@@ -139,7 +139,7 @@ export function PricingCard({
               </Button>
             ) : !currentPrice ? (
               <Button variant={buttonVariantMap[metadata.priceCardVariant]} className='w-full' asChild>
-                <Link href='/contact'>Contact Us</Link>
+                <Link href='/support'>Contact Us</Link>
               </Button>
             ) : (
               <Button
