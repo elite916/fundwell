@@ -1,5 +1,7 @@
 'use server'
 
+import { after } from 'next/server';
+
 import { ContestStatus } from '@/features/contests/constants';
 import { ActionResponse } from '@/types/action-response';
 
@@ -10,6 +12,8 @@ interface AssignGridNumbersParams {
   rowNumbers: number[] | null;
   colNumbers: number[] | null;
   autoGenerate: boolean;
+  /** Email every player, including those who already got their numbers. */
+  emailPlayers?: boolean;
 }
 
 interface AssignGridNumbersResult {
@@ -38,6 +42,7 @@ export async function assignGridNumbers({
   rowNumbers,
   colNumbers,
   autoGenerate,
+  emailPlayers = false,
 }: AssignGridNumbersParams): Promise<ActionResponse<AssignGridNumbersResult>> {
   return withContestOwnership<AssignGridNumbersResult>(contestId, async (user, supabase, contest) => {
     // Verify contest status allows number assignment
@@ -80,7 +85,9 @@ export async function assignGridNumbers({
       throw new Error(`Failed to assign grid numbers: ${updateError.message}`);
     }
 
-    // Send numbers revealed emails (non-blocking)
+    // Send numbers revealed emails after the response. The function emails
+    // only players who haven't had them yet, unless the owner asked to email
+    // everyone again.
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       // The function accepts only the service role key, so only this server
@@ -88,14 +95,16 @@ export async function assignGridNumbers({
       const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
       if (supabaseUrl && serviceRoleKey) {
-        fetch(`${supabaseUrl}/functions/v1/send-numbers-revealed-emails`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${serviceRoleKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ contestId }),
-        }).catch(() => {}); // Silently fail
+        after(() =>
+          fetch(`${supabaseUrl}/functions/v1/send-numbers-revealed-emails`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${serviceRoleKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ contestId, sendAgain: emailPlayers }),
+          }).catch(() => {}) // Silently fail
+        );
       }
     } catch {
       // Silently fail - don't block number assignment

@@ -2,15 +2,19 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+interface EmailSquare {
+  rowIndex: number;
+  colIndex: number;
+  rowNumber: number;
+  colNumber: number;
+}
+
 interface NumbersRevealedEmailParams {
   participantName: string;
   contestName: string;
   rowTeamName: string;
   colTeamName: string;
-  rowIndex: number;
-  colIndex: number;
-  rowNumber: number;
-  colNumber: number;
+  squares: EmailSquare[];
   contestUrl: string;
 }
 
@@ -42,10 +46,7 @@ function generateNumbersRevealedEmail({
   contestName,
   rowTeamName,
   colTeamName,
-  rowIndex,
-  colIndex,
-  rowNumber,
-  colNumber,
+  squares,
   contestUrl,
 }: NumbersRevealedEmailParams): { subject: string; html: string } {
   // Escape user-provided values to prevent HTML injection
@@ -74,7 +75,7 @@ function generateNumbersRevealedEmail({
           <!-- Header -->
           <tr>
             <td style="background-color: #F97316; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Griddo</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Fundwell</h1>
             </td>
           </tr>
           
@@ -96,38 +97,34 @@ function generateNumbersRevealedEmail({
                 <tr>
                   <td style="padding: 20px;">
                     <h2 style="margin: 0 0 16px 0; color: #fafafa; font-size: 18px; font-weight: 600;">
-                      Your Square
+                      ${squares.length === 1 ? 'Your Square' : 'Your Squares'}
                     </h2>
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="padding: 8px 0; color: #a1a1aa; font-size: 14px;">Position:</td>
-                        <td style="padding: 8px 0; color: #fafafa; font-size: 14px; text-align: right;">
-                          Row ${rowIndex}, Column ${colIndex}
+                        <td style="padding: 8px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase;">Position</td>
+                        <td style="padding: 8px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase; text-align: center;">
+                          ${safeRowTeamName}
+                        </td>
+                        <td style="padding: 8px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase; text-align: center;">
+                          ${safeColTeamName}
                         </td>
                       </tr>
-                    </table>
-                    
-                    <!-- Numbers Display -->
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 16px;">
+                      ${squares
+                        .map(
+                          (square) => `
                       <tr>
-                        <td style="padding: 12px; background-color: #27272A; border-radius: 6px; text-align: center;">
-                          <p style="margin: 0 0 4px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase;">
-                            ${safeRowTeamName}
-                          </p>
-                          <p style="margin: 0; color: #F97316; font-size: 32px; font-weight: bold;">
-                            ${rowNumber}
-                          </p>
+                        <td style="padding: 8px 0; color: #fafafa; font-size: 14px;">
+                          Row ${square.rowIndex}, Column ${square.colIndex}
                         </td>
-                        <td style="width: 16px;"></td>
-                        <td style="padding: 12px; background-color: #27272A; border-radius: 6px; text-align: center;">
-                          <p style="margin: 0 0 4px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase;">
-                            ${safeColTeamName}
-                          </p>
-                          <p style="margin: 0; color: #F97316; font-size: 32px; font-weight: bold;">
-                            ${colNumber}
-                          </p>
+                        <td style="padding: 8px 0; color: #F97316; font-size: 24px; font-weight: bold; text-align: center;">
+                          ${square.rowNumber}
                         </td>
-                      </tr>
+                        <td style="padding: 8px 0; color: #F97316; font-size: 24px; font-weight: bold; text-align: center;">
+                          ${square.colNumber}
+                        </td>
+                      </tr>`
+                        )
+                        .join('')}
                     </table>
                   </td>
                 </tr>
@@ -151,7 +148,7 @@ function generateNumbersRevealedEmail({
           <tr>
             <td style="padding: 24px; text-align: center;">
               <p style="margin: 0; color: #71717a; font-size: 14px;">
-                Good luck! - The Griddo Team
+                Good luck! - The Fundwell Team
               </p>
             </td>
           </tr>
@@ -203,7 +200,7 @@ serve(async (req: Request) => {
     });
   }
 
-  let body: { contestId?: string };
+  let body: { contestId?: string; sendAgain?: boolean };
   try {
     body = await req.json();
   } catch (err) {
@@ -214,7 +211,7 @@ serve(async (req: Request) => {
     });
   }
 
-  const { contestId } = body;
+  const { contestId, sendAgain } = body;
 
   if (!contestId) {
     return new Response(JSON.stringify({ error: 'contestId is required' }), {
@@ -308,82 +305,168 @@ serve(async (req: Request) => {
   const baseUrl = Deno.env.get('SITE_URL') || 'https://fundwell.us';
   const contestUrl = `${baseUrl}/contest/${encodeURIComponent(contest.slug)}`;
 
-  let successCount = 0;
-  let failCount = 0;
+  // One send at a time per contest, so a double-click can't send twice.
+  const { data: gotLock, error: lockError } = await supabase.rpc('take_numbers_email_lock', {
+    p_contest_id: contestId,
+  });
 
-  for (const square of squares) {
-    // Validate array indices before accessing
-    const rowIndex = square.row_index;
-    const colIndex = square.col_index;
+  if (lockError) {
+    console.log('Lock error:', lockError);
+    return new Response(JSON.stringify({ error: 'Failed to lock contest for sending' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (!gotLock) {
+    console.log('Numbers emails already sending for contest:', contestId);
+    return new Response(JSON.stringify({ error: 'Numbers emails are already being sent' }), {
+      status: 409,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    // Numbers go out once per person. Later changes re-send only when the owner asks.
+    const alreadySent = new Set<string>();
+    if (sendAgain !== true) {
+      const { data: sentRows, error: logsError } = await supabase
+        .from('email_logs')
+        .select('recipient_email')
+        .eq('contest_id', contestId)
+        .eq('email_type', 'numbers_revealed')
+        .eq('status', 'sent');
+
+      if (logsError) {
+        console.log('Email logs fetch error:', logsError);
+        return new Response(JSON.stringify({ error: 'Failed to check sent emails' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      for (const row of sentRows ?? []) alreadySent.add(row.recipient_email.trim().toLowerCase());
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+    let skippedCount = 0;
+
+    // One email per person: group squares by email, ignoring case.
+    const people = new Map<string, { email: string; name: string; squares: EmailSquare[] }>();
     const rowNumbers = contest.row_numbers as number[];
     const colNumbers = contest.col_numbers as number[];
 
-    if (rowIndex < 0 || rowIndex >= rowNumbers.length || colIndex < 0 || colIndex >= colNumbers.length) {
-      console.warn(
-        `Skipping square with invalid indices: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
-          `row_numbers.length=${rowNumbers.length}, col_numbers.length=${colNumbers.length}`
-      );
-      failCount++;
-      continue;
+    for (const square of squares) {
+      // Validate array indices before accessing
+      const rowIndex = square.row_index;
+      const colIndex = square.col_index;
+
+      if (rowIndex < 0 || rowIndex >= rowNumbers.length || colIndex < 0 || colIndex >= colNumbers.length) {
+        console.warn(
+          `Skipping square with invalid indices: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
+            `row_numbers.length=${rowNumbers.length}, col_numbers.length=${colNumbers.length}`
+        );
+        failCount++;
+        continue;
+      }
+
+      const rowNumber = rowNumbers[rowIndex];
+      const colNumber = colNumbers[colIndex];
+
+      // Extra safety check for undefined values (shouldn't happen after bounds check)
+      if (rowNumber === undefined || colNumber === undefined) {
+        console.warn(
+          `Skipping square with undefined numbers: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
+            `rowNumber=${rowNumber}, colNumber=${colNumber}`
+        );
+        failCount++;
+        continue;
+      }
+
+      const key = square.claimant_email.trim().toLowerCase();
+      if (alreadySent.has(key)) {
+        skippedCount++;
+        continue;
+      }
+      let person = people.get(key);
+      if (!person) {
+        person = { email: square.claimant_email.trim(), name: square.claimant_first_name || 'Participant', squares: [] };
+        people.set(key, person);
+      }
+      person.squares.push({ rowIndex, colIndex, rowNumber, colNumber });
     }
 
-    const rowNumber = rowNumbers[rowIndex];
-    const colNumber = colNumbers[colIndex];
+    let personIndex = 0;
+    for (const person of people.values()) {
+      personIndex++;
+      person.squares.sort((a, b) => a.rowIndex - b.rowIndex || a.colIndex - b.colIndex);
 
-    // Extra safety check for undefined values (shouldn't happen after bounds check)
-    if (rowNumber === undefined || colNumber === undefined) {
-      console.warn(
-        `Skipping square with undefined numbers: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
-          `rowNumber=${rowNumber}, colNumber=${colNumber}`
-      );
-      failCount++;
-      continue;
-    }
-
-    const { subject, html } = generateNumbersRevealedEmail({
-      participantName: square.claimant_first_name || 'Participant',
-      contestName: contest.name,
-      rowTeamName: contest.row_team_name,
-      colTeamName: contest.col_team_name,
-      rowIndex: square.row_index,
-      colIndex: square.col_index,
-      rowNumber,
-      colNumber,
-      contestUrl,
-    });
-
-    try {
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: Deno.env.get('RESEND_FROM_EMAIL') || 'Griddo <no-reply@griddo.us>',
-          to: square.claimant_email,
-          subject,
-          html,
-        }),
+      const { subject, html } = generateNumbersRevealedEmail({
+        participantName: person.name,
+        contestName: contest.name,
+        rowTeamName: contest.row_team_name,
+        colTeamName: contest.col_team_name,
+        squares: person.squares,
+        contestUrl,
       });
 
-      if (response.ok) {
-        successCount++;
-        console.log(`Email sent successfully for square_id=${square.id}`);
-      } else {
+      let sent = false;
+      let resendId: string | null = null;
+      try {
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: Deno.env.get('RESEND_FROM_EMAIL') || 'Fundwell <no-reply@fundwell.us>',
+            to: person.email,
+            subject,
+            html,
+          }),
+        });
+
+        if (response.ok) {
+          sent = true;
+          successCount++;
+          resendId = (await response.json().catch(() => null))?.id ?? null;
+          console.log(`Email sent successfully for person ${personIndex} (${person.squares.length} squares)`);
+        } else {
+          failCount++;
+          const errorData = await response.text();
+          console.log(`Failed to send email for person ${personIndex}:`, errorData);
+        }
+      } catch (error) {
         failCount++;
-        const errorData = await response.text();
-        console.log(`Failed to send email for square_id=${square.id}:`, errorData);
+        console.log(`Error sending email for person ${personIndex}:`, error);
       }
-    } catch (error) {
-      failCount++;
-      console.log(`Error sending email for square_id=${square.id}:`, error);
+
+      const { error: logError } = await supabase.from('email_logs').insert({
+        contest_id: contestId,
+        recipient_email: person.email,
+        email_type: 'numbers_revealed',
+        resend_id: resendId,
+        status: sent ? 'sent' : 'failed',
+      });
+      if (logError) {
+        console.log(`Failed to log email for person ${personIndex}:`, logError);
+      }
+    }
+
+    console.log(
+      `Numbers revealed emails complete. Sent: ${successCount}, Failed: ${failCount}, Already sent (squares): ${skippedCount}`
+    );
+
+    return new Response(
+      JSON.stringify({ success: true, sent: successCount, failed: failCount, skipped: skippedCount }),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  } finally {
+    const { error: unlockError } = await supabase.from('numbers_email_locks').delete().eq('contest_id', contestId);
+    if (unlockError) {
+      console.log('Unlock error:', unlockError);
     }
   }
-
-  console.log(`Numbers revealed emails complete. Sent: ${successCount}, Failed: ${failCount}`);
-
-  return new Response(JSON.stringify({ success: true, sent: successCount, failed: failCount }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
 });
