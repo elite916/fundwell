@@ -1,5 +1,6 @@
 'use server';
 
+import { isAllowedStatusTransition } from '@/features/contests/constants/status-transitions';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database, Tables } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
@@ -32,6 +33,13 @@ export async function updateContestStatus(
 
   if (fetchError || !contest) {
     return { data: null, error: { message: 'Contest not found or access denied' } };
+  }
+
+  if (!isAllowedStatusTransition(contest.status, targetStatus)) {
+    return {
+      data: null,
+      error: { message: `Cannot change contest status from ${contest.status} to ${targetStatus}` },
+    };
   }
 
   // Validate transition requirements
