@@ -12,7 +12,7 @@ interface AssignGridNumbersParams {
   rowNumbers: number[] | null;
   colNumbers: number[] | null;
   autoGenerate: boolean;
-  /** Email players again when numbers were already sent. */
+  /** Email every player, including those who already got their numbers. */
   emailPlayers?: boolean;
 }
 
@@ -86,7 +86,8 @@ export async function assignGridNumbers({
     }
 
     // Send numbers revealed emails after the response. The function emails
-    // only the first time unless the owner asked to email players again.
+    // only players who haven't had them yet, unless the owner asked to email
+    // everyone again.
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       // The function accepts only the service role key, so only this server

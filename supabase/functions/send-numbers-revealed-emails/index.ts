@@ -265,32 +265,6 @@ serve(async (req: Request) => {
     });
   }
 
-  // Numbers go out once. Later changes re-send only when the owner asks.
-  if (sendAgain !== true) {
-    const { count: sentBefore, error: logsError } = await supabase
-      .from('email_logs')
-      .select('id', { count: 'exact', head: true })
-      .eq('contest_id', contestId)
-      .eq('email_type', 'numbers_revealed')
-      .eq('status', 'sent');
-
-    if (logsError) {
-      console.log('Email logs fetch error:', logsError);
-      return new Response(JSON.stringify({ error: 'Failed to check sent emails' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    if (sentBefore) {
-      console.log('Numbers already emailed for contest:', contestId);
-      return new Response(
-        JSON.stringify({ success: true, sent: 0, failed: 0, skipped: true, message: 'Numbers already emailed' }),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-  }
-
   // Fetch squares with participants. Emails live in the owner-only
   // square_claimants table; the inner join keeps only squares that have one.
   const { data: squareRows, error: squaresError } = await supabase
@@ -331,111 +305,168 @@ serve(async (req: Request) => {
   const baseUrl = Deno.env.get('SITE_URL') || 'https://fundwell.us';
   const contestUrl = `${baseUrl}/contest/${encodeURIComponent(contest.slug)}`;
 
-  let successCount = 0;
-  let failCount = 0;
+  // One send at a time per contest, so a double-click can't send twice.
+  const { data: gotLock, error: lockError } = await supabase.rpc('take_numbers_email_lock', {
+    p_contest_id: contestId,
+  });
 
-  // One email per person: group squares by email, ignoring case.
-  const people = new Map<string, { email: string; name: string; squares: EmailSquare[] }>();
-  const rowNumbers = contest.row_numbers as number[];
-  const colNumbers = contest.col_numbers as number[];
-
-  for (const square of squares) {
-    // Validate array indices before accessing
-    const rowIndex = square.row_index;
-    const colIndex = square.col_index;
-
-    if (rowIndex < 0 || rowIndex >= rowNumbers.length || colIndex < 0 || colIndex >= colNumbers.length) {
-      console.warn(
-        `Skipping square with invalid indices: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
-          `row_numbers.length=${rowNumbers.length}, col_numbers.length=${colNumbers.length}`
-      );
-      failCount++;
-      continue;
-    }
-
-    const rowNumber = rowNumbers[rowIndex];
-    const colNumber = colNumbers[colIndex];
-
-    // Extra safety check for undefined values (shouldn't happen after bounds check)
-    if (rowNumber === undefined || colNumber === undefined) {
-      console.warn(
-        `Skipping square with undefined numbers: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
-          `rowNumber=${rowNumber}, colNumber=${colNumber}`
-      );
-      failCount++;
-      continue;
-    }
-
-    const key = square.claimant_email.trim().toLowerCase();
-    let person = people.get(key);
-    if (!person) {
-      person = { email: square.claimant_email.trim(), name: square.claimant_first_name || 'Participant', squares: [] };
-      people.set(key, person);
-    }
-    person.squares.push({ rowIndex, colIndex, rowNumber, colNumber });
+  if (lockError) {
+    console.log('Lock error:', lockError);
+    return new Response(JSON.stringify({ error: 'Failed to lock contest for sending' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  let personIndex = 0;
-  for (const person of people.values()) {
-    personIndex++;
-    person.squares.sort((a, b) => a.rowIndex - b.rowIndex || a.colIndex - b.colIndex);
-
-    const { subject, html } = generateNumbersRevealedEmail({
-      participantName: person.name,
-      contestName: contest.name,
-      rowTeamName: contest.row_team_name,
-      colTeamName: contest.col_team_name,
-      squares: person.squares,
-      contestUrl,
+  if (!gotLock) {
+    console.log('Numbers emails already sending for contest:', contestId);
+    return new Response(JSON.stringify({ error: 'Numbers emails are already being sent' }), {
+      status: 409,
+      headers: { 'Content-Type': 'application/json' },
     });
+  }
 
-    let sent = false;
-    let resendId: string | null = null;
-    try {
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: Deno.env.get('RESEND_FROM_EMAIL') || 'Fundwell <no-reply@fundwell.us>',
-          to: person.email,
-          subject,
-          html,
-        }),
+  try {
+    // Numbers go out once per person. Later changes re-send only when the owner asks.
+    const alreadySent = new Set<string>();
+    if (sendAgain !== true) {
+      const { data: sentRows, error: logsError } = await supabase
+        .from('email_logs')
+        .select('recipient_email')
+        .eq('contest_id', contestId)
+        .eq('email_type', 'numbers_revealed')
+        .eq('status', 'sent');
+
+      if (logsError) {
+        console.log('Email logs fetch error:', logsError);
+        return new Response(JSON.stringify({ error: 'Failed to check sent emails' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      for (const row of sentRows ?? []) alreadySent.add(row.recipient_email.trim().toLowerCase());
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+    let skippedCount = 0;
+
+    // One email per person: group squares by email, ignoring case.
+    const people = new Map<string, { email: string; name: string; squares: EmailSquare[] }>();
+    const rowNumbers = contest.row_numbers as number[];
+    const colNumbers = contest.col_numbers as number[];
+
+    for (const square of squares) {
+      // Validate array indices before accessing
+      const rowIndex = square.row_index;
+      const colIndex = square.col_index;
+
+      if (rowIndex < 0 || rowIndex >= rowNumbers.length || colIndex < 0 || colIndex >= colNumbers.length) {
+        console.warn(
+          `Skipping square with invalid indices: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
+            `row_numbers.length=${rowNumbers.length}, col_numbers.length=${colNumbers.length}`
+        );
+        failCount++;
+        continue;
+      }
+
+      const rowNumber = rowNumbers[rowIndex];
+      const colNumber = colNumbers[colIndex];
+
+      // Extra safety check for undefined values (shouldn't happen after bounds check)
+      if (rowNumber === undefined || colNumber === undefined) {
+        console.warn(
+          `Skipping square with undefined numbers: square_id=${square.id}, row_index=${rowIndex}, col_index=${colIndex}, ` +
+            `rowNumber=${rowNumber}, colNumber=${colNumber}`
+        );
+        failCount++;
+        continue;
+      }
+
+      const key = square.claimant_email.trim().toLowerCase();
+      if (alreadySent.has(key)) {
+        skippedCount++;
+        continue;
+      }
+      let person = people.get(key);
+      if (!person) {
+        person = { email: square.claimant_email.trim(), name: square.claimant_first_name || 'Participant', squares: [] };
+        people.set(key, person);
+      }
+      person.squares.push({ rowIndex, colIndex, rowNumber, colNumber });
+    }
+
+    let personIndex = 0;
+    for (const person of people.values()) {
+      personIndex++;
+      person.squares.sort((a, b) => a.rowIndex - b.rowIndex || a.colIndex - b.colIndex);
+
+      const { subject, html } = generateNumbersRevealedEmail({
+        participantName: person.name,
+        contestName: contest.name,
+        rowTeamName: contest.row_team_name,
+        colTeamName: contest.col_team_name,
+        squares: person.squares,
+        contestUrl,
       });
 
-      if (response.ok) {
-        sent = true;
-        successCount++;
-        resendId = (await response.json().catch(() => null))?.id ?? null;
-        console.log(`Email sent successfully for person ${personIndex} (${person.squares.length} squares)`);
-      } else {
+      let sent = false;
+      let resendId: string | null = null;
+      try {
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: Deno.env.get('RESEND_FROM_EMAIL') || 'Fundwell <no-reply@fundwell.us>',
+            to: person.email,
+            subject,
+            html,
+          }),
+        });
+
+        if (response.ok) {
+          sent = true;
+          successCount++;
+          resendId = (await response.json().catch(() => null))?.id ?? null;
+          console.log(`Email sent successfully for person ${personIndex} (${person.squares.length} squares)`);
+        } else {
+          failCount++;
+          const errorData = await response.text();
+          console.log(`Failed to send email for person ${personIndex}:`, errorData);
+        }
+      } catch (error) {
         failCount++;
-        const errorData = await response.text();
-        console.log(`Failed to send email for person ${personIndex}:`, errorData);
+        console.log(`Error sending email for person ${personIndex}:`, error);
       }
-    } catch (error) {
-      failCount++;
-      console.log(`Error sending email for person ${personIndex}:`, error);
+
+      const { error: logError } = await supabase.from('email_logs').insert({
+        contest_id: contestId,
+        recipient_email: person.email,
+        email_type: 'numbers_revealed',
+        resend_id: resendId,
+        status: sent ? 'sent' : 'failed',
+      });
+      if (logError) {
+        console.log(`Failed to log email for person ${personIndex}:`, logError);
+      }
     }
 
-    const { error: logError } = await supabase.from('email_logs').insert({
-      contest_id: contestId,
-      recipient_email: person.email,
-      email_type: 'numbers_revealed',
-      resend_id: resendId,
-      status: sent ? 'sent' : 'failed',
-    });
-    if (logError) {
-      console.log(`Failed to log email for person ${personIndex}:`, logError);
+    console.log(
+      `Numbers revealed emails complete. Sent: ${successCount}, Failed: ${failCount}, Already sent (squares): ${skippedCount}`
+    );
+
+    return new Response(
+      JSON.stringify({ success: true, sent: successCount, failed: failCount, skipped: skippedCount }),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  } finally {
+    const { error: unlockError } = await supabase.from('numbers_email_locks').delete().eq('contest_id', contestId);
+    if (unlockError) {
+      console.log('Unlock error:', unlockError);
     }
   }
-
-  console.log(`Numbers revealed emails complete. Sent: ${successCount}, Failed: ${failCount}`);
-
-  return new Response(JSON.stringify({ success: true, sent: successCount, failed: failCount }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
 });
