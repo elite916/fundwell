@@ -14,6 +14,7 @@ import {
   getScoresForContest,
   getSquaresForContest,
 } from '@/features/contests/queries';
+import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { getURL } from '@/utils/get-url';
@@ -61,12 +62,13 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
   }
 
   // Fetch squares, scores, and payment options count
-  const [squares, scores, paymentOptionsResult, participants, accessPin] = await Promise.all([
+  const [squares, scores, paymentOptionsResult, participants, accessPin, isPro] = await Promise.all([
     getSquaresForContest(contestId),
     getScoresForContest(contestId),
     supabase.from('payment_options').select('*', { count: 'exact', head: true }).eq('contest_id', contestId),
     getParticipantsForContest(contestId),
     getContestPinForOwner(contestId),
+    hasActiveSubscription(user.id),
   ]);
 
   const hasPaymentOptions = (paymentOptionsResult.count ?? 0) > 0;
@@ -350,7 +352,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
         />
 
         {/* Ad Placeholder */}
-        <AdPlaceholder size="rectangle" className="mx-auto" />
+        {!isPro && <AdPlaceholder size="rectangle" className="mx-auto" />}
       </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ import {
   getSquaresForContest,
 } from '@/features/contests/queries';
 import { getPublicContestBySlug } from '@/features/contests/queries/get-contest-safe';
-import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
+import { ownerHasPro } from '@/features/subscriptions/owner-has-pro';
 
 import { ContestPageClient } from './contest-page-client';
 
@@ -57,8 +57,7 @@ export default async function ContestPage({ params }: ContestPageProps) {
     isOwner = false;
   }
 
-  const ownerHasActiveSubscription = await hasActiveSubscription(contest.owner_id);
-  const showAds = !ownerHasActiveSubscription;
+  const showAds = !(await ownerHasPro(contest.owner_id));
 
   // Fetch squares, payment options, and scores only when access is granted
   const [squares, paymentOptions, scores] = hasAccess
