@@ -1,9 +1,12 @@
 'use server';
 
-import { cookies } from 'next/headers';
-import { createHash, timingSafeEqual } from 'crypto';
+import { cookies, headers } from 'next/headers';
+import { timingSafeEqual } from 'crypto';
 
+import { contestAccessCookieName, contestAccessToken } from '@/features/contests/access';
 import { getContestPin } from '@/features/contests/queries';
+import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
+import { logger } from '@/utils/logger';
 
 interface VerifyPinInput {
   contestSlug: string;
@@ -15,9 +18,46 @@ interface VerifyPinResponse {
   error: { message: string } | null;
 }
 
+// Failed PIN attempts allowed per window: per contest and IP, and per contest
+// from all IPs together.
+const IP_LIMIT = { max: 10, windowSeconds: 15 * 60 };
+const CONTEST_LIMIT = { max: 100, windowSeconds: 60 * 60 };
+
+async function getClientIp(): Promise<string> {
+  const headerStore = await headers();
+  const forwardedFor = headerStore.get('x-forwarded-for')?.split(',')[0].trim();
+  return headerStore.get('x-real-ip') || forwardedFor || 'unknown';
+}
+
+/**
+ * Counts an attempt against a limit and returns whether it is within it.
+ * Throws if the limiter can't be reached, so the PIN check fails closed.
+ */
+async function hitRateLimit(key: string, limit: { max: number; windowSeconds: number }): Promise<boolean> {
+  const { data, error } = await supabaseAdminClient.rpc('rate_limit_hit', {
+    p_key: key,
+    p_max: limit.max,
+    p_window_seconds: limit.windowSeconds,
+  });
+  if (error) {
+    logger.error('verifyPin rate limit', error);
+    throw new Error('Rate limit check failed');
+  }
+  return data;
+}
+
+async function undoRateLimitHit(key: string, limit: { windowSeconds: number }): Promise<void> {
+  const { error } = await supabaseAdminClient.rpc('rate_limit_undo_hit', {
+    p_key: key,
+    p_window_seconds: limit.windowSeconds,
+  });
+  if (error) logger.error('verifyPin rate limit', error);
+}
+
 /**
  * Verifies a PIN for accessing a private contest.
  * If successful, sets a cookie to remember access for 7 days.
+ * Failed attempts are rate-limited in the database (see IP_LIMIT and CONTEST_LIMIT).
  */
 export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinResponse> {
   const { contestSlug, enteredPin } = input;
@@ -36,6 +76,20 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
     return {
       data: null,
       error: { message: 'Contest not found' },
+    };
+  }
+
+  // Count the attempt before comparing, so parallel guesses can't slip past
+  // the limit. A correct PIN gives its attempt back below.
+  const ip = await getClientIp();
+  const ipKey = `pin:ip:${contestSlug}:${ip}`;
+  const contestKey = `pin:contest:${contestSlug}`;
+  const withinLimits = (await hitRateLimit(ipKey, IP_LIMIT)) && (await hitRateLimit(contestKey, CONTEST_LIMIT));
+
+  if (!withinLimits) {
+    return {
+      data: { success: false },
+      error: { message: 'Too many attempts. Try again in a few minutes.' },
     };
   }
 
@@ -63,13 +117,15 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
     };
   }
 
+  // Only failed attempts count against the limits
+  await Promise.all([undoRateLimitHit(ipKey, IP_LIMIT), undoRateLimitHit(contestKey, CONTEST_LIMIT)]);
+
   // Set access cookie (expires in 7 days)
   const cookieStore = await cookies();
-  const cookieName = `contest_access_${contestSlug}`;
+  const cookieName = contestAccessCookieName(contestSlug);
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-  const pinHash = createHash('sha256').update(accessPin).digest('hex');
 
-  cookieStore.set(cookieName, pinHash, {
+  cookieStore.set(cookieName, contestAccessToken(contestSlug, accessPin), {
     expires: expiresAt,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -81,24 +137,4 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
     data: { success: true },
     error: null,
   };
-}
-
-/**
- * Checks if the user has access to a PIN-protected contest.
- * Returns true if no PIN is required or if the user has a valid access cookie.
- */
-export async function hasContestAccess(contestSlug: string, accessPin: string | null): Promise<boolean> {
-  // No PIN required - public access
-  if (!accessPin) {
-    return true;
-  }
-
-  // Check for access cookie
-  const cookieStore = await cookies();
-  const cookieName = `contest_access_${contestSlug}`;
-  const accessCookie = cookieStore.get(cookieName);
-
-  const pinHash = createHash('sha256').update(accessPin).digest('hex');
-
-  return accessCookie?.value === pinHash;
 }
