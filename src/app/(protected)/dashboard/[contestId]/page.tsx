@@ -301,6 +301,11 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
                   payout_game5_percent: contest.payout_game5_percent,
                   payout_game6_percent: contest.payout_game6_percent,
                   payout_game7_percent: contest.payout_game7_percent,
+                  prize_type: contest.prize_type,
+                  prize_q1_text: contest.prize_q1_text,
+                  prize_q2_text: contest.prize_q2_text,
+                  prize_q3_text: contest.prize_q3_text,
+                  prize_final_text: contest.prize_final_text,
                 }}
                 scores={scores}
                 squares={squaresList}
@@ -344,6 +349,11 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
             payout_game5_percent: contest.payout_game5_percent,
             payout_game6_percent: contest.payout_game6_percent,
             payout_game7_percent: contest.payout_game7_percent,
+            prize_type: contest.prize_type,
+            prize_q1_text: contest.prize_q1_text,
+            prize_q2_text: contest.prize_q2_text,
+            prize_q3_text: contest.prize_q3_text,
+            prize_final_text: contest.prize_final_text,
           }}
           scores={scores}
           squares={squaresList}

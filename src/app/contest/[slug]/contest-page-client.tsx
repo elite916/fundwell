@@ -9,10 +9,10 @@ import { AdPlaceholder, ShareQrModal } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { ClaimSquareModal, PinEntryModal, Square, SquaresGrid } from '@/features/contests/components';
-import { FOOTBALL_QUARTER_LABELS } from '@/features/contests/constants';
+import { FOOTBALL_QUARTER_LABELS, TOTAL_SQUARES } from '@/features/contests/constants';
 import { ContestPrizeFields } from '@/features/contests/types';
 import { Player } from '@/features/contests/types/player';
-import { getPrizeText } from '@/features/contests/utils';
+import { calculatePrizeAmount, countSoldSquares, getPrizeText } from '@/features/contests/utils';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 import { Database } from '@/libs/supabase/types';
 import { cn } from '@/utils/cn';
@@ -119,9 +119,8 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
     .filter((score) => score.winning_square_id)
     .map((score) => score.winning_square_id as string);
 
-  // Calculate total pot
-  const claimedSquaresCount = realtimeSquares.filter((s) => s.payment_status !== 'available').length;
-  const totalPot = claimedSquaresCount * contest.square_price;
+  // Squares sold so far (pending or paid)
+  const squaresSold = countSoldSquares(realtimeSquares);
 
   // Check if we have winners to show
   const hasWinners = scores.length > 0 && scores.some((s) => s.winning_square_id);
@@ -463,10 +462,9 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                         </div>
                       );
                     }
-                    const expectedPot = 100 * contest.square_price;
                     const percent = payout.percent ?? 0;
-                    const expectedPayout = (expectedPot * percent) / 100;
-                    const currentPayout = (totalPot * percent) / 100;
+                    const expectedPayout = calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, percent);
+                    const currentPayout = calculatePrizeAmount(squaresSold, contest.square_price, percent);
                     return (
                       <div
                         key={payout.label}
@@ -490,10 +488,9 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                     <span className="text-sm text-zinc-400">Total Payouts</span>
                     <div className="text-right">
                       {(() => {
-                        const expectedPot = 100 * contest.square_price;
                         const totalPercent = payoutList.reduce((sum, p) => sum + (p.percent || 0), 0);
-                        const expectedTotal = (expectedPot * totalPercent) / 100;
-                        const currentTotal = (totalPot * totalPercent) / 100;
+                        const expectedTotal = calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, totalPercent);
+                        const currentTotal = calculatePrizeAmount(squaresSold, contest.square_price, totalPercent);
                         return (
                           <>
                             <span className="text-sm font-bold text-white">${expectedTotal.toFixed(0)}</span>
@@ -520,7 +517,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                     .map((score) => {
                       const winnerInfo = getWinnerInfo(score.winning_square_id!);
                       const payoutPercent = getPayoutPercent(score.quarter);
-                      const payoutAmount = (totalPot * payoutPercent) / 100;
+                      const payoutAmount = calculatePrizeAmount(squaresSold, contest.square_price, payoutPercent);
                       const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
 
                       return (

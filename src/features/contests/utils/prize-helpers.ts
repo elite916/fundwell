@@ -27,3 +27,16 @@ export function getPrizeText(
   return prizeMap[quarter] ?? null;
 }
 
+/**
+ * Counts the squares sold: claimed squares, pending or paid.
+ */
+export function countSoldSquares(squares: { payment_status: string }[]): number {
+  return squares.filter((s) => s.payment_status !== 'available').length;
+}
+
+/**
+ * A quarter's prize: squares sold × square price × that quarter's payout %.
+ */
+export function calculatePrizeAmount(squaresSold: number, squarePrice: number, payoutPercent: number): number {
+  return (squaresSold * Number(squarePrice) * payoutPercent) / 100;
+}
