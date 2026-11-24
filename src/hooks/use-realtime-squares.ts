@@ -32,8 +32,9 @@ export function useRealtimeSquares<T extends BaseSquare>(contestId: string, init
           if (payload.eventType === 'INSERT') {
             setSquares((prev) => [...prev, payload.new as T]);
           } else if (payload.eventType === 'UPDATE') {
+            // Merge, so fields the public row doesn't carry (owner-only email/Venmo) survive
             setSquares((prev) =>
-              prev.map((s) => (s.id === (payload.new as T).id ? (payload.new as T) : s))
+              prev.map((s) => (s.id === (payload.new as T).id ? { ...s, ...(payload.new as T) } : s))
             );
           } else if (payload.eventType === 'DELETE') {
             setSquares((prev) => prev.filter((s) => s.id !== (payload.old as T).id));

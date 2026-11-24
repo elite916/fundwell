@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
+import { updateContestPin } from '@/features/contests/actions/update-contest-pin';
 import { Database } from '@/libs/supabase/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -40,6 +41,7 @@ type AccessControlFormData = z.infer<typeof accessControlSchema>;
 
 interface AccessControlSectionProps {
   contest: Contest;
+  accessPin: string | null;
 }
 
 function generatePin(): string {
@@ -51,7 +53,7 @@ function generatePin(): string {
   return pin;
 }
 
-export function AccessControlSection({ contest }: AccessControlSectionProps) {
+export function AccessControlSection({ contest, accessPin }: AccessControlSectionProps) {
   const [isPending, startTransition] = useTransition();
   const [showPin, setShowPin] = useState(false);
   const { toast } = useToast();
@@ -67,8 +69,8 @@ export function AccessControlSection({ contest }: AccessControlSectionProps) {
     resolver: zodResolver(accessControlSchema),
     defaultValues: {
       is_public: contest.is_public,
-      require_pin: !!contest.access_pin,
-      access_pin: contest.access_pin ?? '',
+      require_pin: !!accessPin,
+      access_pin: accessPin ?? '',
     },
   });
 
@@ -81,10 +83,12 @@ export function AccessControlSection({ contest }: AccessControlSectionProps) {
 
   const onSubmit = (data: AccessControlFormData) => {
     startTransition(async () => {
-      const result = await updateContest(contest.id, {
-        is_public: data.is_public,
-        access_pin: data.require_pin ? data.access_pin : null,
-      });
+      const pinResult = await updateContestPin(contest.id, data.require_pin ? (data.access_pin ?? null) : null);
+      const result = pinResult?.error
+        ? pinResult
+        : await updateContest(contest.id, {
+            is_public: data.is_public,
+          });
 
       if (result?.error) {
         toast({

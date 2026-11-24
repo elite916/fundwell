@@ -53,7 +53,7 @@ export async function updateSquareStatus(
     // Verify square belongs to contest
     const { data: square, error: squareError } = await supabase
       .from('squares')
-      .select('id, contest_id, payment_status, claimant_email, claimant_first_name, row_index, col_index')
+      .select('id, contest_id, payment_status, claimant_first_name, row_index, col_index, square_claimants(email)')
       .eq('id', squareId)
       .eq('contest_id', contestId)
       .single();
@@ -62,6 +62,8 @@ export async function updateSquareStatus(
       throw new NotFoundError(ContestErrors.SQUARE_NOT_FOUND);
     }
 
+    const claimantEmail = square.square_claimants?.email ?? null;
+
     // Build update data based on new status
     type SquareUpdate = Database['public']['Tables']['squares']['Update'];
     let updateData: SquareUpdate = {
@@ -69,15 +71,15 @@ export async function updateSquareStatus(
     };
 
     if (newStatus === PaymentStatus.AVAILABLE) {
-      // Clear all claimant info when releasing square
+      // Clear all claimant info when releasing square (contact details are
+      // deleted from square_claimants below)
       updateData = {
         ...updateData,
         claimant_first_name: null,
         claimant_last_name: null,
-        claimant_email: null,
-        claimant_venmo: null,
         claimed_at: null,
         paid_at: null,
+        referred_by: null,
       };
     } else if (newStatus === PaymentStatus.PAID) {
       // Set paid_at timestamp when marking as paid
@@ -104,12 +106,20 @@ export async function updateSquareStatus(
       throw new NotFoundError(ContestErrors.SQUARE_NOT_FOUND);
     }
 
+    if (newStatus === PaymentStatus.AVAILABLE) {
+      const { error: deleteError } = await supabase.from('square_claimants').delete().eq('square_id', squareId);
+
+      if (deleteError) {
+        throw new Error(ContestErrors.FAILED_TO_UPDATE);
+      }
+    }
+
     // Send confirmation email when marking as paid (don't block on failure)
-    if (newStatus === PaymentStatus.PAID && square.claimant_email) {
+    if (newStatus === PaymentStatus.PAID && claimantEmail) {
       const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
       sendEmailSafe({
-        to: square.claimant_email,
+        to: claimantEmail,
         template: paymentConfirmedEmail({
           participantName: square.claimant_first_name || 'there',
           contestName: contest.name,

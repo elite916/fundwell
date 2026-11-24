@@ -268,13 +268,18 @@ serve(async (req: Request) => {
     });
   }
 
-  // Fetch squares with participants
-  const { data: squares, error: squaresError } = await supabase
+  // Fetch squares with participants. Emails live in the owner-only
+  // square_claimants table; the inner join keeps only squares that have one.
+  const { data: squareRows, error: squaresError } = await supabase
     .from('squares')
-    .select('id, row_index, col_index, claimant_first_name, claimant_email, payment_status')
+    .select('id, row_index, col_index, claimant_first_name, payment_status, square_claimants!inner(email)')
     .eq('contest_id', contestId)
-    .in('payment_status', ['pending', 'paid'])
-    .not('claimant_email', 'is', null);
+    .in('payment_status', ['pending', 'paid']);
+
+  const squares = squareRows?.map((row) => {
+    const claimant = Array.isArray(row.square_claimants) ? row.square_claimants[0] : row.square_claimants;
+    return { ...row, claimant_email: claimant?.email as string };
+  });
 
   if (squaresError) {
     console.log('Squares fetch error:', squaresError);
