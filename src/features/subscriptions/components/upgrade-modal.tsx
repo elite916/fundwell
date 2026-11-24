@@ -29,7 +29,7 @@ export function UpgradeModal({ isOpen, onClose, proPrice, currentCount }: Upgrad
     if (!proPrice) return;
     setIsLoading(true);
     try {
-      await createCheckoutAction({ price: proPrice });
+      await createCheckoutAction({ priceId: proPrice.id });
     } catch (error) {
       // redirect() throws a special error that Next.js handles - re-throw it
       if (error instanceof Error && error.message === 'NEXT_REDIRECT') {

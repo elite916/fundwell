@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { nanoid } from 'nanoid';
 import slugify from 'slugify';
 
+import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
@@ -12,6 +13,8 @@ import { logger } from '@/utils/logger';
 import { CreateContestInput, createContestSchema } from '../models/contest';
 
 type ContestInsert = Database['public']['Tables']['contests']['Insert'];
+
+const CONTEST_LIMIT_MESSAGE = "You've reached the limit for free accounts (1 contest). Upgrade to Pro to create more.";
 
 /**
  * Generates a unique 6-character code for sharing contests
@@ -70,6 +73,13 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
 
   const data = validationResult.data;
 
+  // Free plan: 1 active contest. The database enforces this too.
+  const { canCreate } = await getContestLimit(user.id);
+
+  if (!canCreate) {
+    return { data: null, error: { message: CONTEST_LIMIT_MESSAGE } };
+  }
+
   // Generate unique code and slug
   const uniqueId = nanoid(6);
   const code = generateContestCode();
@@ -126,6 +136,10 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
       code: insertError.code,
       retryCount,
     });
+
+    if (insertError.message.includes('contest_limit_reached')) {
+      return { data: null, error: { message: CONTEST_LIMIT_MESSAGE } };
+    }
 
     // Handle unique constraint violations
     if (insertError.code === '23505') {
