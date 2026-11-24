@@ -71,7 +71,7 @@ export async function updateContestStatus(
   };
 
   // Make contest publicly readable when opening (required for RLS to allow anonymous reads)
-  // Note: is_public = true allows the page to load; access_pin provides additional security
+  // Note: is_public = true allows the page to load; the PIN (contest_pins) provides additional security
   if (targetStatus === 'open') {
     updateData.is_public = true;
   }

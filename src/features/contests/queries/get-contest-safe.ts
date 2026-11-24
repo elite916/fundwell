@@ -2,12 +2,12 @@ import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-clie
 import { Database } from '@/libs/supabase/types';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
-type PublicContest = Omit<Contest, 'access_pin'>;
 
 /**
- * Fetches a contest for public viewing (excludes sensitive fields like access_pin)
+ * Fetches a contest for public viewing. The access PIN isn't on this row; it
+ * lives in the owner-only contest_pins table.
  */
-export async function getPublicContestBySlug(slug: string): Promise<PublicContest | null> {
+export async function getPublicContestBySlug(slug: string): Promise<Contest | null> {
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -21,9 +21,7 @@ export async function getPublicContestBySlug(slug: string): Promise<PublicContes
     return null;
   }
 
-  // Remove private fields
-  const { access_pin, ...publicData } = data;
-  return publicData;
+  return data;
 }
 
 /**
