@@ -1,3 +1,7 @@
+import { notFound } from 'next/navigation';
+
+import { getUser } from '@/features/account/controllers/get-user';
+import { isAdmin } from '@/features/admin/require-admin';
 import {
   getProcessingLogs,
   getQuarterResults,
@@ -12,6 +16,12 @@ export const metadata = {
 };
 
 export default async function SuperBowlPage() {
+  const user = await getUser();
+
+  if (!user || !(await isAdmin(user.id))) {
+    notFound();
+  }
+
   const [config, logs, results, contests] = await Promise.all([
     getSuperBowlConfig(),
     getProcessingLogs(),

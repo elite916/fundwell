@@ -1,20 +1,9 @@
 'use server';
 
+import { requireAdmin } from '@/features/admin/require-admin';
 import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
-import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { ActionResponse } from '@/types/action-response';
 import { logger } from '@/utils/logger';
-
-// =============================================================================
-// Auth helper - ensure user is authenticated
-// =============================================================================
-
-async function requireAuth() {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) throw new Error('Authentication required');
-  return data.user;
-}
 
 // =============================================================================
 // Toggle score checking on/off
@@ -22,7 +11,7 @@ async function requireAuth() {
 
 export async function toggleScoreChecking(enabled: boolean): Promise<ActionResponse<{ enabled: boolean }>> {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const { error } = await supabaseAdminClient
       .from('super_bowl_config')
@@ -44,7 +33,7 @@ export async function toggleScoreChecking(enabled: boolean): Promise<ActionRespo
 
 export async function getSuperBowlConfig() {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const { data, error } = await supabaseAdminClient
       .from('super_bowl_config')
@@ -66,7 +55,7 @@ export async function getSuperBowlConfig() {
 
 export async function getProcessingLogs(limit = 50) {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const { data, error } = await supabaseAdminClient
       .from('super_bowl_processing_log')
@@ -88,7 +77,7 @@ export async function getProcessingLogs(limit = 50) {
 
 export async function getQuarterResults() {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const { data, error } = await supabaseAdminClient
       .from('super_bowl_quarter_results')
@@ -112,7 +101,7 @@ export async function triggerScoreCheck(
   force = false
 ): Promise<ActionResponse<{ status: string }>> {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -152,7 +141,7 @@ export async function resendQuarterEmails(
   resultId: string
 ): Promise<ActionResponse<{ status: string }>> {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     // Reset email flags so next processing attempt resends
     const { error } = await supabaseAdminClient
@@ -186,7 +175,7 @@ export async function resendQuarterEmails(
 
 export async function getSuperBowlContests() {
   try {
-    await requireAuth();
+    await requireAdmin();
 
     const { data, error } = await supabaseAdminClient
       .from('contests')

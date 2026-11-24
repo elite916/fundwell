@@ -167,10 +167,35 @@ function generateNumbersRevealedEmail({
   return { subject, html };
 }
 
+/**
+ * Constant-time string comparison, so response timing doesn't leak the key.
+ */
+function safeEqual(a: string, b: string): boolean {
+  const encoder = new TextEncoder();
+  const aBytes = encoder.encode(a);
+  const bBytes = encoder.encode(b);
+  let diff = aBytes.length ^ bBytes.length;
+  for (let i = 0; i < Math.max(aBytes.length, bBytes.length); i++) {
+    diff |= (aBytes[i] ?? 0) ^ (bBytes[i] ?? 0);
+  }
+  return diff === 0;
+}
+
 serve(async (req: Request) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Only the app's server (which checks contest ownership first) may call this.
+  // The public anon key passes the platform's JWT check, so check the key here.
+  const serviceRoleKeyForAuth = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+  const authHeader = req.headers.get('Authorization') ?? '';
+  if (!serviceRoleKeyForAuth || !safeEqual(authHeader, `Bearer ${serviceRoleKeyForAuth}`)) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
       headers: { 'Content-Type': 'application/json' },
     });
   }
@@ -221,6 +246,7 @@ serve(async (req: Request) => {
     .from('contests')
     .select('id, name, slug, row_team_name, col_team_name, row_numbers, col_numbers')
     .eq('id', contestId)
+    .is('deleted_at', null)
     .single();
 
   if (contestError || !contest) {

@@ -26,7 +26,7 @@ export default async function TeamMembersPage({ params }: TeamMembersPageProps) 
     notFound();
   }
 
-  // Fetch contest (RLS will ensure only owner can view)
+  // Fetch contest (returns null unless the user owns it)
   const contest = await getContestById(contestId);
 
   if (!contest) {
