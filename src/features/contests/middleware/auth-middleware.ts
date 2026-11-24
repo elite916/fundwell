@@ -27,6 +27,14 @@ export class ForbiddenError extends Error {
   }
 }
 
+/** An expected refusal (bad input, a rule not met). Its message is shown to the owner. */
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
 export async function requireAuth() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
@@ -78,7 +86,8 @@ export function withContestOwnership<T>(
       if (
         error instanceof AuthError ||
         error instanceof NotFoundError ||
-        error instanceof ForbiddenError
+        error instanceof ForbiddenError ||
+        error instanceof ValidationError
       ) {
         return { data: null, error: { message: error.message } };
       }
