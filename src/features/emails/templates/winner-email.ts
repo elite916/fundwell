@@ -1,4 +1,5 @@
 import { ctaButton } from '../components/email-components';
+import { escapeHtml } from '../escape-html';
 import { emailLayout, emailStyles } from '../layouts/email-layout';
 
 interface WinnerEmailParams {
@@ -26,6 +27,12 @@ export function winnerEmail({
 }: WinnerEmailParams): { subject: string; html: string } {
   const subject = `🏆 You won ${quarterName} in ${contestName}!`;
 
+  // Escape user-provided values to prevent HTML injection
+  const safeParticipantName = escapeHtml(participantName);
+  const safeContestName = escapeHtml(contestName);
+  const safeHomeTeamName = escapeHtml(homeTeamName);
+  const safeAwayTeamName = escapeHtml(awayTeamName);
+
   const scoreBox = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailStyles.detailsBox}">
       <tr>
@@ -38,7 +45,7 @@ export function winnerEmail({
               <td style="padding: 12px 16px; background-color: #52525b; border-radius: 6px 6px 0 0;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="color: #fafafa; font-size: 16px; font-weight: 600;">${homeTeamName}</td>
+                    <td style="color: #fafafa; font-size: 16px; font-weight: 600;">${safeHomeTeamName}</td>
                     <td style="color: #fafafa; font-size: 24px; font-weight: bold; text-align: right;">${homeScore}</td>
                   </tr>
                 </table>
@@ -48,7 +55,7 @@ export function winnerEmail({
               <td style="padding: 12px 16px; background-color: #52525b; border-radius: 0 0 6px 6px; border-top: 1px solid #71717a;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="color: #fafafa; font-size: 16px; font-weight: 600;">${awayTeamName}</td>
+                    <td style="color: #fafafa; font-size: 16px; font-weight: 600;">${safeAwayTeamName}</td>
                     <td style="color: #fafafa; font-size: 24px; font-weight: bold; text-align: right;">${awayScore}</td>
                   </tr>
                 </table>
@@ -99,10 +106,10 @@ export function winnerEmail({
       </tr>
     </table>
     <p style="margin: 0 0 8px 0; color: #fafafa; font-size: 20px; text-align: center; font-weight: 600;">
-      Congratulations ${participantName}!
+      Congratulations ${safeParticipantName}!
     </p>
     <p style="margin: 0 0 24px 0; color: #a1a1aa; font-size: 16px; text-align: center;">
-      You won <strong style="color: #F97316;">${quarterName}</strong> in <strong style="color: #fafafa;">${contestName}</strong>!
+      You won <strong style="color: #F97316;">${quarterName}</strong> in <strong style="color: #fafafa;">${safeContestName}</strong>!
     </p>
     ${scoreBox}
     ${prizeSection}

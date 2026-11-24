@@ -1,5 +1,7 @@
 'use server';
 
+import { after } from 'next/server';
+
 import { ContestStatus, QuarterDisplayNames } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
@@ -142,24 +144,27 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
         const gridSize = contest.row_numbers.length * contest.col_numbers.length;
         const totalPot = contest.square_price * gridSize;
         const prizeAmount = (totalPot * payoutPercent) / 100;
+        const winnerAddress = winningSquare.claimant_email;
 
-        sendEmailSafe({
-          to: winningSquare.claimant_email,
-          template: winnerEmail({
-            participantName: winningSquare.claimant_first_name || 'Winner',
-            contestName: contest.name,
-            quarterName: QuarterDisplayNames[score.quarter] || score.quarter,
-            homeTeamName: contest.row_team_name,
-            awayTeamName: contest.col_team_name,
-            homeScore: score.homeScore,
-            awayScore: score.awayScore,
-            prizeAmount,
-            contestUrl: `${getURL()}/contest/${contest.slug}`,
-          }),
-          contestId,
-          squareId: winningSquare.id,
-          emailType: 'winner_notification',
-        });
+        after(() =>
+          sendEmailSafe({
+            to: winnerAddress,
+            template: winnerEmail({
+              participantName: winningSquare.claimant_first_name || 'Winner',
+              contestName: contest.name,
+              quarterName: QuarterDisplayNames[score.quarter] || score.quarter,
+              homeTeamName: contest.row_team_name,
+              awayTeamName: contest.col_team_name,
+              homeScore: score.homeScore,
+              awayScore: score.awayScore,
+              prizeAmount,
+              contestUrl: `${getURL()}/contest/${contest.slug}`,
+            }),
+            contestId,
+            squareId: winningSquare.id,
+            emailType: 'winner_notification',
+          })
+        );
       }
     }
 
