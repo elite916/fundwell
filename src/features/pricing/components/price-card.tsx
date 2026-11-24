@@ -20,7 +20,7 @@ export function PricingCard({
 }: {
   product: ProductWithPrices;
   price?: Price;
-  createCheckoutAction?: ({ price }: { price: Price }) => void;
+  createCheckoutAction?: ({ priceId }: { priceId: string }) => void;
   isLoggedIn?: boolean;
 }) {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>(
@@ -126,7 +126,7 @@ export function PricingCard({
               <Button
                 variant={buttonVariantMap[metadata.priceCardVariant]}
                 className='w-full text-base font-semibold'
-                onClick={() => createCheckoutAction({ price: currentPrice })}
+                onClick={() => createCheckoutAction({ priceId: currentPrice.id })}
               >
                 {isPro ? (
                   <>
