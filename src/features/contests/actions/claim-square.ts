@@ -1,5 +1,6 @@
 'use server';
 
+import { after } from 'next/server';
 import { z } from 'zod';
 
 import { ContestStatus } from '@/features/contests/constants';
@@ -157,31 +158,33 @@ export async function claimSquare(
     return { data: null, error: { message: ContestErrors.FAILED_TO_CLAIM } };
   }
 
-  // Send confirmation email (don't block on failure)
+  // Send confirmation email after the response (don't block on failure)
   const paymentOptions = await getPaymentOptionsForContest(contestId);
   const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
-  sendEmailSafe({
-    to: sanitizedEmail,
-    template: squareClaimedEmail({
-      participantName: firstName,
-      contestName: contest.name,
-      rowTeamName: contest.row_team_name,
-      colTeamName: contest.col_team_name,
-      rowIndex: claimed.row_index,
-      colIndex: claimed.col_index,
-      squarePrice: contest.square_price,
-      contestUrl,
-      paymentOptions: paymentOptions.map((opt) => ({
-        type: opt.type,
-        handle: opt.handle_or_link,
-        link: opt.handle_or_link.startsWith('http') ? opt.handle_or_link : undefined,
-      })),
-    }),
-    contestId,
-    squareId: claimed.id,
-    emailType: 'square_claimed',
-  });
+  after(() =>
+    sendEmailSafe({
+      to: sanitizedEmail,
+      template: squareClaimedEmail({
+        participantName: firstName,
+        contestName: contest.name,
+        rowTeamName: contest.row_team_name,
+        colTeamName: contest.col_team_name,
+        rowIndex: claimed.row_index,
+        colIndex: claimed.col_index,
+        squarePrice: contest.square_price,
+        contestUrl,
+        paymentOptions: paymentOptions.map((opt) => ({
+          type: opt.type,
+          handle: opt.handle_or_link,
+          link: opt.handle_or_link.startsWith('http') ? opt.handle_or_link : undefined,
+        })),
+      }),
+      contestId,
+      squareId: claimed.id,
+      emailType: 'square_claimed',
+    })
+  );
 
   return {
     data: {

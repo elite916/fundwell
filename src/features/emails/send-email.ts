@@ -30,9 +30,6 @@ export async function sendEmail({
       throw new Error(error.message);
     }
 
-    // Log email to database (optional, for tracking)
-    // await logEmail({ contestId, squareId, recipientEmail: to, emailType, resendId: data?.id });
-
     return { success: true, id: data?.id };
   } catch (error) {
     logger.error('send-email', error);
