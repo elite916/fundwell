@@ -40,23 +40,29 @@ export async function upsertPrice(price: Stripe.Price) {
     }
   }
   
-  const priceData: Price = {
-    id: price.id,
-    product_id: productId,
-    active: price.active,
-    currency: price.currency,
-    description: price.nickname ?? null,
-    type: price.type,
-    unit_amount: price.unit_amount ?? null,
-    interval: price.recurring?.interval ?? null,
-    interval_count: price.recurring?.interval_count ?? null,
-    trial_period_days: price.recurring?.trial_period_days ?? null,
-    metadata: price.metadata,
-  };
+  const priceData = toPriceRow(price, productId);
 
   const { error } = await supabaseAdminClient.from('prices').upsert([priceData]);
 
   if (error) {
     throw error;
   }
+}
+
+// Reads only fields that are the same in every API version from 2023-10-16 on, because webhook
+// payloads arrive in the webhook endpoint's API version, not the SDK's.
+export function toPriceRow(price: Stripe.Price, productId: string): Price {
+  return {
+    id: price.id,
+    product_id: productId,
+    active: price.active,
+    currency: price.currency,
+    description: price.nickname ?? null,
+    type: price.type as Price['type'],
+    unit_amount: price.unit_amount ?? null,
+    interval: (price.recurring?.interval ?? null) as Price['interval'],
+    interval_count: price.recurring?.interval_count ?? null,
+    trial_period_days: price.recurring?.trial_period_days ?? null,
+    metadata: price.metadata,
+  };
 }

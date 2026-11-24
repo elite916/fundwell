@@ -30,22 +30,7 @@ export async function upsertUserSubscription({
   });
 
   // Upsert the latest status of the subscription object.
-  const subscriptionData: Database['public']['Tables']['subscriptions']['Insert'] = {
-    id: subscription.id,
-    user_id: userId,
-    metadata: subscription.metadata,
-    status: subscription.status,
-    price_id: subscription.items.data[0].price.id,
-    cancel_at_period_end: subscription.cancel_at_period_end,
-    cancel_at: subscription.cancel_at ? toDateTime(subscription.cancel_at).toISOString() : null,
-    canceled_at: subscription.canceled_at ? toDateTime(subscription.canceled_at).toISOString() : null,
-    current_period_start: toDateTime(subscription.current_period_start).toISOString(),
-    current_period_end: toDateTime(subscription.current_period_end).toISOString(),
-    created: toDateTime(subscription.created).toISOString(),
-    ended_at: subscription.ended_at ? toDateTime(subscription.ended_at).toISOString() : null,
-    trial_start: subscription.trial_start ? toDateTime(subscription.trial_start).toISOString() : null,
-    trial_end: subscription.trial_end ? toDateTime(subscription.trial_end).toISOString() : null,
-  };
+  const subscriptionData = toSubscriptionRow(subscription, userId);
 
   const { error } = await supabaseAdminClient.from('subscriptions').upsert([subscriptionData]);
   if (error) {
@@ -57,6 +42,30 @@ export async function upsertUserSubscription({
   if (isCreateAction && subscription.default_payment_method && userId) {
     await copyBillingDetailsToCustomer(userId, subscription.default_payment_method as Stripe.PaymentMethod);
   }
+}
+
+type SubscriptionRow = Database['public']['Tables']['subscriptions']['Insert'];
+
+// Since API version 2025-03-31.basil the billing period lives on each subscription item, not on the subscription.
+export function toSubscriptionRow(subscription: Stripe.Subscription, userId: string): SubscriptionRow {
+  const item = subscription.items.data[0];
+
+  return {
+    id: subscription.id,
+    user_id: userId,
+    metadata: subscription.metadata,
+    status: subscription.status as SubscriptionRow['status'],
+    price_id: item.price.id,
+    cancel_at_period_end: subscription.cancel_at_period_end,
+    cancel_at: subscription.cancel_at ? toDateTime(subscription.cancel_at).toISOString() : null,
+    canceled_at: subscription.canceled_at ? toDateTime(subscription.canceled_at).toISOString() : null,
+    current_period_start: toDateTime(item.current_period_start).toISOString(),
+    current_period_end: toDateTime(item.current_period_end).toISOString(),
+    created: toDateTime(subscription.created).toISOString(),
+    ended_at: subscription.ended_at ? toDateTime(subscription.ended_at).toISOString() : null,
+    trial_start: subscription.trial_start ? toDateTime(subscription.trial_start).toISOString() : null,
+    trial_end: subscription.trial_end ? toDateTime(subscription.trial_end).toISOString() : null,
+  };
 }
 
 const copyBillingDetailsToCustomer = async (userId: string, paymentMethod: Stripe.PaymentMethod) => {
@@ -74,7 +83,9 @@ const copyBillingDetailsToCustomer = async (userId: string, paymentMethod: Strip
     .from('users')
     .update({
       billing_address: { ...address },
-      payment_method: { ...paymentMethod[paymentMethod.type] },
+      payment_method: {
+        ...paymentMethod[paymentMethod.type as Extract<Stripe.PaymentMethod.Type, keyof Stripe.PaymentMethod>],
+      },
     })
     .eq('id', userId);
 
