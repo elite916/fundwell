@@ -45,7 +45,7 @@ export async function createCheckoutAction({ priceId }: { priceId: string }) {
 
   // 4. Create a checkout session in Stripe
   const checkoutSession = await stripeAdmin.checkout.sessions.create({
-    payment_method_types: ['card'],
+    allowed_payment_method_types: ['card'],
     billing_address_collection: 'required',
     customer,
     customer_update: {
