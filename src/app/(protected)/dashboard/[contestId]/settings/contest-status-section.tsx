@@ -16,8 +16,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { updateContest } from '@/features/contests/actions/update-contest';
 import { Database } from '@/libs/supabase/types';
+
+import { updateContestStatus } from '../actions';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
 type ContestStatus = Database['public']['Enums']['contest_status'];
@@ -60,7 +61,6 @@ interface StatusTransition {
   description: string;
   icon: React.ReactNode;
   variant?: 'default' | 'destructive' | 'outline';
-  setPublic?: boolean;
 }
 
 const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
@@ -70,7 +70,6 @@ const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
       label: 'Open Contest',
       description: 'This will make your contest visible to participants and allow them to claim squares.',
       icon: <Users className="mr-2 h-4 w-4" />,
-      setPublic: true,
     },
   ],
   open: [
@@ -131,15 +130,7 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
     if (!confirmDialog) return;
 
     startTransition(async () => {
-      const updates: Partial<Contest> = {
-        status: confirmDialog.targetStatus,
-      };
-
-      if (confirmDialog.setPublic) {
-        updates.is_public = true;
-      }
-
-      const result = await updateContest(contest.id, updates);
+      const result = await updateContestStatus(contest.id, confirmDialog.targetStatus);
 
       if (result?.error) {
         toast({
