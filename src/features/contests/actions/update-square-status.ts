@@ -1,5 +1,7 @@
 'use server';
 
+import { after } from 'next/server';
+
 import { PaymentStatus, PaymentStatusType } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { sendEmailSafe } from '@/features/emails/send-email-safe';
@@ -114,25 +116,27 @@ export async function updateSquareStatus(
       }
     }
 
-    // Send confirmation email when marking as paid (don't block on failure)
+    // Send confirmation email after the response when marking as paid (don't block on failure)
     if (newStatus === PaymentStatus.PAID && claimantEmail) {
       const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
-      sendEmailSafe({
-        to: claimantEmail,
-        template: paymentConfirmedEmail({
-          participantName: square.claimant_first_name || 'there',
-          contestName: contest.name,
-          rowTeamName: contest.row_team_name,
-          colTeamName: contest.col_team_name,
-          rowIndex: square.row_index,
-          colIndex: square.col_index,
-          contestUrl,
-        }),
-        contestId,
-        squareId: square.id,
-        emailType: 'payment_confirmed',
-      });
+      after(() =>
+        sendEmailSafe({
+          to: claimantEmail,
+          template: paymentConfirmedEmail({
+            participantName: square.claimant_first_name || 'there',
+            contestName: contest.name,
+            rowTeamName: contest.row_team_name,
+            colTeamName: contest.col_team_name,
+            rowIndex: square.row_index,
+            colIndex: square.col_index,
+            contestUrl,
+          }),
+          contestId,
+          squareId: square.id,
+          emailType: 'payment_confirmed',
+        })
+      );
     }
 
     return { success: true };
