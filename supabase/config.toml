@@ -64,3 +64,8 @@ port = 54327
 vector_port = 54328
 backend = "postgres"
 
+
+# The function trusts the JWT's role claim, so the platform must verify the
+# signature first. Keep this on.
+[functions.send-numbers-revealed-emails]
+verify_jwt = true
