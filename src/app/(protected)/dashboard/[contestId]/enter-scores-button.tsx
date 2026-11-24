@@ -7,13 +7,14 @@ import { Gamepad2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EnterScoresModal } from '@/features/contests/components';
 import { GridSquare } from '@/features/contests/queries/get-squares';
+import { ContestPrizeFields } from '@/features/contests/types';
 import { Database } from '@/libs/supabase/types';
 
 type Score = Database['public']['Tables']['scores']['Row'];
 type SportType = Database['public']['Enums']['sport_type'];
 type ContestStatus = Database['public']['Enums']['contest_status'];
 
-interface Contest {
+interface Contest extends ContestPrizeFields {
   id: string;
   sport_type: SportType;
   row_team_name: string;

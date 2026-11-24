@@ -27,3 +27,24 @@ export function getPrizeText(
   return prizeMap[quarter] ?? null;
 }
 
+/**
+ * Counts the squares sold: claimed squares, pending or paid.
+ */
+export function countSoldSquares(squares: { payment_status: string }[]): number {
+  return squares.filter((s) => s.payment_status !== 'available').length;
+}
+
+/**
+ * A quarter's prize: squares sold × square price × that quarter's payout %.
+ */
+export function calculatePrizeAmount(squaresSold: number, squarePrice: number, payoutPercent: number): number {
+  return (squaresSold * Number(squarePrice) * payoutPercent) / 100;
+}
+
+/**
+ * Formats a prize amount: "$50", or "$46.25" when there are cents.
+ */
+export function formatPrizeAmount(amount: number): string {
+  const digits = Math.round(amount * 100) % 100 === 0 ? 0 : 2;
+  return `$${amount.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+}

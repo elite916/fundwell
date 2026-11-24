@@ -12,6 +12,7 @@ import { getURL } from '@/utils/get-url';
 
 import { withContestOwnership } from '../middleware/auth-middleware';
 import { GameQuarter } from '../types';
+import { calculatePrizeAmount, countSoldSquares, getPrizeText } from '../utils/prize-helpers';
 
 interface ScoreInput {
   quarter: GameQuarter;
@@ -52,7 +53,7 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
     // Fetch all squares for this contest
     const { data: squareRows, error: squaresError } = await supabase
       .from('squares')
-      .select('id, row_index, col_index, claimant_first_name, claimant_last_name, square_claimants(email)')
+      .select('id, row_index, col_index, payment_status, claimant_first_name, claimant_last_name, square_claimants(email)')
       .eq('contest_id', contestId);
 
     if (squaresError) {
@@ -138,12 +139,11 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
       const isNewWinner = winningSquareId && winningSquareId !== previousWinningSquareId;
 
       if (isNewWinner && winningSquare?.claimant_email) {
-        // Calculate prize amount based on payout percentage
+        // Calculate prize amount based on squares sold and payout percentage
         const payoutPercentKey = `payout_${score.quarter}_percent` as keyof typeof contest;
         const payoutPercent = (contest[payoutPercentKey] as number | null) || 0;
-        const gridSize = contest.row_numbers.length * contest.col_numbers.length;
-        const totalPot = contest.square_price * gridSize;
-        const prizeAmount = (totalPot * payoutPercent) / 100;
+        const prizeAmount = calculatePrizeAmount(countSoldSquares(squares ?? []), contest.square_price, payoutPercent);
+        const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
         const winnerAddress = winningSquare.claimant_email;
 
         after(() =>
@@ -158,6 +158,7 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
               homeScore: score.homeScore,
               awayScore: score.awayScore,
               prizeAmount,
+              prizeText,
               contestUrl: `${getURL()}/contest/${contest.slug}`,
             }),
             contestId,
