@@ -22,7 +22,7 @@ import { saveScores } from '../actions/save-scores';
 import { FOOTBALL_QUARTER_LABELS } from '../constants';
 import { GridSquare } from '../queries/get-squares';
 import { ContestPrizeFields } from '../types';
-import { getPrizeText } from '../utils';
+import { calculatePrizeAmount, countSoldSquares, formatPrizeAmount, getPrizeText } from '../utils';
 
 type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
@@ -162,7 +162,7 @@ export function EnterScoresModal({
   const [scoreEntries, setScoreEntries] = useState<ScoreEntry[]>([]);
 
   const quarterConfig = getQuarterConfig(contest.sport_type);
-  const totalPot = contest.square_price * 100;
+  const squaresSold = countSoldSquares(squares);
 
   // Initialize score entries from existing scores
   useEffect(() => {
@@ -306,7 +306,9 @@ export function EnterScoresModal({
             );
 
             const payoutAmount =
-              entry.payoutPercent != null ? (totalPot * entry.payoutPercent) / 100 : null;
+              entry.payoutPercent != null
+                ? calculatePrizeAmount(squaresSold, contest.square_price, entry.payoutPercent)
+                : null;
             const prizeText = getPrizeText(contest.prize_type, entry.quarter, contest);
 
             return (
@@ -320,7 +322,7 @@ export function EnterScoresModal({
                   {contest.prize_type === 'custom' && prizeText ? (
                     <p className="text-xs text-orange-400">{prizeText}</p>
                   ) : payoutAmount != null ? (
-                    <p className="text-xs text-orange-400">${payoutAmount.toFixed(0)} payout</p>
+                    <p className="text-xs text-orange-400">{formatPrizeAmount(payoutAmount)} payout</p>
                   ) : null}
                 </div>
 

@@ -1,3 +1,5 @@
+import { formatPrizeAmount } from '@/features/contests/utils/prize-helpers';
+
 import { ctaButton } from '../components/email-components';
 import { escapeHtml } from '../escape-html';
 import { emailLayout, emailStyles } from '../layouts/email-layout';
@@ -11,6 +13,7 @@ interface WinnerEmailParams {
   homeScore: number;
   awayScore: number;
   prizeAmount: number;
+  prizeText?: string | null;
   contestUrl: string;
 }
 
@@ -23,6 +26,7 @@ export function winnerEmail({
   homeScore,
   awayScore,
   prizeAmount,
+  prizeText,
   contestUrl,
 }: WinnerEmailParams): { subject: string; html: string } {
   const subject = `🏆 You won ${quarterName} in ${contestName}!`;
@@ -67,7 +71,10 @@ export function winnerEmail({
     </table>
   `;
 
-  const prizeSection = `
+  // Custom prizes show their text; a quarter with no prize shows no prize block.
+  const prizeValue = prizeText ? escapeHtml(prizeText) : prizeAmount > 0 ? formatPrizeAmount(prizeAmount) : null;
+  const prizeSection = prizeValue
+    ? `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px;">
       <tr>
         <td align="center">
@@ -75,12 +82,13 @@ export function winnerEmail({
             Your Prize
           </p>
           <p style="margin: 0; color: #22c55e; font-size: 48px; font-weight: bold;">
-            $${prizeAmount.toLocaleString()}
+            ${prizeValue}
           </p>
         </td>
       </tr>
     </table>
-  `;
+  `
+    : '';
 
   const gradientCtaButton = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FOOTBALL_QUARTER_LABELS } from '@/features/contests/constants';
 import { GridSquare } from '@/features/contests/queries/get-squares';
 import { ContestPrizeFields } from '@/features/contests/types';
-import { getPrizeText } from '@/features/contests/utils';
+import { calculatePrizeAmount, countSoldSquares, formatPrizeAmount, getPrizeText } from '@/features/contests/utils';
 import { Database } from '@/libs/supabase/types';
 
 type Score = Database['public']['Tables']['scores']['Row'];
@@ -71,7 +71,7 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
   }
 
   const quarterConfig = getQuarterConfig(contest.sport_type);
-  const totalPot = contest.square_price * 100;
+  const squaresSold = countSoldSquares(squares);
 
   // Create a map of squares by ID for quick lookup
   const squaresMap = new Map(squares.map((sq) => [sq.id, sq]));
@@ -83,7 +83,8 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
       if (!config) return null;
 
       const payoutPercent = contest[config.payoutKey] as number | null;
-      const payoutAmount = payoutPercent != null ? (totalPot * payoutPercent) / 100 : null;
+      const payoutAmount =
+        payoutPercent != null ? calculatePrizeAmount(squaresSold, contest.square_price, payoutPercent) : null;
       const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
       const winningSquare = score.winning_square_id ? squaresMap.get(score.winning_square_id) : undefined;
 
@@ -129,7 +130,7 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
                   </span>
                 ) : item!.payoutAmount != null ? (
                   <span className="text-sm font-medium text-orange-400">
-                    ${item!.payoutAmount.toFixed(0)}
+                    {formatPrizeAmount(item!.payoutAmount)}
                   </span>
                 ) : null}
               </div>

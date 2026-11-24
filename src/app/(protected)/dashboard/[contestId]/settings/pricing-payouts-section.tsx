@@ -268,7 +268,7 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
               <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div>
-                    <p className="text-sm text-zinc-400">Total Pot</p>
+                    <p className="text-sm text-zinc-400">Total pot if all squares sell</p>
                     <p className="text-xl font-bold text-white">${totalPot.toLocaleString()}</p>
                   </div>
                   <div>
@@ -469,7 +469,7 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
           <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <p className="text-sm text-zinc-400">Total Pot</p>
+                <p className="text-sm text-zinc-400">Total pot if all squares sell</p>
                 <p className="text-xl font-bold text-white">${totalPot.toLocaleString()}</p>
               </div>
               <div>
