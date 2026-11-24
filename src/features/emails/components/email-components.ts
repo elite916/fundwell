@@ -1,3 +1,4 @@
+import { escapeHtml } from '../escape-html';
 import { emailStyles } from '../layouts/email-layout';
 
 type SquareDetailsParams = {
@@ -27,7 +28,7 @@ export function squareDetailsTable({
             </tr>
             <tr style="${emailStyles.detailRow}">
               <td style="${emailStyles.detailLabel}">Teams:</td>
-              <td style="${emailStyles.detailValue}">${rowTeamName} vs ${colTeamName}</td>
+              <td style="${emailStyles.detailValue}">${escapeHtml(rowTeamName)} vs ${escapeHtml(colTeamName)}</td>
             </tr>
             ${statusHtml ? `<tr style="${emailStyles.detailRow}">${statusHtml}</tr>` : ''}
           </table>

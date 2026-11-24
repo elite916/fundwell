@@ -1,4 +1,5 @@
 import { ctaButton, squareDetailsTable } from '../components/email-components';
+import { escapeHtml } from '../escape-html';
 import { emailLayout, emailStyles } from '../layouts/email-layout';
 
 interface PaymentOption {
@@ -32,7 +33,16 @@ export function squareClaimedEmail({
 }: SquareClaimedEmailParams): { subject: string; html: string } {
   const subject = `You claimed a square in ${contestName}!`;
 
-  const paymentOptionsHtml = paymentOptions
+  // Escape user-provided values to prevent HTML injection
+  const safeParticipantName = escapeHtml(participantName);
+  const safeContestName = escapeHtml(contestName);
+  const safePaymentOptions = paymentOptions.map((option) => ({
+    type: escapeHtml(option.type),
+    handle: escapeHtml(option.handle),
+    link: option.link && escapeHtml(option.link),
+  }));
+
+  const paymentOptionsHtml = safePaymentOptions
     .map(
       (option) => `
       <tr>
@@ -67,9 +77,9 @@ export function squareClaimedEmail({
       : '';
 
   const content = `
-    <p style="${emailStyles.greeting}">Hi ${participantName},</p>
+    <p style="${emailStyles.greeting}">Hi ${safeParticipantName},</p>
     <p style="${emailStyles.greeting}">
-      You've claimed a square in <strong style="color: #F97316;">${contestName}</strong>!
+      You've claimed a square in <strong style="color: #F97316;">${safeContestName}</strong>!
     </p>
     ${squareDetailsTable({
       rowIndex,

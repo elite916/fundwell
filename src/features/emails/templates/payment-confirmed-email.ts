@@ -1,4 +1,5 @@
 import { ctaButton, squareDetailsTable } from '../components/email-components';
+import { escapeHtml } from '../escape-html';
 import { emailLayout, emailStyles } from '../layouts/email-layout';
 
 interface PaymentConfirmedEmailParams {
@@ -22,13 +23,16 @@ export function paymentConfirmedEmail({
 }: PaymentConfirmedEmailParams): { subject: string; html: string } {
   const subject = `Payment confirmed for ${contestName}`;
 
+  // Escape user-provided values to prevent HTML injection
+  const safeParticipantName = escapeHtml(participantName);
+
   const statusHtml = `
     <td style="${emailStyles.detailLabel}">Status:</td>
     <td style="color: #22c55e; font-size: 16px; font-weight: bold; text-align: right;">✓ Paid</td>
   `;
 
   const content = `
-    <p style="${emailStyles.greeting}">Hi ${participantName},</p>
+    <p style="${emailStyles.greeting}">Hi ${safeParticipantName},</p>
     <p style="margin: 0 0 24px 0; color: #fafafa; font-size: 18px; font-weight: 600;">
       Your payment has been confirmed! ✓
     </p>
