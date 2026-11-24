@@ -2,7 +2,7 @@
 
 import type { ActionResponse } from '@/types/action-response';
 
-import { withContestOwnership } from '../middleware/auth-middleware';
+import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
 
 const PIN_PATTERN = /^[A-Za-z0-9]{1,6}$/;
 
@@ -21,7 +21,7 @@ export async function updateContestPin(contestId: string, pin: string | null): P
     }
 
     if (!PIN_PATTERN.test(trimmed)) {
-      throw new Error('PIN must be 1-6 letters or numbers');
+      throw new ValidationError('PIN must be 1-6 letters or numbers');
     }
 
     const { error } = await supabase

@@ -10,7 +10,7 @@ import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 import { getURL } from '@/utils/get-url';
 
-import { withContestOwnership } from '../middleware/auth-middleware';
+import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
 import { GameQuarter } from '../types';
 import { calculatePrizeAmount, countSoldSquares, getPrizeText } from '../utils/prize-helpers';
 
@@ -42,12 +42,12 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
 
     // Verify contest is in progress
     if (contest.status !== ContestStatus.IN_PROGRESS) {
-      throw new Error(ContestErrors.SCORES_ONLY_IN_PROGRESS);
+      throw new ValidationError(ContestErrors.SCORES_ONLY_IN_PROGRESS);
     }
 
     // Verify row and column numbers are assigned
     if (!contest.row_numbers || !contest.col_numbers) {
-      throw new Error(ContestErrors.NUMBERS_REQUIRED);
+      throw new ValidationError(ContestErrors.NUMBERS_REQUIRED);
     }
 
     // Fetch all squares for this contest

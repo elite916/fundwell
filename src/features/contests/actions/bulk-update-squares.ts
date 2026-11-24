@@ -5,7 +5,7 @@ import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 
-import { withContestOwnership } from '../middleware/auth-middleware';
+import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
 
 interface BulkUpdateSquaresInput {
   contestId: string;
@@ -20,7 +20,7 @@ export async function bulkUpdateSquares({
 }: BulkUpdateSquaresInput): Promise<ActionResponse<{ updated: number }>> {
   return withContestOwnership<{ updated: number }>(contestId, async (user, supabase, contest) => {
     if (squareIds.length === 0) {
-      throw new Error(ContestErrors.NO_SQUARES_SELECTED);
+      throw new ValidationError(ContestErrors.NO_SQUARES_SELECTED);
     }
 
     // Build update data based on new status
