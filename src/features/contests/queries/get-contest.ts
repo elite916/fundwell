@@ -1,3 +1,4 @@
+import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 
@@ -34,16 +35,38 @@ export async function getContestById(contestId: string): Promise<Contest | null>
 }
 
 /**
- * Fetches only the access_pin for PIN verification
+ * Fetches a contest's access PIN for PIN verification (server only).
+ * PINs live in contest_pins, which only owners can read, so this uses the
+ * service role. Never send the result to a non-owner.
  */
 export async function getContestPin(slug: string): Promise<string | null> {
-  const supabase = await createSupabaseServerClient();
-
-  const { data, error } = await supabase.from('contests').select('access_pin').eq('slug', slug).single();
+  const { data, error } = await supabaseAdminClient
+    .from('contests')
+    .select('contest_pins(pin)')
+    .eq('slug', slug)
+    .is('deleted_at', null)
+    .maybeSingle();
 
   if (error || !data) {
     return null;
   }
 
-  return data.access_pin;
+  return firstPin(data.contest_pins);
+}
+
+/**
+ * Fetches the PIN of a contest the signed-in user owns (RLS: owners only).
+ */
+export async function getContestPinForOwner(contestId: string): Promise<string | null> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data } = await supabase.from('contest_pins').select('pin').eq('contest_id', contestId).maybeSingle();
+
+  return data?.pin ?? null;
+}
+
+function firstPin(pins: { pin: string } | { pin: string }[] | null): string | null {
+  if (!pins) return null;
+  if (Array.isArray(pins)) return pins[0]?.pin ?? null;
+  return pins.pin;
 }

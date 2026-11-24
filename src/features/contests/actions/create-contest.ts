@@ -105,8 +105,6 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
     org_image_url: data.orgImageUrl || null,
     primary_color: data.primaryColor,
     secondary_color: data.secondaryColor,
-    // Access control - only save PIN if requirePin is true
-    access_pin: data.requirePin ? data.accessPin : null,
     // Prize settings
     prize_type: data.prizeType,
     // Prize text fields - only include values when prizeType is 'custom', otherwise null
@@ -141,6 +139,17 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
       data: null,
       error: { message: 'Failed to create contest. Please try again.' },
     };
+  }
+
+  // Access PIN lives in the owner-only contest_pins table
+  if (data.requirePin && data.accessPin) {
+    const { error: pinError } = await supabase
+      .from('contest_pins')
+      .insert({ contest_id: contest.id, pin: data.accessPin });
+
+    if (pinError) {
+      logger.error('createContest', pinError, { step: 'pin' });
+    }
   }
 
   // Redirect to the new contest's management page

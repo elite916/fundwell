@@ -24,10 +24,11 @@ export interface Participant {
 export async function getParticipantsForContest(contestId: string): Promise<Participant[]> {
   const supabase = await createSupabaseServerClient();
 
+  // Email and Venmo live in square_claimants, which only the contest owner can read.
   const { data, error } = await supabase
     .from('squares')
     .select(
-      'id, row_index, col_index, payment_status, claimant_first_name, claimant_last_name, claimant_email, claimant_venmo, claimed_at, paid_at, referred_by'
+      'id, row_index, col_index, payment_status, claimant_first_name, claimant_last_name, claimed_at, paid_at, referred_by, square_claimants(email, venmo)'
     )
     .eq('contest_id', contestId)
     .neq('payment_status', 'available')
@@ -37,5 +38,9 @@ export async function getParticipantsForContest(contestId: string): Promise<Part
     throw new Error(`Failed to fetch participants: ${error.message}`);
   }
 
-  return data ?? [];
+  return (data ?? []).map(({ square_claimants: claimant, ...square }) => ({
+    ...square,
+    claimant_email: claimant?.email ?? null,
+    claimant_venmo: claimant?.venmo ?? null,
+  }));
 }
