@@ -25,21 +25,21 @@ Fundwell is a game day squares fundraiser platform, live at [fundwell.us](https:
 
 ## Scripts
 
-| Script                     | What it does                                                         |
-| -------------------------- | -------------------------------------------------------------------- |
-| `bun run dev`              | Starts the dev server (Turbopack)                                    |
-| `bun run build`            | Production build, including type checks                              |
-| `bun run start`            | Serves the production build                                          |
-| `bun run lint`             | ESLint                                                               |
-| `bun run email:dev`        | Previews the email templates on port 3001                            |
-| `bun run email:build`      | Builds the email templates                                           |
-| `bun run email:export`     | Exports the email templates to HTML                                  |
-| `bun run stripe:listen`    | Forwards Stripe webhooks to localhost. Don't run it (see above)      |
-| `bun run generate-types`   | Regenerates `src/libs/supabase/types.ts` from the database           |
-| `bun run supabase:link`    | Links the Supabase CLI to the project                                |
-| `bun run migration:new`    | Creates a new migration file in `supabase/migrations`                |
-| `bun run migration:up`     | Applies migrations to the linked project, then regenerates the types |
-| `bun run migration:squash` | Squashes migrations on the linked project                            |
+| Script                     | What it does                                                       |
+| -------------------------- | ------------------------------------------------------------------ |
+| `bun run dev`              | Starts the dev server (Turbopack)                                  |
+| `bun run build`            | Production build, including type checks                            |
+| `bun run start`            | Serves the production build                                        |
+| `bun run lint`             | ESLint                                                             |
+| `bun run email:dev`        | Previews the email templates on port 3001                          |
+| `bun run email:build`      | Builds the email templates                                         |
+| `bun run email:export`     | Exports the email templates to HTML                                |
+| `bun run stripe:listen`    | Forwards Stripe webhooks to localhost. Don't run it (see above)    |
+| `bun run generate-types`   | Regenerates `src/libs/supabase/types.ts` from the database         |
+| `bun run supabase:link`    | Links the Supabase CLI to the live project                         |
+| `bun run migration:new`    | Creates a new migration file in `supabase/migrations`              |
+| `bun run migration:up`     | Applies migrations to the live project, then regenerates the types |
+| `bun run migration:squash` | Squashes migrations on the live project                            |
 
 Don't build while the dev server is running in the same folder. They share `.next`.
 
