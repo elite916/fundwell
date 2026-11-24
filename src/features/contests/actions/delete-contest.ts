@@ -5,7 +5,7 @@ import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 import { logger } from '@/utils/logger';
 
-import { withContestOwnership } from '../middleware/auth-middleware';
+import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
 /**
  * Soft deletes a contest by setting deleted_at timestamp.
  * Only the owner can delete their contest.
@@ -18,7 +18,7 @@ export async function deleteContest(contestId: string): Promise<ActionResponse<n
         contestId, 
         deletedAt: contest.deleted_at 
       });
-      throw new Error('Contest has already been deleted');
+      throw new ValidationError('Contest has already been deleted');
     }
 
     // Use the database function instead of direct UPDATE
