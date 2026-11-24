@@ -48,14 +48,19 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
     }
 
     // Fetch all squares for this contest
-    const { data: squares, error: squaresError } = await supabase
+    const { data: squareRows, error: squaresError } = await supabase
       .from('squares')
-      .select('id, row_index, col_index, claimant_first_name, claimant_last_name, claimant_email')
+      .select('id, row_index, col_index, claimant_first_name, claimant_last_name, square_claimants(email)')
       .eq('contest_id', contestId);
 
     if (squaresError) {
       throw new Error('Failed to fetch squares');
     }
+
+    const squares = squareRows?.map(({ square_claimants: claimant, ...square }) => ({
+      ...square,
+      claimant_email: claimant?.email ?? null,
+    }));
 
     // Fetch existing scores to determine which quarters are new
     const { data: existingScores } = await supabase

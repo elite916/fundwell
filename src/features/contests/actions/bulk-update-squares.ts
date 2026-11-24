@@ -27,6 +27,10 @@ export async function bulkUpdateSquares({
     const updateData: {
       payment_status: PaymentStatusType;
       paid_at?: string | null;
+      claimant_first_name?: null;
+      claimant_last_name?: null;
+      claimed_at?: null;
+      referred_by?: null;
     } = {
       payment_status: newStatus,
     };
@@ -36,6 +40,13 @@ export async function bulkUpdateSquares({
       updateData.paid_at = getCurrentISOString();
     } else if (newStatus === PaymentStatus.PENDING) {
       updateData.paid_at = null;
+    } else if (newStatus === PaymentStatus.AVAILABLE) {
+      // Releasing squares clears the claimant, same as a single release
+      updateData.paid_at = null;
+      updateData.claimant_first_name = null;
+      updateData.claimant_last_name = null;
+      updateData.claimed_at = null;
+      updateData.referred_by = null;
     }
 
     // Update all squares in one query
@@ -47,6 +58,18 @@ export async function bulkUpdateSquares({
 
     if (updateError) {
       throw new Error(ContestErrors.FAILED_TO_UPDATE);
+    }
+
+    if (newStatus === PaymentStatus.AVAILABLE) {
+      const { error: deleteError } = await supabase
+        .from('square_claimants')
+        .delete()
+        .eq('contest_id', contestId)
+        .in('square_id', squareIds);
+
+      if (deleteError) {
+        throw new Error(ContestErrors.FAILED_TO_UPDATE);
+      }
     }
 
     return { updated: count ?? squareIds.length };

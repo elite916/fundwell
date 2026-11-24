@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
-import { getContestById, getPaymentOptionsForContest } from '@/features/contests/queries';
+import { getContestById, getContestPinForOwner, getPaymentOptionsForContest } from '@/features/contests/queries';
 import { getPlayerSalesCounts } from '@/features/contests/queries/get-player-sales-counts';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
@@ -52,6 +52,9 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   // Fetch player sales counts
   const playerSalesCounts = await getPlayerSalesCounts(contestId);
 
+  // Access PIN (owner-only table)
+  const accessPin = await getContestPinForOwner(contestId);
+
   return (
     <div className="space-y-6">
       {/* Back link */}
@@ -77,7 +80,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
         <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />
         <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
         <SuperBowlSection contest={contest} />
-        <AccessControlSection contest={contest} />
+        <AccessControlSection contest={contest} accessPin={accessPin} />
         <BrandingSection contest={contest} />
         <DangerZoneSection contest={contest} />
       </div>

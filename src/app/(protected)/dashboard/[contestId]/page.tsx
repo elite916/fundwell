@@ -7,7 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ManageSquare } from '@/features/contests/components/manage-square-modal';
-import { getContestById, getScoresForContest, getSquaresForContest } from '@/features/contests/queries';
+import {
+  getContestById,
+  getContestPinForOwner,
+  getParticipantsForContest,
+  getScoresForContest,
+  getSquaresForContest,
+} from '@/features/contests/queries';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { getURL } from '@/utils/get-url';
@@ -55,10 +61,12 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
   }
 
   // Fetch squares, scores, and payment options count
-  const [squares, scores, paymentOptionsResult] = await Promise.all([
+  const [squares, scores, paymentOptionsResult, participants, accessPin] = await Promise.all([
     getSquaresForContest(contestId),
     getScoresForContest(contestId),
     supabase.from('payment_options').select('*', { count: 'exact', head: true }).eq('contest_id', contestId),
+    getParticipantsForContest(contestId),
+    getContestPinForOwner(contestId),
   ]);
 
   const hasPaymentOptions = (paymentOptionsResult.count ?? 0) > 0;
@@ -70,7 +78,18 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
     .map((s) => s.winning_square_id as string);
 
   // Calculate stats
-  const squaresList = (squares || []) as ManageSquare[];
+  // Add owner-only details (email, Venmo, dates) to the grid squares for the manage modal
+  const participantsById = new Map(participants.map((p) => [p.id, p]));
+  const squaresList: ManageSquare[] = (squares || []).map((s) => {
+    const participant = participantsById.get(s.id);
+    return {
+      ...s,
+      claimant_email: participant?.claimant_email ?? null,
+      claimant_venmo: participant?.claimant_venmo ?? null,
+      claimed_at: participant?.claimed_at ?? null,
+      paid_at: participant?.paid_at ?? null,
+    };
+  });
   const claimedSquares = squaresList.filter((s) => s.payment_status !== 'available');
   const paidSquares = squaresList.filter((s) => s.payment_status === 'paid');
   const revenue = paidSquares.length * Number(contest.square_price);
@@ -125,7 +144,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
           </div>
 
           <div className="flex shrink-0 gap-2">
-            <CopyLinkButton url={publicUrl} code={contest.access_pin} contestName={contest.name} />
+            <CopyLinkButton url={publicUrl} code={accessPin} contestName={contest.name} />
             <Button variant="default" size="sm" asChild>
               <Link href={`/dashboard/${contestId}/settings`}>
                 <Settings className="mr-2 h-4 w-4" />
