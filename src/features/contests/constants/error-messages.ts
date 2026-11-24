@@ -19,3 +19,6 @@ export const ContestErrors = {
 export const MAX_SQUARES_REACHED = (max: number): string =>
   `You have already claimed the maximum of ${max} square(s) for this contest.`;
 
+
+export const CONTEST_LIMIT_MESSAGE =
+  "You've reached the limit for free accounts (1 contest). Upgrade to Pro to create more.";
