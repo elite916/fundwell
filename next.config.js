@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // Next 16 raises this to 4 hours. Replacing an avatar keeps its URL, so a longer cache would show the old one.
+    minimumCacheTTL: 60,
     remotePatterns: [
       {
         protocol: 'https',
@@ -60,6 +62,8 @@ module.exports = withSentryConfig(module.exports, {
   // side errors will fail.
   tunnelRoute: "/monitoring",
 
+  // These options and Sentry's wrapping of pages, route handlers and the proxy only work in webpack builds,
+  // so the build script runs `next build --webpack` (Turbopack is the default from Next 16).
   webpack: {
     // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
     // See the following for more information:
