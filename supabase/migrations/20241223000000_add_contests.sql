@@ -1,5 +1,5 @@
 -- =============================================
--- GRIDDO CONTESTS FEATURE
+-- FUNDWELL CONTESTS FEATURE
 -- Super Bowl Squares / Game Day Fundraiser
 -- =============================================
 

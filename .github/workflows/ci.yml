@@ -51,7 +51,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          NEXT_PUBLIC_SITE_URL: https://griddo.vercel.app
+          NEXT_PUBLIC_SITE_URL: https://fundwell.us
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
           STRIPE_SECRET_KEY: sk_test_placeholder
           STRIPE_WEBHOOK_SECRET: whsec_placeholder
