@@ -46,9 +46,10 @@ interface DashboardShellProps {
   children: React.ReactNode;
   userEmail: string;
   avatarUrl: string | null;
+  isAdmin: boolean;
 }
 
-export function DashboardShell({ children, userEmail, avatarUrl }: DashboardShellProps) {
+export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: DashboardShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
@@ -64,7 +65,7 @@ export function DashboardShell({ children, userEmail, avatarUrl }: DashboardShel
 
             {/* Navigation */}
             <nav className='flex-1 space-y-1 px-3 py-4'>
-              <NavItems />
+              <NavItems isAdmin={isAdmin} />
             </nav>
 
             {/* Sidebar Footer */}
@@ -94,7 +95,7 @@ export function DashboardShell({ children, userEmail, avatarUrl }: DashboardShel
                     </SheetTitle>
                   </SheetHeader>
                   <nav className='flex-1 space-y-1 px-3 py-4'>
-                    <NavItems onClick={() => setMobileNavOpen(false)} />
+                    <NavItems isAdmin={isAdmin} onClick={() => setMobileNavOpen(false)} />
                   </nav>
                   <div className='border-t border-zinc-800 p-4'>
                     <LogoutButton onClick={() => setMobileNavOpen(false)} />
