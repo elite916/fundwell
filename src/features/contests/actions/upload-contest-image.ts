@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-clie
 import { ActionResponse } from '@/types/action-response';
 import { validateImageFile } from '@/utils/file-validators';
 
-import { requireAuth } from '../middleware/auth-middleware';
+import { requireAuth, requireContestOwnershipForUpload } from '../middleware/auth-middleware';
 
 type ImageType = 'hero' | 'logo';
 
@@ -16,7 +16,10 @@ export async function uploadContestImage(
   contestId: string,
   formData: FormData
 ): Promise<ActionResponse<{ url: string }>> {
-  const authResult = await requireAuth();
+  const authResult = await requireContestOwnershipForUpload(contestId);
+  if ('error' in authResult) {
+    return { data: null, error: { message: authResult.error } };
+  }
   const { user, supabase } = authResult;
 
   // Get file from form data
@@ -75,7 +78,12 @@ export async function uploadContestImage(
  */
 export async function deleteContestImage(imageUrl: string): Promise<ActionResponse<null>> {
   // Verify user is authenticated
-  const authResult = await requireAuth();
+  let authResult;
+  try {
+    authResult = await requireAuth();
+  } catch {
+    return { data: null, error: { message: 'You must be logged in' } };
+  }
   const { user, supabase } = authResult;
 
   // Extract file path from URL
