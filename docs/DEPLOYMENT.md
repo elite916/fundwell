@@ -4,7 +4,7 @@
 
 | Environment | Branch    | URL                          | Purpose                   |
 | ----------- | --------- | ---------------------------- | ------------------------- |
-| Production  | `main`    | https://fundwell.vercel.app    | Live site                 |
+| Production  | `main`    | https://fundwell.us          | Live site                 |
 | Staging     | `staging` | Preview URL (auto-generated) | Testing before production |
 
 ---
@@ -101,7 +101,7 @@ Same as above, plus:
 
 | Variable                             | Description                                       |
 | ------------------------------------ | ------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`               | Production URL (https://fundwell.vercel.app)      |
+| `NEXT_PUBLIC_SITE_URL`               | Production URL (https://fundwell.us)              |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe public key                                 |
 | `STRIPE_SECRET_KEY`                  | Stripe secret key                                 |
 | `STRIPE_WEBHOOK_SECRET`              | Stripe webhook signing secret                     |
