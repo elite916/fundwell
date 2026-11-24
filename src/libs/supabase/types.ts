@@ -53,7 +53,6 @@ export type Database = {
       };
       contests: {
         Row: {
-          access_pin: string | null;
           code: string;
           col_numbers: number[] | null;
           col_team_name: string;
@@ -100,7 +99,6 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
-          access_pin?: string | null;
           code: string;
           col_numbers?: number[] | null;
           col_team_name: string;
@@ -146,7 +144,6 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          access_pin?: string | null;
           code?: string;
           col_numbers?: number[] | null;
           col_team_name?: string;
@@ -473,10 +470,8 @@ export type Database = {
       };
       squares: {
         Row: {
-          claimant_email: string | null;
           claimant_first_name: string | null;
           claimant_last_name: string | null;
-          claimant_venmo: string | null;
           claimed_at: string | null;
           col_index: number;
           contest_id: string;
@@ -488,10 +483,8 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
-          claimant_email?: string | null;
           claimant_first_name?: string | null;
           claimant_last_name?: string | null;
-          claimant_venmo?: string | null;
           claimed_at?: string | null;
           col_index: number;
           contest_id: string;
@@ -502,10 +495,8 @@ export type Database = {
           row_index: number;
         };
         Update: {
-          claimant_email?: string | null;
           claimant_first_name?: string | null;
           claimant_last_name?: string | null;
-          claimant_venmo?: string | null;
           claimed_at?: string | null;
           col_index?: number;
           contest_id?: string;
