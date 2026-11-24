@@ -52,7 +52,7 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
 
       toast({
         title: 'Contest deleted',
-        description: 'Your contest has been permanently deleted.',
+        description: 'Your contest has been deleted.',
       });
 
       setIsDialogOpen(false);
@@ -102,7 +102,7 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
             </DialogTitle>
             <DialogDescription>
               This action cannot be undone. All contest data, squares, and participant information
-              will be permanently deleted.
+              will be deleted.
             </DialogDescription>
           </DialogHeader>
 
