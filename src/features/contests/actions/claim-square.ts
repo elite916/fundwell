@@ -17,7 +17,7 @@ import { getURL } from '@/utils/get-url';
 import { logger } from '@/utils/logger';
 import { checkRateLimit } from '@/utils/rate-limit';
 
-import { hasContestAccess } from './verify-pin';
+import { hasContestAccess } from '../access';
 
 interface ClaimSquareInput {
   squareId: string;

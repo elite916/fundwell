@@ -1,5 +1,3 @@
-'use server';
-
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
 export async function getUsageStats(userId: string): Promise<{

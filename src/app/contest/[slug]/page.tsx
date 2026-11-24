@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { PageLoader } from '@/components/shared';
 import { Button } from '@/components/ui/button';
-import { hasContestAccess } from '@/features/contests/actions/verify-pin';
+import { hasContestAccess } from '@/features/contests/access';
 import { requireAuth } from '@/features/contests/middleware/auth-middleware';
 import {
   getContestPin,
