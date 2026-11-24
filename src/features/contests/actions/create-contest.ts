@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { nanoid } from 'nanoid';
 import slugify from 'slugify';
 
+import { CONTEST_LIMIT_MESSAGE } from '@/features/contests/constants';
 import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
@@ -13,8 +14,6 @@ import { logger } from '@/utils/logger';
 import { CreateContestInput, createContestSchema } from '../models/contest';
 
 type ContestInsert = Database['public']['Tables']['contests']['Insert'];
-
-const CONTEST_LIMIT_MESSAGE = "You've reached the limit for free accounts (1 contest). Upgrade to Pro to create more.";
 
 /**
  * Generates a unique 6-character code for sharing contests
