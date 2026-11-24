@@ -83,13 +83,15 @@ export async function assignGridNumbers({
     // Send numbers revealed emails (non-blocking)
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      // The function accepts only the service role key, so only this server
+      // action (after the ownership check above) can trigger the emails.
+      const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-      if (supabaseUrl && anonKey) {
+      if (supabaseUrl && serviceRoleKey) {
         fetch(`${supabaseUrl}/functions/v1/send-numbers-revealed-emails`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${anonKey}`,
+            Authorization: `Bearer ${serviceRoleKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ contestId }),

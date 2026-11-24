@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 
 import { getUser } from '@/features/account/controllers/get-user';
 import { getUserProfile } from '@/features/account/controllers/get-user-profile';
+import { isAdmin } from '@/features/admin/require-admin';
 
 import { DashboardShell } from './dashboard-shell';
 
@@ -15,9 +16,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const userEmail = user.email ?? 'User';
   const userProfile = await getUserProfile();
   const avatarUrl = userProfile?.avatar_url ?? null;
+  const userIsAdmin = await isAdmin(user.id);
 
   return (
-    <DashboardShell userEmail={userEmail} avatarUrl={avatarUrl}>
+    <DashboardShell userEmail={userEmail} avatarUrl={avatarUrl} isAdmin={userIsAdmin}>
       {children}
     </DashboardShell>
   );

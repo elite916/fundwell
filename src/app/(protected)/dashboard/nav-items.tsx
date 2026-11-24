@@ -10,25 +10,27 @@ export interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  adminOnly?: boolean;
 }
 
 export const navItems: NavItem[] = [
   { href: '/dashboard', label: 'My Contests', icon: LayoutGrid },
-  { href: '/dashboard/super-bowl', label: 'Super Bowl', icon: Trophy },
+  { href: '/dashboard/super-bowl', label: 'Super Bowl', icon: Trophy, adminOnly: true },
   { href: '/dashboard/account', label: 'Account', icon: User },
   { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
 ];
 
 interface NavItemsProps {
   onClick?: () => void;
+  isAdmin: boolean;
 }
 
-export function NavItems({ onClick }: NavItemsProps) {
+export function NavItems({ onClick, isAdmin }: NavItemsProps) {
   const pathname = usePathname();
 
   return (
     <>
-      {navItems.map((item) => {
+      {navItems.filter((item) => isAdmin || !item.adminOnly).map((item) => {
         const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
         return (
           <Link

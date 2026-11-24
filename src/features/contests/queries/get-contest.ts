@@ -4,12 +4,27 @@ import { Database } from '@/libs/supabase/types';
 type Contest = Database['public']['Tables']['contests']['Row'];
 
 /**
- * Fetches a contest by ID (for dashboard/owner views)
+ * Fetches a contest by ID for dashboard/owner views.
+ * Returns null unless the signed-in user owns the contest. RLS alone isn't
+ * enough: any signed-in user can read public contests.
  */
 export async function getContestById(contestId: string): Promise<Contest | null> {
   const supabase = await createSupabaseServerClient();
 
-  const { data, error } = await supabase.from('contests').select('*').eq('id', contestId).single();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('contests')
+    .select('*')
+    .eq('id', contestId)
+    .eq('owner_id', user.id)
+    .single();
 
   if (error) {
     return null;
