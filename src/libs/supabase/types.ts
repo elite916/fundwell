@@ -255,6 +255,30 @@ export type Database = {
           }
         ];
       };
+      numbers_email_locks: {
+        Row: {
+          contest_id: string;
+          locked_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          contest_id: string;
+          locked_at?: string;
+        };
+        Update: {
+          contest_id?: string;
+          locked_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'numbers_email_locks_contest_id_fkey';
+            columns: ['contest_id'];
+            isOneToOne: true;
+            referencedRelation: 'contests';
+            referencedColumns: ['id'];
+          }
+        ];
+      };
       payment_options: {
         Row: {
           account_last_4_digits: string | null;
@@ -798,6 +822,7 @@ export type Database = {
       rate_limit_hit: { Args: { p_key: string; p_max: number; p_window_seconds: number }; Returns: boolean };
       rate_limit_undo_hit: { Args: { p_key: string; p_window_seconds: number }; Returns: undefined };
       soft_delete_contest: { Args: { contest_id: string }; Returns: boolean };
+      take_numbers_email_lock: { Args: { p_contest_id: string }; Returns: boolean };
     };
     Enums: {
       contest_status: 'draft' | 'open' | 'locked' | 'in_progress' | 'completed';
