@@ -168,17 +168,21 @@ function generateNumbersRevealedEmail({
 }
 
 /**
- * Constant-time string comparison, so response timing doesn't leak the key.
+ * Reads the `role` claim of the bearer JWT. The signature is NOT checked here:
+ * this function must run with verify_jwt = true (supabase/config.toml), so the
+ * platform rejects any token with a bad signature before this code runs.
  */
-function safeEqual(a: string, b: string): boolean {
-  const encoder = new TextEncoder();
-  const aBytes = encoder.encode(a);
-  const bBytes = encoder.encode(b);
-  let diff = aBytes.length ^ bBytes.length;
-  for (let i = 0; i < Math.max(aBytes.length, bBytes.length); i++) {
-    diff |= (aBytes[i] ?? 0) ^ (bBytes[i] ?? 0);
+function bearerRole(authHeader: string): string | null {
+  const token = authHeader.replace(/^Bearer\s+/i, '');
+  const payload = token.split('.')[1];
+  if (!payload) return null;
+  try {
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(payload.length / 4) * 4, '='));
+    const role = JSON.parse(json).role;
+    return typeof role === 'string' ? role : null;
+  } catch {
+    return null;
   }
-  return diff === 0;
 }
 
 serve(async (req: Request) => {
@@ -190,10 +194,9 @@ serve(async (req: Request) => {
   }
 
   // Only the app's server (which checks contest ownership first) may call this.
-  // The public anon key passes the platform's JWT check, so check the key here.
-  const serviceRoleKeyForAuth = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-  const authHeader = req.headers.get('Authorization') ?? '';
-  if (!serviceRoleKeyForAuth || !safeEqual(authHeader, `Bearer ${serviceRoleKeyForAuth}`)) {
+  // The public anon key passes the platform's JWT check, so require the
+  // service_role claim here.
+  if (bearerRole(req.headers.get('Authorization') ?? '') !== 'service_role') {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
