@@ -172,6 +172,7 @@ export function ManageNumbersModal({
   );
   const [rowError, setRowError] = useState<string | null>(null);
   const [colError, setColError] = useState<string | null>(null);
+  const [emailPlayers, setEmailPlayers] = useState(false);
   
   // Preview state (for auto-generate preview before saving)
   const [previewNumbers, setPreviewNumbers] = useState<{
@@ -192,6 +193,7 @@ export function ManageNumbersModal({
     setColInputs(contest.col_numbers ?? Array(10).fill(null));
     setRowError(null);
     setColError(null);
+    setEmailPlayers(false);
     setPreviewNumbers(
       contest.row_numbers && contest.col_numbers
         ? { row: contest.row_numbers, col: contest.col_numbers }
@@ -244,6 +246,7 @@ export function ManageNumbersModal({
         rowNumbers: null,
         colNumbers: null,
         autoGenerate: true,
+        emailPlayers,
       });
 
       if (result?.error) {
@@ -292,6 +295,7 @@ export function ManageNumbersModal({
         rowNumbers: rowInputs as number[],
         colNumbers: colInputs as number[],
         autoGenerate: false,
+        emailPlayers,
       });
 
       if (result?.error) {
@@ -365,6 +369,21 @@ export function ManageNumbersModal({
                 <p className="text-sm text-amber-200">
                   This will replace the current numbers.
                 </p>
+              </div>
+            )}
+
+            {hasExistingNumbers && (
+              <div className="flex items-center gap-2">
+                <input
+                  id="emailPlayers"
+                  type="checkbox"
+                  checked={emailPlayers}
+                  onChange={(e) => setEmailPlayers(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-orange-500 focus:ring-orange-500 focus:ring-offset-0"
+                />
+                <Label htmlFor="emailPlayers" className="text-zinc-300">
+                  Email players their new numbers
+                </Label>
               </div>
             )}
 
