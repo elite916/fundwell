@@ -104,9 +104,10 @@ export function NewContestForm() {
       }
       // If successful, the server action redirects to the contest page
     } catch (error) {
-      // Check if this is a Next.js redirect - if so, let it propagate
+      // A Next.js redirect: the router has already shown the new page from the action's response.
+      // Rethrowing would make Next navigate there a second time and show "Loading contest..." again.
       if (isRedirectError(error)) {
-        throw error;
+        return;
       }
 
       // Only show toast for actual errors
