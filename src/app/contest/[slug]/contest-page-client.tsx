@@ -12,7 +12,7 @@ import { ClaimSquareModal, PinEntryModal, Square, SquaresGrid } from '@/features
 import { FOOTBALL_QUARTER_LABELS, TOTAL_SQUARES } from '@/features/contests/constants';
 import { ContestPrizeFields } from '@/features/contests/types';
 import { Player } from '@/features/contests/types/player';
-import { calculatePrizeAmount, countSoldSquares, getPrizeText } from '@/features/contests/utils';
+import { calculatePrizeAmount, countSoldSquares, formatPrizeAmount, getPrizeText } from '@/features/contests/utils';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 import { Database } from '@/libs/supabase/types';
 import { cn } from '@/utils/cn';
@@ -434,7 +434,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
             {/* Payouts Section (only when no winners yet) */}
             {showPayouts && (
               <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-                <h2 className="text-lg font-bold text-white mb-1">Payouts</h2>
+                <h2 className="text-lg font-bold text-white mb-1">Payouts if all squares sell</h2>
                 <p className="text-xs text-zinc-400 mb-3">
                   Help sell all squares —{' '}
                   <button
@@ -473,10 +473,10 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                         <span className="text-sm text-zinc-300">{payout.label}</span>
                         <div className="text-right">
                           <span className="text-sm font-semibold text-white">
-                            ${expectedPayout.toFixed(0)}
+                            {formatPrizeAmount(expectedPayout)}
                           </span>
                           <span className="text-xs text-zinc-500 ml-1">
-                            (${currentPayout.toFixed(0)} now)
+                            ({formatPrizeAmount(currentPayout)} now)
                           </span>
                         </div>
                       </div>
@@ -493,8 +493,8 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                         const currentTotal = calculatePrizeAmount(squaresSold, contest.square_price, totalPercent);
                         return (
                           <>
-                            <span className="text-sm font-bold text-white">${expectedTotal.toFixed(0)}</span>
-                            <span className="text-xs text-zinc-500 ml-1">(${currentTotal.toFixed(0)} now)</span>
+                            <span className="text-sm font-bold text-white">{formatPrizeAmount(expectedTotal)}</span>
+                            <span className="text-xs text-zinc-500 ml-1">({formatPrizeAmount(currentTotal)} now)</span>
                           </>
                         );
                       })()}
@@ -535,7 +535,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
                               </span>
                             ) : payoutPercent > 0 ? (
                               <span className="text-sm font-bold text-green-400">
-                                ${payoutAmount.toFixed(0)}
+                                {formatPrizeAmount(payoutAmount)}
                               </span>
                             ) : null}
                           </div>

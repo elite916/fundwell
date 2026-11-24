@@ -22,7 +22,7 @@ import { saveScores } from '../actions/save-scores';
 import { FOOTBALL_QUARTER_LABELS } from '../constants';
 import { GridSquare } from '../queries/get-squares';
 import { ContestPrizeFields } from '../types';
-import { calculatePrizeAmount, countSoldSquares, getPrizeText } from '../utils';
+import { calculatePrizeAmount, countSoldSquares, formatPrizeAmount, getPrizeText } from '../utils';
 
 type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
@@ -322,7 +322,7 @@ export function EnterScoresModal({
                   {contest.prize_type === 'custom' && prizeText ? (
                     <p className="text-xs text-orange-400">{prizeText}</p>
                   ) : payoutAmount != null ? (
-                    <p className="text-xs text-orange-400">${payoutAmount.toFixed(0)} payout</p>
+                    <p className="text-xs text-orange-400">{formatPrizeAmount(payoutAmount)} payout</p>
                   ) : null}
                 </div>
 

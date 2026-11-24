@@ -1,3 +1,5 @@
+import { formatPrizeAmount } from '@/features/contests/utils/prize-helpers';
+
 import { ctaButton } from '../components/email-components';
 import { escapeHtml } from '../escape-html';
 import { emailLayout, emailStyles } from '../layouts/email-layout';
@@ -70,7 +72,7 @@ export function winnerEmail({
   `;
 
   // Custom prizes show their text; a quarter with no prize shows no prize block.
-  const prizeValue = prizeText ? escapeHtml(prizeText) : prizeAmount > 0 ? `$${prizeAmount.toLocaleString()}` : null;
+  const prizeValue = prizeText ? escapeHtml(prizeText) : prizeAmount > 0 ? formatPrizeAmount(prizeAmount) : null;
   const prizeSection = prizeValue
     ? `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px;">

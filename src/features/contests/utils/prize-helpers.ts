@@ -40,3 +40,11 @@ export function countSoldSquares(squares: { payment_status: string }[]): number 
 export function calculatePrizeAmount(squaresSold: number, squarePrice: number, payoutPercent: number): number {
   return (squaresSold * Number(squarePrice) * payoutPercent) / 100;
 }
+
+/**
+ * Formats a prize amount: "$50", or "$46.25" when there are cents.
+ */
+export function formatPrizeAmount(amount: number): string {
+  const digits = Math.round(amount * 100) % 100 === 0 ? 0 : 2;
+  return `$${amount.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+}
