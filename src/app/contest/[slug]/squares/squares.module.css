@@ -1,0 +1,170 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  /* First screen: where it stands, and the board */
+  .first {
+    display: grid;
+    grid-template: auto 1fr / minmax(0, 1fr) auto;
+    column-gap: 40px;
+    align-items: start;
+    min-height: 100svh;
+    padding: 15vh var(--studio-edge) 9vh;
+  }
+  .lead {
+    grid-area: 1 / 1;
+    container-type: inline-size;
+  }
+  /* Shrinks for long team names: a character is about half an em wide */
+  .headline {
+    font-size: min(var(--studio-big), calc(100cqw / (var(--fit) * 0.52)));
+    overflow-wrap: anywhere;
+  }
+  .act {
+    grid-area: 2 / 1;
+    align-self: end;
+    max-width: 330px;
+    margin-top: 40px;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+  .side {
+    grid-area: 1 / 2 / 3 / 3;
+    align-self: start;
+    width: var(--studio-board);
+    margin-bottom: -110px;
+  }
+  .find {
+    margin-top: 34px;
+    overflow-wrap: anywhere;
+  }
+  .findSelect select {
+    max-width: 100%;
+    text-overflow: ellipsis;
+  }
+  .legend {
+    margin-top: 26px;
+  }
+
+  /* Payouts or winners, and the organizer */
+  .more {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12vh 40px;
+    align-items: start;
+    padding: 18vh var(--studio-edge) 12vh;
+  }
+  .prizes {
+    display: grid;
+    grid-template-columns: minmax(0, max-content) auto;
+    gap: 14px 48px;
+    justify-content: start;
+    margin-top: 30px;
+  }
+  .prizes > div {
+    display: contents;
+  }
+  .prizes dt,
+  .prizes dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .prizes dd {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .prizes small {
+    display: block;
+    color: var(--studio-soft);
+    font-size: var(--studio-small);
+  }
+  .prizes .left > * {
+    margin-top: 18px;
+  }
+  .organizer {
+    min-width: 0;
+  }
+
+  /* Claim sheet */
+  .alert {
+    font-weight: 600;
+  }
+  .alert:empty {
+    display: none;
+  }
+  .payment {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 24px;
+    padding-bottom: 18px;
+  }
+  .paymentText {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+  .paymentLine {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 14px;
+  }
+  .paymentName {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 500;
+  }
+  .handle {
+    min-width: 0;
+    color: var(--studio-soft);
+    overflow-wrap: anywhere;
+  }
+  .paymentNote {
+    color: var(--studio-soft);
+    font-size: var(--studio-small);
+    overflow-wrap: anywhere;
+  }
+  .paymentQr {
+    flex: none;
+    width: 96px;
+  }
+
+  @media (min-width: 1000px) and (max-width: 1199px) {
+    .first {
+      --studio-big: min(6.3vw, 15vh);
+      column-gap: 24px;
+    }
+  }
+  @media (max-width: 999px) {
+    .first {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 0;
+      padding: 96px var(--studio-edge) 32px;
+    }
+    .act {
+      align-self: stretch;
+      max-width: none;
+      margin-top: 18px;
+    }
+    .side {
+      align-self: stretch;
+      width: auto;
+      margin: 26px 0 0;
+    }
+    .find {
+      margin-top: 30px;
+    }
+    .more {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 72px;
+      padding: 48px var(--studio-edge) 72px;
+    }
+    .prizes {
+      grid-template-columns: minmax(0, 1fr) auto;
+      justify-content: stretch;
+      margin-top: 22px;
+    }
+  }
+}

@@ -1,8 +1,7 @@
-import { Suspense } from 'react';
-import Link from 'next/link';
-
-import { PageLoader } from '@/components/shared';
-import { Button } from '@/components/ui/button';
+import { organizerColors } from '@/components/studio/color';
+import { OrganizerHeader } from '@/components/studio/shell/organizer-header';
+import { StudioPage } from '@/components/studio/shell/studio-page';
+import { TextLink } from '@/components/studio/text-link';
 import { hasContestAccess } from '@/features/contests/access';
 import { requireAuth } from '@/features/contests/middleware/auth-middleware';
 import {
@@ -12,40 +11,44 @@ import {
   getSquaresForContest,
 } from '@/features/contests/queries';
 import { getPublicContestBySlug } from '@/features/contests/queries/get-contest-safe';
-import { ownerHasPro } from '@/features/subscriptions/owner-has-pro';
 
-import { ContestPageClient } from './contest-page-client';
+import { SquaresFundraiser } from './squares/squares-fundraiser';
+import { ContestMessage } from './contest-message';
+import { OrganizerPrint } from './organizer-print';
+import { PinGate } from './pin-gate';
+import { ShareButton } from './share-button';
 
 interface ContestPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ ref?: string | string[] }>;
 }
 
-export default async function ContestPage({ params }: ContestPageProps) {
+export default async function ContestPage({ params, searchParams }: ContestPageProps) {
   const { slug } = await params;
 
   const contest = await getPublicContestBySlug(slug);
 
   if (!contest) {
     return (
-      <div className='flex min-h-screen flex-col items-center justify-center bg-zinc-900 px-4'>
-        <div className='text-center'>
-          <h1 className='text-4xl font-bold text-white'>Contest Not Found</h1>
-          <p className='mt-4 text-zinc-400'>
-            The contest you&apos;re looking for doesn&apos;t exist or may have been removed.
-          </p>
-          <Link href='/'>
-            <Button className='mt-6'>← Back to Home</Button>
-          </Link>
-        </div>
-      </div>
+      <ContestMessage title='Contest Not Found' action={<TextLink href='/'>Back to Home</TextLink>}>
+        The contest you&apos;re looking for doesn&apos;t exist or may have been removed.
+      </ContestMessage>
     );
   }
+
+  const colors = organizerColors(contest.primary_color ?? '#F97316', contest.secondary_color ?? '#D97706');
 
   // Fetch access PIN separately (not included in PublicContest for security)
   const accessPin = await getContestPin(contest.slug);
 
   // Check if user has access (either no PIN required or valid cookie)
-  const hasAccess = await hasContestAccess(contest.slug, accessPin);
+  if (!(await hasContestAccess(contest.slug, accessPin))) {
+    return (
+      <StudioPage style={colors} header={<OrganizerHeader contestName={contest.name} />}>
+        <PinGate contestSlug={contest.slug} />
+      </StudioPage>
+    );
+  }
 
   // Check if current user is the contest owner
   let isOwner = false;
@@ -57,36 +60,23 @@ export default async function ContestPage({ params }: ContestPageProps) {
     isOwner = false;
   }
 
-  const showAds = !(await ownerHasPro(contest.owner_id));
+  const [squares, paymentOptions, scores, { ref }] = await Promise.all([
+    getSquaresForContest(contest.id),
+    getPaymentOptionsForContest(contest.id),
+    getScoresForContest(contest.id),
+    searchParams,
+  ]);
+  const referral = (Array.isArray(ref) ? ref[0] : ref) || null;
 
-  // Fetch squares, payment options, and scores only when access is granted
-  const [squares, paymentOptions, scores] = hasAccess
-    ? await Promise.all([
-        getSquaresForContest(contest.id),
-        getPaymentOptionsForContest(contest.id),
-        getScoresForContest(contest.id),
-      ])
-    : [[], [], []];
-
-  // Only include access_pin for contest owners (for share modal)
+  // Only what the page uses goes to the browser
   const contestForClient = {
     id: contest.id,
-    name: contest.name,
-    slug: contest.slug,
-    description: contest.description,
     status: contest.status,
     sport_type: contest.sport_type,
     row_team_name: contest.row_team_name,
     col_team_name: contest.col_team_name,
     square_price: contest.square_price,
     max_squares_per_person: contest.max_squares_per_person,
-    primary_color: contest.primary_color ?? '#F97316',
-    secondary_color: contest.secondary_color ?? '#D97706',
-    hero_image_url: contest.hero_image_url,
-    hero_image_position: contest.hero_image_position,
-    org_image_url: contest.org_image_url,
-    requiresPin: Boolean(accessPin),
-    access_pin: isOwner ? accessPin : null,
     row_numbers: contest.row_numbers,
     col_numbers: contest.col_numbers,
     // Payout percentages for winner display
@@ -113,16 +103,42 @@ export default async function ContestPage({ params }: ContestPageProps) {
   };
 
   return (
-    <Suspense fallback={<PageLoader />}>
-      <ContestPageClient
+    <StudioPage
+      style={colors}
+      header={
+        <OrganizerHeader
+          contestName={contest.name}
+          logoUrl={contest.org_image_url}
+          action={
+            <ShareButton
+              contestName={contest.name}
+              contestSlug={contest.slug}
+              referral={referral}
+              // The owner's own PIN, to share. Nobody else gets it.
+              accessPin={isOwner ? accessPin : null}
+              colors={colors}
+            />
+          }
+        />
+      }
+    >
+      <SquaresFundraiser
         contest={contestForClient}
         squares={squares}
         scores={scores}
-        hasAccess={hasAccess}
-        showAds={showAds}
         paymentOptions={paymentOptions}
+        referral={referral}
+        colors={colors}
+        organizer={
+          <OrganizerPrint
+            contestName={contest.name}
+            imageUrl={contest.hero_image_url}
+            imagePosition={contest.hero_image_position}
+            description={contest.description}
+          />
+        }
       />
-    </Suspense>
+    </StudioPage>
   );
 }
 

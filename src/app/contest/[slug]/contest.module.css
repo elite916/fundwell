@@ -1,0 +1,107 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  /* Not found, error and loading */
+  .message,
+  .gate {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 88svh;
+    padding: 15vh var(--studio-edge) 9vh;
+  }
+  .messageTitle {
+    max-width: 8em;
+  }
+  .messageText,
+  .gateForm {
+    align-self: end;
+    width: 100%;
+    max-width: 392px;
+    margin-top: 40px;
+  }
+  .messageActions,
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 26px;
+    margin: 16px 0;
+  }
+  .loading {
+    padding: 15vh var(--studio-edge);
+  }
+
+  /* PIN */
+  .pin input {
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .alert {
+    font-weight: 600;
+  }
+  .alert:empty {
+    display: none;
+  }
+
+  /* Share */
+  .url {
+    overflow-wrap: anywhere;
+  }
+  .accessPin {
+    margin-top: 18px;
+  }
+  .accessPin strong {
+    margin-left: 8px;
+    color: var(--studio-ink);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+  .qr {
+    align-self: flex-start;
+    margin-top: 28px;
+    padding: 18px;
+    border-radius: var(--studio-radius-field);
+    background: #fff;
+  }
+
+  /* A print lying in the same light as the board */
+  .print {
+    position: relative;
+    width: 86%;
+    aspect-ratio: 16 / 10;
+    border-radius: 6px;
+    background: var(--org);
+    box-shadow:
+      3px 5px 7px rgb(var(--studio-shade) / 0.4),
+      14px 14px 0 var(--org-2),
+      30px 42px 46px -2px rgb(var(--studio-shade) / 0.38);
+  }
+  .print img {
+    border-radius: 6px;
+    object-fit: cover;
+  }
+  .description {
+    max-width: 520px;
+    margin-top: 48px;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 999px) {
+    .message,
+    .gate {
+      min-height: 74svh;
+      padding: 96px var(--studio-edge) 40px;
+    }
+    .print {
+      width: 96%;
+    }
+  }
+  @media (min-width: 600px) and (max-width: 999px) {
+    .print {
+      width: 70%;
+    }
+  }
+}
