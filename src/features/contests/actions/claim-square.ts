@@ -16,9 +16,9 @@ import { ActionResponse } from '@/types/action-response';
 import { sanitizeEmail } from '@/utils/email-validator';
 import { getURL } from '@/utils/get-url';
 import { logger } from '@/utils/logger';
-import { checkRateLimit } from '@/utils/rate-limit';
 
 import { hasContestAccess } from '../access';
+import { isClaimWithinLimits, undoContestClaimHit } from '../claim-rate-limit';
 
 interface ClaimSquareInput {
   squareId: string;
@@ -48,15 +48,6 @@ export async function claimSquare(
     return {
       data: null,
       error: { message: 'Invalid email address format' },
-    };
-  }
-
-  // Rate limit check
-  const rateLimit = await checkRateLimit(`claim:${sanitizedEmail}`, { maxRequests: 10, windowMs: 60000 });
-  if (!rateLimit.success) {
-    return {
-      data: null,
-      error: { message: 'Too many requests. Please wait a moment and try again.' },
     };
   }
 
@@ -125,6 +116,15 @@ export async function claimSquare(
     }
   }
 
+  // Only attempts that reach this point can send email or probe an address, so
+  // only they count.
+  if (!(await isClaimWithinLimits(contestId, sanitizedEmail))) {
+    return {
+      data: null,
+      error: { message: 'Too many requests. Please wait a moment and try again.' },
+    };
+  }
+
   const { data: claimed, error: claimError } = await supabaseAdminClient
     .rpc('claim_square', {
       p_contest_id: contestId,
@@ -139,6 +139,7 @@ export async function claimSquare(
     .single();
 
   if (claimError || !claimed) {
+    await undoContestClaimHit(contestId);
     const reason = claimError?.message ?? '';
     if (reason.includes('square_taken')) {
       return { data: null, error: { message: ContestErrors.RACE_CONDITION } };
