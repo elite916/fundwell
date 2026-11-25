@@ -43,6 +43,7 @@ export function Sheet({
   style,
 }: SheetProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const openerRef = useRef<Element | null>(null);
   const keepOpen = (event: Event) => {
     if (!dismissible) event.preventDefault();
   };
@@ -57,7 +58,13 @@ export function Sheet({
           data-studio-sheet={placement}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
+            openerRef.current = document.activeElement;
             titleRef.current?.focus();
+          }}
+          onCloseAutoFocus={(event) => {
+            // Radix only goes back to its own trigger, and these sheets are opened from state.
+            event.preventDefault();
+            if (openerRef.current instanceof HTMLElement) openerRef.current.focus();
           }}
           onEscapeKeyDown={keepOpen}
           onInteractOutside={keepOpen}
@@ -65,7 +72,7 @@ export function Sheet({
         >
           <div className={css.inner}>
             <Dialog.Title asChild>
-              <Mid as='h2' ref={titleRef} tabIndex={-1} className={css.title}>
+              <Mid as='h2' ref={titleRef} tabIndex={-1} className={cn(css.title, !description && css.alone)}>
                 {title}
               </Mid>
             </Dialog.Title>

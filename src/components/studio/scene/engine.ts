@@ -700,7 +700,7 @@ export function createSceneEngine({ parent, progress, board, onProgress, onReady
       canvas.removeEventListener('webglcontextlost', handleLost);
       for (const thing of rubbish) thing.dispose();
       renderer.dispose();
-      renderer.forceContextLoss();
+      if (!renderer.getContext().isContextLost()) renderer.forceContextLoss();
       canvas.remove();
     },
   };

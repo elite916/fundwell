@@ -27,6 +27,9 @@
     margin-right: 60px;
     outline: 0;
   }
+  .alone {
+    margin-bottom: 24px;
+  }
   .description {
     margin: 6px 0 30px;
     color: var(--studio-soft);
