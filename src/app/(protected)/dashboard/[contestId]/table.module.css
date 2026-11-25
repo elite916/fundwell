@@ -1,0 +1,343 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  .about {
+    color: var(--studio-soft);
+    font-size: 13px;
+  }
+  .bulk {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 0;
+    padding: 8px 10px 8px 20px;
+    border-radius: var(--dash-radius);
+    background: var(--dash-side);
+  }
+  .bulk > span {
+    flex: 1;
+    font-weight: 600;
+  }
+  .tools {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 18px 0 14px;
+  }
+  .tools > input {
+    max-width: 340px;
+  }
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .filters > button {
+    padding: 0 16px;
+  }
+  .filters > button[aria-pressed='true'] {
+    background: var(--studio-ink);
+    color: var(--studio-on-ink);
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .table th {
+    padding: 8px 12px 8px 0;
+    border-bottom: 1px solid var(--dash-rule);
+    color: var(--studio-soft);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .table td {
+    height: 48px;
+    padding: 0 12px 0 0;
+    border-bottom: 1px solid var(--dash-hair);
+  }
+  .table tbody tr {
+    cursor: pointer;
+  }
+  .table tbody tr:hover {
+    background: #e9eae9;
+  }
+  .table tbody tr[data-on] {
+    background: #e2e3e2;
+  }
+  .table tbody tr.blank {
+    background: none;
+    cursor: default;
+  }
+  .table .blank td {
+    padding: 20px 0;
+    color: var(--studio-soft);
+  }
+  .soft {
+    color: var(--studio-soft);
+  }
+
+  /* Participants */
+  .check {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-left: -10px;
+    cursor: pointer;
+  }
+  .name {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .square,
+  .date,
+  .venmo {
+    white-space: nowrap;
+  }
+  .email {
+    overflow-wrap: anywhere;
+  }
+  .email a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .lead {
+    display: none;
+  }
+
+  /* Team members */
+  .member {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .url {
+    color: var(--studio-soft);
+    overflow-wrap: anywhere;
+  }
+  .team td {
+    padding-block: 8px;
+  }
+  .team td:last-child {
+    padding-right: 0;
+    text-align: right;
+  }
+  .team th:last-child {
+    padding-right: 0;
+    text-align: right;
+  }
+
+  @media (max-width: 1239px) {
+    .people,
+    .people tbody,
+    .people thead {
+      display: block;
+    }
+    .people thead {
+      border-bottom: 1px solid var(--dash-rule);
+    }
+    .people thead tr {
+      display: flex;
+    }
+    .people thead th {
+      padding: 0;
+      border: 0;
+    }
+    .people thead th:not(:first-child) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    .people tbody tr {
+      display: grid;
+      align-items: center;
+      border-bottom: 1px solid var(--dash-hair);
+    }
+    .people tbody td {
+      height: auto;
+      padding: 0;
+      border: 0;
+      line-height: 1.35;
+    }
+    .people .square,
+    .people .venmo,
+    .people .date {
+      color: var(--studio-soft);
+      font-size: 13px;
+    }
+    .people .venmo {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .lead {
+      display: inline;
+    }
+    .people .blank td {
+      grid-column: 1 / -1;
+      padding: 20px 0;
+    }
+  }
+  @media (min-width: 700px) and (max-width: 1239px) {
+    .people tbody tr {
+      grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1.5fr) 150px 60px;
+      column-gap: 14px;
+      padding: 6px 0;
+    }
+    .people .tick {
+      grid-area: 1 / 1 / 3;
+    }
+    .people .name {
+      grid-area: 1 / 2;
+      align-self: end;
+    }
+    .people .square {
+      grid-area: 2 / 2;
+      align-self: start;
+    }
+    .people .email {
+      grid-area: 1 / 3;
+      align-self: end;
+      font-size: 13.5px;
+    }
+    .people .email a {
+      margin: -12px 0 -10px;
+    }
+    .people .venmo {
+      grid-area: 2 / 3;
+      align-self: start;
+    }
+    .people .status {
+      grid-area: 1 / 4;
+      align-self: end;
+    }
+    .people .date {
+      grid-area: 2 / 4;
+      align-self: start;
+    }
+    .people .go {
+      grid-area: 1 / 5 / 3;
+    }
+  }
+
+  @media (max-width: 699px) {
+    .tools {
+      flex-direction: column;
+    }
+    .tools > input {
+      max-width: none;
+    }
+    .tools > button {
+      align-self: flex-start;
+    }
+    .filters {
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .filters > button {
+      flex: 1;
+      padding: 0 12px;
+    }
+    .bulk {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      left: 12px;
+      z-index: 25;
+      margin: 0;
+      padding: 8px 8px 8px 18px;
+      background: var(--studio-ink);
+      color: var(--studio-on-ink);
+    }
+    .bulk > button {
+      padding: 0 16px;
+    }
+    .bulk > button:first-of-type:not(:disabled) {
+      background: var(--studio-on-ink);
+      color: var(--studio-ink);
+    }
+    .bulk > button:last-of-type {
+      padding: 0 8px;
+      background: none;
+      color: var(--studio-on-ink);
+    }
+    .bulk > button:focus-visible {
+      outline-color: var(--studio-on-ink);
+    }
+    /* The bar must not cover the last rows */
+    .bulk ~ .people {
+      margin-bottom: 72px;
+    }
+
+    .people tbody tr {
+      grid-template-columns: 40px minmax(0, 1fr) auto auto;
+      column-gap: 10px;
+      padding: 8px 0 2px;
+    }
+    .people .tick {
+      grid-area: 1 / 1 / 3;
+    }
+    .people .name {
+      grid-area: 1 / 2;
+      align-self: end;
+    }
+    .people .square {
+      grid-area: 2 / 2;
+      align-self: start;
+    }
+    .people .status {
+      grid-area: 1 / 3 / 3;
+    }
+    .people .go {
+      grid-area: 1 / 4 / 3;
+    }
+    .people .email {
+      grid-area: 3 / 2 / 4 / 5;
+      font-size: 14px;
+    }
+    .people .email a {
+      margin-top: -8px;
+    }
+    .people .venmo,
+    .people .date {
+      display: none;
+    }
+
+    .team,
+    .team tbody,
+    .team tr,
+    .team td {
+      display: block;
+    }
+    .team thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    .team td {
+      height: auto;
+      padding: 0;
+      border: 0;
+    }
+    .team td:nth-child(3) {
+      margin: 2px 0 8px;
+    }
+    .team td:last-child {
+      text-align: left;
+    }
+    .team tbody tr {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--dash-hair);
+    }
+  }
+}

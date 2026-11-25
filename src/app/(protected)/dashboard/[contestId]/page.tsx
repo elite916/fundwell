@@ -135,7 +135,10 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
         {/* Header */}
         <div className={css.head}>
           <div>
-            <h1>{contest.name}</h1> <Tag className={css.status}>{STATUS_LABELS[contest.status]}</Tag>
+            <div className={css.title}>
+              <h1>{contest.name}</h1>
+              <Tag className={css.status}>{STATUS_LABELS[contest.status]}</Tag>
+            </div>
             <p className={css.about}>
               {contest.row_team_name} vs {contest.col_team_name}
             </p>
