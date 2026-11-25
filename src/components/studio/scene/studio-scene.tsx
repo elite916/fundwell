@@ -38,12 +38,16 @@ function subscribeToReducedMotion(onChange: () => void) {
   return () => query.removeEventListener('change', onChange);
 }
 
+/** WebGL that draws without a graphics card can hold the page up for seconds: the still is better there. */
+const SOFTWARE = /swiftshader|llvmpipe|basic render/i;
+
 function hasWebGL(): boolean {
   try {
-    // Not when it would be drawn without a graphics card: that froze the page, up to 14 seconds in a test
-    const gl = document.createElement('canvas').getContext('webgl2', { failIfMajorPerformanceCaveat: true });
+    const gl = document.createElement('canvas').getContext('webgl2');
+    const info = gl?.getExtension('WEBGL_debug_renderer_info');
+    const renderer = info ? String(gl?.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
     gl?.getExtension('WEBGL_lose_context')?.loseContext();
-    return !!gl;
+    return !!gl && !SOFTWARE.test(renderer);
   } catch {
     return false;
   }
