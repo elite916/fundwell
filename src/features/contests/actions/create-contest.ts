@@ -84,7 +84,8 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
   const code = generateContestCode();
   const slug = generateSlug(data.name, uniqueId);
 
-  // Insert contest into database
+  // Insert contest into database. Owners may insert only these columns
+  // (contest_write_rules migration), so a new column needs a grant too.
   const insertData: ContestInsert = {
     owner_id: user.id,
     code,

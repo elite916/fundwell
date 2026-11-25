@@ -5,12 +5,18 @@ import { type Resolver, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { Note } from '@/components/studio/dashboard/dash-page';
 import { Segmented } from '@/components/studio/setup/fields';
 import { SetupSection } from '@/components/studio/setup/section';
 import { TextField } from '@/components/studio/text-field';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
-import { FOOTBALL_QUARTER_LABELS, PRIZE_TEXT_MAX_LENGTH } from '@/features/contests/constants';
+import {
+  ContestErrors,
+  FOOTBALL_QUARTER_LABELS,
+  hasGameStarted,
+  PRIZE_TEXT_MAX_LENGTH,
+} from '@/features/contests/constants';
 import { Database } from '@/libs/supabase/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -95,6 +101,7 @@ export function PricingPayoutsSection({ contest }: PricingPayoutsSectionProps) {
 function FootballPayoutsForm({ contest }: { contest: Contest }) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const locked = hasGameStarted(contest.status);
 
   const {
     register,
@@ -185,7 +192,9 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
       description='Set square price and payout percentages for each quarter.'
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset className={css.plain}>
+        <fieldset disabled={locked} className={css.plain}>
+          {locked && <Note>{ContestErrors.RULES_LOCKED}.</Note>}
+
           {/* Pricing */}
           <div className={css.two}>
             <TextField
@@ -305,6 +314,7 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
 function BaseballPayoutsForm({ contest }: { contest: Contest }) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const locked = hasGameStarted(contest.status);
 
   const {
     register,
@@ -387,7 +397,9 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
       description='Set square price and payout percentages for each game.'
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset className={css.plain}>
+        <fieldset disabled={locked} className={css.plain}>
+          {locked && <Note>{ContestErrors.RULES_LOCKED}.</Note>}
+
           {/* Pricing */}
           <div className={css.two}>
             <TextField
