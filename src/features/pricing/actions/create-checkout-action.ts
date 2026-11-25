@@ -50,13 +50,30 @@ export async function createCheckoutAction({ priceId }: { priceId: string }) {
     return redirect(`${getURL()}/dashboard/billing`);
   }
 
-  // 4. Retrieve or create the customer in Stripe
+  // 4. Neither can a user whose paid subscription is past due or unpaid. They don't have Pro, but it's still open.
+  const { data: overdue, error: overdueError } = await supabaseAdminClient
+    .from('subscriptions')
+    .select('id, prices!inner(unit_amount)')
+    .eq('user_id', user.id)
+    .in('status', ['past_due', 'unpaid'])
+    .gt('prices.unit_amount', 0)
+    .limit(1);
+
+  if (overdueError || !overdue) {
+    throw Error('Could not check subscription');
+  }
+
+  if (overdue.length > 0) {
+    return redirect(`${getURL()}/dashboard/billing`);
+  }
+
+  // 5. Retrieve or create the customer in Stripe
   const customer = await getOrCreateCustomer({
     userId: user.id,
     email: user.email,
   });
 
-  // 5. Create a checkout session in Stripe
+  // 6. Create a checkout session in Stripe
   const checkoutSession = await stripeAdmin.checkout.sessions.create({
     allowed_payment_method_types: ['card'],
     billing_address_collection: 'required',
@@ -80,6 +97,6 @@ export async function createCheckoutAction({ priceId }: { priceId: string }) {
     throw Error('checkoutSession is not defined');
   }
 
-  // 6. Redirect to checkout url
+  // 7. Redirect to checkout url
   redirect(checkoutSession.url);
 }
