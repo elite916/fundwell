@@ -1,12 +1,11 @@
 'use server';
 
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { timingSafeEqual } from 'crypto';
 
 import { contestAccessCookieName, contestAccessToken } from '@/features/contests/access';
 import { getContestPin } from '@/features/contests/queries';
-import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
-import { logger } from '@/utils/logger';
+import { getClientIp, hitRateLimit, undoRateLimitHit } from '@/utils/rate-limit';
 
 interface VerifyPinInput {
   contestSlug: string;
@@ -22,37 +21,6 @@ interface VerifyPinResponse {
 // from all IPs together.
 const IP_LIMIT = { max: 10, windowSeconds: 15 * 60 };
 const CONTEST_LIMIT = { max: 100, windowSeconds: 60 * 60 };
-
-async function getClientIp(): Promise<string> {
-  const headerStore = await headers();
-  const forwardedFor = headerStore.get('x-forwarded-for')?.split(',')[0].trim();
-  return headerStore.get('x-real-ip') || forwardedFor || 'unknown';
-}
-
-/**
- * Counts an attempt against a limit and returns whether it is within it.
- * Throws if the limiter can't be reached, so the PIN check fails closed.
- */
-async function hitRateLimit(key: string, limit: { max: number; windowSeconds: number }): Promise<boolean> {
-  const { data, error } = await supabaseAdminClient.rpc('rate_limit_hit', {
-    p_key: key,
-    p_max: limit.max,
-    p_window_seconds: limit.windowSeconds,
-  });
-  if (error) {
-    logger.error('verifyPin rate limit', error);
-    throw new Error('Rate limit check failed');
-  }
-  return data;
-}
-
-async function undoRateLimitHit(key: string, limit: { windowSeconds: number }): Promise<void> {
-  const { error } = await supabaseAdminClient.rpc('rate_limit_undo_hit', {
-    p_key: key,
-    p_window_seconds: limit.windowSeconds,
-  });
-  if (error) logger.error('verifyPin rate limit', error);
-}
 
 /**
  * Verifies a PIN for accessing a private contest.
@@ -80,7 +48,8 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
   }
 
   // Count the attempt before comparing, so parallel guesses can't slip past
-  // the limit. A correct PIN gives its attempt back below.
+  // the limit. A correct PIN gives its attempt back below. If the limiter can't
+  // be reached this throws, so the PIN check fails closed.
   const ip = await getClientIp();
   const ipKey = `pin:ip:${contestSlug}:${ip}`;
   const contestKey = `pin:contest:${contestSlug}`;

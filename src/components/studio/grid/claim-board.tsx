@@ -76,7 +76,8 @@ export function ClaimBoard<T extends GridSquare>({
             type='button'
             data-cell={index}
             tabIndex={index === tabStop ? 0 : -1}
-            aria-label={cell.label}
+            // Starts with the letters on the tile, so people who use their voice can say what they see
+            aria-label={[cell.initials, cell.label].filter(Boolean).join(', ')}
             aria-disabled={!action || undefined}
             aria-pressed={!isAvailable && action ? cell.found : undefined}
             className={tileClass(cell, action && pressableClass(isAvailable))}
