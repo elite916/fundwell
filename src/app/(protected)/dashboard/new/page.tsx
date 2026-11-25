@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getUser } from '@/features/account/controllers/get-user';
 import { getProducts } from '@/features/pricing/controllers/get-products';
 import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
+import { isSeasonOpen } from '@/features/super-bowl/queries';
 
 import { NewContestForm } from './new-contest-form';
 import { UpgradeLimitReached } from './upgrade-limit-reached';
@@ -17,7 +18,7 @@ export default async function NewContestPage() {
   const { canCreate, currentCount } = await getContestLimit(user.id);
 
   if (canCreate) {
-    return <NewContestForm />;
+    return <NewContestForm isSuperBowlOpen={await isSeasonOpen()} />;
   }
 
   // User cannot create - fetch products to get Pro pricing

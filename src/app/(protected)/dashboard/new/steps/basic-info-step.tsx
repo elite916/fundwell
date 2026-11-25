@@ -2,6 +2,7 @@
 
 import { useFormContext, useWatch } from 'react-hook-form';
 
+import { DashCheckbox } from '@/components/studio/dashboard/dash-button';
 import { TextArea } from '@/components/studio/setup/fields';
 import { TextField } from '@/components/studio/text-field';
 import { CreateContestInput, SportType } from '@/features/contests/models/contest';
@@ -40,7 +41,7 @@ const SPORT_DESCRIPTIONS: Record<SportType, string> = {
     "Your 10×10 grid will have the row team's last digit of their score on the left axis, and the column team's on the top. Winners are determined by matching the last digit of each team's score at the end of each game in the series.",
 };
 
-export function BasicInfoStep() {
+export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }) {
   const {
     register,
     formState: { errors },
@@ -128,6 +129,16 @@ export function BasicInfoStep() {
           {...register('colTeamName')}
         />
       </div>
+
+      {sportType === 'football' && isSuperBowlOpen && (
+        <div className={css.checkRow}>
+          <DashCheckbox id='isSuperBowl' aria-describedby='isSuperBowl-hint' {...register('isSuperBowl')} />
+          <label htmlFor='isSuperBowl'>Super Bowl contest</label>
+          <p id='isSuperBowl-hint' className={css.small}>
+            Fundwell enters the score after each quarter. You can still enter or correct scores yourself.
+          </p>
+        </div>
+      )}
 
       {/* Grid Preview Hint */}
       <p className={css.say}>

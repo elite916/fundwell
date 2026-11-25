@@ -6,6 +6,8 @@ import slugify from 'slugify';
 
 import { CONTEST_LIMIT_MESSAGE } from '@/features/contests/constants';
 import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
+import { isSeasonOpen } from '@/features/super-bowl/queries';
+import { SUPER_BOWL_SEASON } from '@/features/super-bowl/season';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
@@ -84,6 +86,9 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
   const code = generateContestCode();
   const slug = generateSlug(data.name, uniqueId);
 
+  // After the final it would be the next game's contest
+  const isSuperBowl = data.isSuperBowl && data.sportType === 'football' && (await isSeasonOpen());
+
   // Insert contest into database. Owners may insert only these columns
   // (contest_write_rules migration), so a new column needs a grant too.
   const insertData: ContestInsert = {
@@ -93,6 +98,7 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
     name: data.name,
     description: data.description || null,
     sport_type: data.sportType,
+    super_bowl_season: isSuperBowl ? SUPER_BOWL_SEASON : null,
     row_team_name: data.rowTeamName,
     col_team_name: data.colTeamName,
     square_price: data.squarePrice,

@@ -56,7 +56,7 @@ const STEP_FIELDS: Record<number, string[]> = {
   3: ['primaryColor', 'secondaryColor'],
 };
 
-export function NewContestForm() {
+export function NewContestForm({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -167,7 +167,7 @@ export function NewContestForm() {
               </div>
 
               {/* Step Content */}
-              {currentStep === 1 && <BasicInfoStep />}
+              {currentStep === 1 && <BasicInfoStep isSuperBowlOpen={isSuperBowlOpen} />}
               {currentStep === 2 && <SettingsStep />}
               {currentStep === 3 && <BrandingStep />}
             </Panel>
