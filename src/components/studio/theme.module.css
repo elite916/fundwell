@@ -180,3 +180,86 @@
     }
   }
 }
+
+/*
+  Messages and the loading bar sit in the root layout, outside any `.studio`. They take the look only while a page in
+  the theme is open. Not in a layer: these have to win over the utilities in components/ui/toast.tsx.
+*/
+body:has(.studio) .toasts {
+  pointer-events: none;
+}
+body:has(.studio) .toast {
+  width: max-content;
+  max-width: min(560px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 13px 50px 13px 22px;
+  border: 0;
+  border-radius: 26px;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-studio), Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  box-shadow: 0 14px 34px rgb(44 43 42 / 0.3);
+}
+body:has(.studio) .toastBad {
+  border-radius: 14px;
+  box-shadow:
+    inset 0 0 0 2px #fff,
+    0 0 0 2px #000;
+}
+body:has(.studio) .toastText {
+  font-size: inherit;
+  font-weight: 400;
+  line-height: inherit;
+  opacity: 1;
+  overflow-wrap: anywhere;
+}
+/* The sentence says it: the title above it is for screen readers */
+body:has(.studio) .toastTitle:has(+ .toastText) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+body:has(.studio) .toastClose {
+  top: 50%;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #fff;
+  opacity: 1;
+  transform: translateY(-50%);
+}
+body:has(.studio) .toastClose:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: -5px;
+  box-shadow: none;
+}
+body:has(.studio) .progress {
+  height: 3px;
+}
+body:has(.studio) .progress > div {
+  background: #000;
+}
+
+/* The message sits at the bottom middle on wide screens, at the top on phones */
+@media (min-width: 640px) {
+  body:has(.studio) .toasts {
+    right: 0;
+    left: 0;
+    max-width: none;
+    padding-bottom: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body:has(.studio) :is(.toast, .progress > div) {
+    transition: none;
+    animation: none;
+  }
+}

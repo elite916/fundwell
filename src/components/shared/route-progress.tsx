@@ -5,6 +5,8 @@ import { usePathname, useSearchParams } from 'next/navigation';
 
 import { cn } from '@/utils/cn';
 
+import studio from '@/components/studio/theme.module.css';
+
 export function RouteProgress() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -70,7 +72,7 @@ export function RouteProgress() {
   if (!isLoading && progress === 0) return null;
 
   return (
-    <div className='fixed top-0 right-0 left-0 z-50 h-0.5'>
+    <div className={cn('fixed top-0 right-0 left-0 z-50 h-0.5', studio.progress)}>
       <div
         className={cn(
           'h-full bg-linear-to-r/srgb from-orange-500 to-amber-400 transition-all duration-200 ease-out',

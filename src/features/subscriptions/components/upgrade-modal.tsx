@@ -61,7 +61,6 @@ export function UpgradeModal({ isOpen, onClose, proPrice, currentCount }: Upgrad
           <h3>Pro Plan</h3>
           <ul>
             <li>Unlimited contests</li>
-            <li>Priority support</li>
           </ul>
         </div>
       </div>

@@ -6,11 +6,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import * as Switch from '@radix-ui/react-switch';
 
-import field from '../field.module.css';
+import { DashButton, IconButton } from '../dashboard/dash-button';
 import { srOnly } from '../theme';
 
-import { DashButton, IconButton } from '../dashboard/dash-button';
-
+import field from '../field.module.css';
 import css from './setup.module.css';
 
 interface Wording {
