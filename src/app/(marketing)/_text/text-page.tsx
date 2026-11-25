@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 
-import { Display, Mid, Soft } from '@/components/studio/type';
+import { Display, Mid } from '@/components/studio/type';
 
 import css from './text-page.module.css';
 
 /** A page to read: the title, a line under it, then sections. */
-export function TextPage({ title, intro, children }: { title: string; intro?: ReactNode; children: ReactNode }) {
+export function TextPage({ title, intro, children }: { title: string; intro?: ReactNode; children?: ReactNode }) {
   return (
     <div className={css.page}>
       <Display as='h1' className={css.title}>
@@ -26,15 +26,5 @@ export function TextSection({ title, children }: { title: string; children: Reac
       </Mid>
       <div className={css.text}>{children}</div>
     </section>
-  );
-}
-
-/** A short heading and a line or two, inside a section. */
-export function TextItem({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div>
-      <h3 className={css.item}>{title}</h3>
-      <Soft>{children}</Soft>
-    </div>
   );
 }

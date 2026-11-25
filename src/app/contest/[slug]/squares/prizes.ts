@@ -9,12 +9,16 @@ export interface PrizeLine {
   label: string;
   /** A dollar amount or the organizer's own words. Null when that quarter pays nothing. */
   prize: string | null;
+  /** What it would pay with the squares sold so far. Only before the first winner. */
+  now?: string;
   notes: string[];
 }
 
 export interface PrizeList {
   kind: 'payouts' | 'winners';
   lines: PrizeLine[];
+  /** All the payouts together. Only before the first winner. */
+  total?: { prize: string; now: string };
   leftForTeam: string | null;
 }
 
@@ -100,29 +104,31 @@ export function prizeList(
   }
 
   const games = baseballGames(contest).filter(({ percent }) => percent > 0);
-  const lines: PrizeLine[] = isBaseball
-    ? games.map(({ label, percent }) => ({
-        label,
-        prize: formatPrizeAmount(calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, percent)),
-        notes: [],
-      }))
-    : FOOTBALL_QUARTER_LABELS.map(({ key, label }) => ({
-        label,
-        prize:
-          contest.prize_type === 'custom'
-            ? getPrizeText(contest.prize_type, key, contest)
-            : prizeFor(contest, key, TOTAL_SQUARES),
-        notes: [],
-      })).filter(({ prize }) => prize);
+  const isCustom = contest.prize_type === 'custom';
+  const ifAllSell = (percent: number) => ({
+    prize: formatPrizeAmount(calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, percent)),
+    now: formatPrizeAmount(calculatePrizeAmount(squaresSold, contest.square_price, percent)),
+  });
+  const payouts = isBaseball
+    ? games
+    : FOOTBALL_QUARTER_LABELS.map(({ label }, i) => ({ label, percent: quarterPercents[i] })).filter(
+        ({ percent }) => percent > 0
+      );
+  const lines: PrizeLine[] =
+    isCustom && !isBaseball
+      ? FOOTBALL_QUARTER_LABELS.map(({ key, label }) => ({
+          label,
+          prize: getPrizeText(contest.prize_type, key, contest),
+          notes: [],
+        })).filter(({ prize }) => prize)
+      : payouts.map(({ label, percent }) => ({ label, ...ifAllSell(percent), notes: [] }));
 
   if (lines.length === 0) return null;
+  const percents = payouts.map(({ percent }) => percent);
   return {
     kind: 'payouts',
     lines,
-    leftForTeam: leftForTeam(
-      contest,
-      isBaseball ? games.map(({ percent }) => percent) : quarterPercents,
-      TOTAL_SQUARES
-    ),
+    total: isCustom ? undefined : ifAllSell(percents.reduce((sum, percent) => sum + percent, 0)),
+    leftForTeam: leftForTeam(contest, percents, TOTAL_SQUARES),
   };
 }

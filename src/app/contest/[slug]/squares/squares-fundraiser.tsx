@@ -132,7 +132,7 @@ export function SquaresFundraiser({
               <Mid as='span'>{prizes.kind === 'winners' ? 'Winners' : 'Payouts if all squares sell'}</Mid>
             </h2>
             <dl className={css.prizes}>
-              {prizes.lines.map(({ label, prize, notes }) => (
+              {prizes.lines.map(({ label, prize, now, notes }) => (
                 <div key={label}>
                   <dt>
                     {label}
@@ -141,10 +141,18 @@ export function SquaresFundraiser({
                     ))}
                   </dt>
                   <dd>{prize}</dd>
+                  {now && <dd className={css.now}>({now} now)</dd>}
                 </div>
               ))}
+              {prizes.total && (
+                <div className={css.sum}>
+                  <dt>Total Payouts</dt>
+                  <dd>{prizes.total.prize}</dd>
+                  <dd className={css.now}>({prizes.total.now} now)</dd>
+                </div>
+              )}
               {prizes.leftForTeam && (
-                <div className={css.left}>
+                <div className={prizes.total ? undefined : css.sum}>
                   <dt>Left for the team</dt>
                   <dd>{prizes.leftForTeam}</dd>
                 </div>
