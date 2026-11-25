@@ -16,20 +16,23 @@ interface OrganizerHeaderProps {
   action?: ReactNode;
 }
 
-/** A contest page's header: the organizer's logo, or the contest's initials on their color. */
-export function OrganizerHeader({ contestName, host, logoUrl, action }: OrganizerHeaderProps) {
-  const initials = contestName
+/** The first letters of a name's first two words. */
+export function initialsOf(name: string): string {
+  return name
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)
     .map((word) => [...word][0].toUpperCase())
     .join('');
+}
 
+/** A contest page's header: the organizer's logo, or the contest's initials on their color. */
+export function OrganizerHeader({ contestName, host, logoUrl, action }: OrganizerHeaderProps) {
   return (
     <header className={css.header}>
       <div className={cn(css.organizer, underSheet)}>
         <span aria-hidden='true' className={css.avatar}>
-          {logoUrl ? <Image src={logoUrl} alt='' width={88} height={88} /> : initials}
+          {logoUrl ? <Image src={logoUrl} alt='' width={88} height={88} /> : initialsOf(contestName)}
         </span>
         <div>
           <h1 className={css.contest}>{contestName}</h1>

@@ -4,20 +4,24 @@
   /* Not found, error and loading */
   .message,
   .gate {
-    display: grid;
-    grid-template-rows: auto 1fr;
     min-height: 88svh;
     padding: 15vh var(--studio-edge) 9vh;
+  }
+  .gate {
+    display: grid;
+    grid-template-rows: auto 1fr;
   }
   .messageTitle {
     max-width: 8em;
   }
   .messageText,
   .gateForm {
-    align-self: end;
     width: 100%;
     max-width: 392px;
     margin-top: 40px;
+  }
+  .gateForm {
+    align-self: end;
   }
   .messageActions,
   .actions {
@@ -80,6 +84,39 @@
   }
   .print img {
     border-radius: 6px;
+    object-fit: cover;
+  }
+  /* No print: two tiles in the organizer's colors, raised like the ones on the board */
+  .colors {
+    display: flex;
+    gap: 14px;
+    padding: 4px 0 9px;
+  }
+  .color {
+    --face: var(--org);
+    display: grid;
+    flex: none;
+    grid-template: 100% / 100%;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 10px;
+    background: var(--face);
+    box-shadow:
+      0 9px 0 color-mix(in srgb, var(--face) 63%, #000),
+      9px 17px 12px rgb(var(--studio-shade) / 0.45);
+    color: var(--org-ink);
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .color + .color {
+    --face: var(--org-2);
+  }
+  .color img {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
     object-fit: cover;
   }
   .description {

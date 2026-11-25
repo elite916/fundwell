@@ -3,6 +3,7 @@
   position: relative;
   --one: 1;
   --two: 1;
+  --two-say: 1;
   --three: 1;
 }
 .stageBox {
@@ -43,14 +44,26 @@
   min-height: 620px;
   overflow: hidden;
 }
-.film[data-live='true'] .two,
-.film[data-live='true'] .hold {
-  margin-top: 70vh;
+/*
+  Live, there is room to scroll between screens, and the words of two and three are pinned before they are due and after
+  they are done, so they never ride across the board. The holds overlap, so two must not catch clicks meant for one.
+*/
+.film[data-live='true'] .gap {
+  height: 70vh;
+}
+.film[data-live='true'] .twoHold {
+  height: calc(100svh + 210vh);
+  margin-top: -120vh;
+  pointer-events: none;
+}
+.film[data-live='true'] .two > * {
+  pointer-events: auto;
 }
 .film[data-live='true'] .hold {
-  height: 300svh;
+  height: calc(300svh + 130vh);
+  margin-top: -150vh;
 }
-.film[data-live='true'] .hold .screen {
+.film[data-live='true'] :is(.twoHold, .hold) .screen {
   position: sticky;
   top: 0;
 }
@@ -85,7 +98,7 @@
 }
 .twoSay {
   left: 63vw;
-  opacity: var(--two);
+  opacity: var(--two-say);
 }
 .three {
   opacity: var(--three);

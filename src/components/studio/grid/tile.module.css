@@ -36,7 +36,7 @@
     box-shadow: var(--studio-shadow-tile);
     transform: translateY(var(--studio-lift-tile));
   }
-  /* Claimed, not paid yet: a ring under the initials */
+  /* Claimed, not paid yet: a dot under the initials */
   .pending {
     padding-bottom: 14%;
   }
@@ -48,8 +48,8 @@
     width: 6px;
     height: 6px;
     margin-left: -3px;
-    border: 1.5px solid currentcolor;
     border-radius: 50%;
+    background: currentcolor;
   }
 
   /* Found by name: the organizer's color, underlined */
@@ -122,8 +122,6 @@
       width: 4px;
       height: 4px;
       margin-left: -2px;
-      border-width: 1px;
-      background: currentcolor;
     }
     .winner,
     .chosen {
@@ -163,15 +161,12 @@
     width: 6px;
     height: 6px;
     margin: 0 0 -3px -3px;
-    border-width: 1.5px;
-    background: none;
   }
   @media (max-width: 999px) {
     .chip.pending::after {
       width: 5px;
       height: 5px;
       margin: 0 0 -2.5px -2.5px;
-      background: currentcolor;
     }
   }
   .chip.past {

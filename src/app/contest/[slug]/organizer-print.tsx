@@ -1,11 +1,14 @@
 import Image from 'next/image';
 
+import { initialsOf } from '@/components/studio/shell/organizer-header';
+
 import css from './contest.module.css';
 
 interface OrganizerPrintProps {
   contestName: string;
   imageUrl: string | null;
   imagePosition: string | null;
+  logoUrl: string | null;
   description: string | null;
 }
 
@@ -16,12 +19,15 @@ function objectPosition(position: string | null): string {
   return `${percent[x] ?? '50%'} ${percent[y] ?? '50%'}`;
 }
 
-/** The organizer's image, lying in the same light as the board, and what they wrote. Without an image, their colors. */
-export function OrganizerPrint({ contestName, imageUrl, imagePosition, description }: OrganizerPrintProps) {
+/**
+ * The organizer's image, lying in the same light as the board, and what they wrote. Without an image: two tiles in their
+ * colors, with their logo or the contest's initials on the first.
+ */
+export function OrganizerPrint({ contestName, imageUrl, imagePosition, logoUrl, description }: OrganizerPrintProps) {
   return (
     <>
-      <div className={css.print} aria-hidden={imageUrl ? undefined : true}>
-        {imageUrl && (
+      {imageUrl ? (
+        <div className={css.print}>
           <Image
             src={imageUrl}
             alt={contestName}
@@ -29,8 +35,15 @@ export function OrganizerPrint({ contestName, imageUrl, imagePosition, descripti
             sizes='(max-width: 999px) 92vw, 42vw'
             style={{ objectPosition: objectPosition(imagePosition) }}
           />
-        )}
-      </div>
+        </div>
+      ) : (
+        <div aria-hidden='true' className={css.colors}>
+          <span className={css.color}>
+            {logoUrl ? <Image src={logoUrl} alt='' width={192} height={192} /> : initialsOf(contestName)}
+          </span>
+          <span className={css.color} />
+        </div>
+      )}
       {description && <p className={css.description}>{description}</p>}
     </>
   );
