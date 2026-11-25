@@ -71,6 +71,7 @@ export default async function ParticipantsPage({ params }: ParticipantsPageProps
           <ParticipantsTableClient
             participants={participants}
             contestId={contestId}
+            contestStatus={contest.status}
             contestName={contest.name}
             squarePrice={Number(contest.square_price)}
           />

@@ -12,6 +12,11 @@ export const ContestStatus = {
 
 export type ContestStatusType = (typeof ContestStatus)[keyof typeof ContestStatus];
 
+/** The game has started: the rules are locked (the database enforces the same). */
+export function hasGameStarted(status: ContestStatusType): boolean {
+  return status === ContestStatus.IN_PROGRESS || status === ContestStatus.COMPLETED;
+}
+
 /**
  * Payment status values for squares.
  * These match the database enum `payment_status`.

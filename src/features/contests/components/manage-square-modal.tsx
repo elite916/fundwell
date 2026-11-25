@@ -17,6 +17,7 @@ import { toast } from '@/components/ui/use-toast';
 import { formatDateTime } from '@/utils/date-formatters';
 
 import { updateSquareStatus } from '../actions/update-square-status';
+import { ContestErrors, ContestStatusType, hasGameStarted } from '../constants';
 import { PaymentStatus } from '../types';
 import { getPaymentConfig } from '../utils/payment-helpers';
 
@@ -41,6 +42,7 @@ interface ManageSquareModalProps {
   onClose: () => void;
   square: ManageSquare | null;
   contestId: string;
+  contestStatus: ContestStatusType;
   squarePrice: number;
   onSuccess?: () => void;
 }
@@ -73,6 +75,7 @@ export function ManageSquareModal({
   onClose,
   square,
   contestId,
+  contestStatus,
   squarePrice,
   onSuccess,
 }: ManageSquareModalProps) {
@@ -113,6 +116,7 @@ export function ManageSquareModal({
     });
   };
 
+  const releaseLocked = hasGameStarted(contestStatus);
   const claimantName = [square.claimant_first_name, square.claimant_last_name].filter(Boolean).join(' ');
 
   return (
@@ -231,7 +235,7 @@ export function ManageSquareModal({
               <Button
                 variant='outline'
                 onClick={() => handleUpdateStatus('available')}
-                disabled={isPending}
+                disabled={isPending || releaseLocked}
                 className='w-full border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white'
               >
                 {isPending ? (
@@ -258,7 +262,7 @@ export function ManageSquareModal({
               <Button
                 variant='outline'
                 onClick={() => handleUpdateStatus('available')}
-                disabled={isPending}
+                disabled={isPending || releaseLocked}
                 className='w-full border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:text-white'
               >
                 {isPending ? (
@@ -269,6 +273,10 @@ export function ManageSquareModal({
                 Release Square
               </Button>
             </>
+          )}
+
+          {releaseLocked && square.payment_status !== 'available' && (
+            <p className='text-center text-sm text-zinc-500'>{ContestErrors.RELEASE_LOCKED}.</p>
           )}
         </DialogFooter>
       </DialogContent>
