@@ -7,6 +7,8 @@ import { withContestOwnership } from '../middleware/auth-middleware';
 
 // Columns the settings forms may change. Anything else is rejected.
 // Status changes go through updateContestStatus (dashboard/[contestId]/actions.ts).
+// The database grants owners the same columns (contest_write_rules migration), so a
+// new column needs a grant too.
 const UPDATABLE_COLUMNS = [
   'is_public',
   'name',
