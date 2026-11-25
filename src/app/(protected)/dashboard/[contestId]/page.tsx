@@ -198,6 +198,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
               prize_q2_text: contest.prize_q2_text,
               prize_q3_text: contest.prize_q3_text,
               prize_final_text: contest.prize_final_text,
+              super_bowl_season: contest.super_bowl_season,
             }}
             scores={scores}
             squares={squaresList}

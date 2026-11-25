@@ -1,7 +1,9 @@
 'use server';
 
-import { ContestErrors, hasGameStarted } from '@/features/contests/constants';
+import { ContestErrors, ContestStatus, hasGameStarted } from '@/features/contests/constants';
 import type { ContestUpdate } from '@/features/contests/types';
+import { isSeasonOpen } from '@/features/super-bowl/queries';
+import { SUPER_BOWL_SEASON } from '@/features/super-bowl/season';
 import type { ActionResponse } from '@/types/action-response';
 
 import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
@@ -16,6 +18,7 @@ const UPDATABLE_COLUMNS = [
   'description',
   'row_team_name',
   'col_team_name',
+  'super_bowl_season',
   'square_price',
   'max_squares_per_person',
   'prize_type',
@@ -83,6 +86,19 @@ export async function updateContest(
   return withContestOwnership<{ id: string }>(contestId, async (user, supabase, contest) => {
     // Server actions accept any JSON, so check the keys at runtime too
     if (!isSettingsUpdate(updates)) {
+      throw new Error('Invalid contest update');
+    }
+
+    const season = updates.super_bowl_season ?? null;
+    if (season !== null && (season !== SUPER_BOWL_SEASON || contest.sport_type !== 'football')) {
+      throw new Error('Invalid contest update');
+    }
+    // A contest can't join once it's completed or the final is in. It can always leave.
+    if (
+      season !== null &&
+      season !== contest.super_bowl_season &&
+      (contest.status === ContestStatus.COMPLETED || !(await isSeasonOpen()))
+    ) {
       throw new Error('Invalid contest update');
     }
 
