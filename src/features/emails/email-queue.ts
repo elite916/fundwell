@@ -68,9 +68,13 @@ export async function enqueueWinnerEmail({
 
 /**
  * Sends a contest's queued emails, and retries the refused ones. Safe to run twice at once:
- * each row is claimed before it's sent. Never throws.
+ * each row is claimed before it's sent. Never throws. When draining contest after contest, pass on
+ * `hasSent` to keep the gap between sends, and stop once one is rate limited.
  */
-export async function drainEmailQueue(contestId: string): Promise<void> {
+export async function drainEmailQueue(
+  contestId: string,
+  hasSent = false
+): Promise<{ hasSent: boolean; isRateLimited: boolean }> {
   try {
     const { error: stuckError } = await supabaseAdminClient
       .from('email_logs')
@@ -90,7 +94,6 @@ export async function drainEmailQueue(contestId: string): Promise<void> {
       .order('sent_at');
     throwIfError(emailsError);
 
-    let hasSent = false;
     for (const email of emails ?? []) {
       if (!(await claimEmail(email))) continue;
 
@@ -118,7 +121,7 @@ export async function drainEmailQueue(contestId: string): Promise<void> {
       }
       if (outcome === 'rate_limited') {
         await setStatus(email, { status: 'queued' });
-        return;
+        return { hasSent, isRateLimited: true };
       }
       await setStatus(
         email,
@@ -130,6 +133,8 @@ export async function drainEmailQueue(contestId: string): Promise<void> {
   } catch (error) {
     logger.error('drainEmailQueue', error, { contestId });
   }
+
+  return { hasSent, isRateLimited: false };
 }
 
 /** Takes a row so that no other drain can send it. False if another one got there first. */

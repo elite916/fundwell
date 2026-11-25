@@ -6,6 +6,7 @@ import slugify from 'slugify';
 
 import { CONTEST_LIMIT_MESSAGE } from '@/features/contests/constants';
 import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
+import { SUPER_BOWL_SEASON } from '@/features/super-bowl/season';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
@@ -93,6 +94,7 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
     name: data.name,
     description: data.description || null,
     sport_type: data.sportType,
+    super_bowl_season: data.isSuperBowl && data.sportType === 'football' ? SUPER_BOWL_SEASON : null,
     row_team_name: data.rowTeamName,
     col_team_name: data.colTeamName,
     square_price: data.squarePrice,

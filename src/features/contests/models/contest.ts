@@ -14,6 +14,7 @@ export const basicInfoSchema = z.object({
   description: z.string().max(500, 'Description must be less than 500 characters').optional(),
   rowTeamName: z.string().min(1, 'Row team name is required').max(50, 'Team name must be less than 50 characters'),
   colTeamName: z.string().min(1, 'Column team name is required').max(50, 'Team name must be less than 50 characters'),
+  isSuperBowl: z.boolean().optional(),
 });
 
 // Base settings schema (without refine, for merging)
