@@ -1,7 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
-import { AlertTriangle, Calendar, Loader2, Mail, Phone, User, UserPlus } from 'lucide-react';
+import { AlertTriangle, Calendar, Loader2, Mail, User, UserPlus } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,9 @@ import { formatDateTime } from '@/utils/date-formatters';
 
 import { updateSquareStatus } from '../actions/update-square-status';
 import { PaymentStatus } from '../types';
+import { getPaymentConfig } from '../utils/payment-helpers';
+
+const VenmoIcon = getPaymentConfig('venmo').Icon;
 
 export interface ManageSquare {
   id: string;
@@ -171,11 +174,11 @@ export function ManageSquareModal({
                 </div>
               )}
 
-              {/* Venmo Handle (as phone/contact alternative) */}
+              {/* Venmo Handle */}
               {square.claimant_venmo && (
                 <div className='flex items-center gap-3'>
-                  <Phone className='h-4 w-4 text-zinc-500' />
-                  <span className='text-zinc-300'>{square.claimant_venmo}</span>
+                  <VenmoIcon className='h-4 w-4 text-zinc-500' />
+                  <span className='text-zinc-300'>Venmo {square.claimant_venmo}</span>
                 </div>
               )}
 

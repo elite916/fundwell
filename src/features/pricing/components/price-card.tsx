@@ -139,6 +139,10 @@ export function PricingCard({
               <Button variant={buttonVariantMap[metadata.priceCardVariant]} className='w-full' asChild>
                 <Link href='/support'>Contact Us</Link>
               </Button>
+            ) : !isLoggedIn ? (
+              <Button variant={buttonVariantMap[metadata.priceCardVariant]} className='w-full' asChild>
+                <Link href='/signup'>Get started free</Link>
+              </Button>
             ) : (
               <Button variant='outline' className='w-full border-zinc-700 text-zinc-400' disabled>
                 Current Plan
