@@ -7,6 +7,7 @@ export function SiteFooter() {
     <footer className={css.footer}>
       <Link href='/'>Fundwell</Link>
       <nav aria-label='Footer'>
+        <Link href='/about-us'>About</Link>
         <Link href='/support'>Support</Link>
         <Link href='/terms'>Terms</Link>
         <Link href='/privacy'>Privacy</Link>
