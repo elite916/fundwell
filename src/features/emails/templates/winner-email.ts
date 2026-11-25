@@ -1,6 +1,6 @@
 import { formatPrizeAmount } from '@/features/contests/utils/prize-helpers';
 
-import { ctaButton } from '../components/email-components';
+import { gradientCtaButton } from '../components/email-components';
 import { escapeHtml } from '../escape-html';
 import { emailLayout, emailStyles } from '../layouts/email-layout';
 
@@ -90,18 +90,6 @@ export function winnerEmail({
   `
     : '';
 
-  const gradientCtaButton = `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td align="center" style="padding: 8px 0;">
-          <a href="${contestUrl}" style="display: inline-block; background: linear-gradient(135deg, #F97316 0%, #FBBF24 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 6px; font-size: 16px; font-weight: 600;">
-            View Contest
-          </a>
-        </td>
-      </tr>
-    </table>
-  `;
-
   const content = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       <tr>
@@ -121,7 +109,7 @@ export function winnerEmail({
     </p>
     ${scoreBox}
     ${prizeSection}
-    ${gradientCtaButton}
+    ${gradientCtaButton('View Contest', contestUrl)}
   `;
 
   const html = emailLayout({ headerStyle: 'gradient', children: content });
