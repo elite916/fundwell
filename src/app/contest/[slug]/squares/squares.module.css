@@ -63,7 +63,8 @@
   .prizes {
     display: grid;
     grid-template-columns: minmax(0, max-content) auto;
-    gap: 14px 48px;
+    gap: 14px 0;
+    align-items: baseline;
     justify-content: start;
     margin-top: 30px;
   }
@@ -75,7 +76,12 @@
     min-width: 0;
     overflow-wrap: anywhere;
   }
+  .prizes dt {
+    grid-column: 1;
+  }
   .prizes dd {
+    grid-column: 2;
+    padding-left: 48px;
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
@@ -84,7 +90,13 @@
     color: var(--studio-soft);
     font-size: var(--studio-small);
   }
-  .prizes .left > * {
+  .prizes .now {
+    grid-column: 3;
+    padding-left: 12px;
+    color: var(--studio-soft);
+    font-size: var(--studio-small);
+  }
+  .prizes .sum > * {
     margin-top: 18px;
   }
   .organizer {
@@ -175,6 +187,16 @@
       grid-template-columns: minmax(0, 1fr) auto;
       justify-content: stretch;
       margin-top: 22px;
+    }
+    .prizes dd {
+      padding-left: 24px;
+    }
+  }
+  @media (max-width: 379px) {
+    /* No room beside the amount: under it */
+    .prizes .now {
+      grid-column: 2;
+      margin-top: -14px;
     }
   }
 }
