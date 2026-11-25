@@ -79,7 +79,7 @@ function PaymentOptionItem({ option }: { option: PaymentOption }) {
             <button
               type="button"
               onClick={handleCopy}
-              className="flex-shrink-0 p-1 rounded hover:bg-zinc-700 transition-colors"
+              className="shrink-0 p-1 rounded hover:bg-zinc-700 transition-colors"
               title="Copy to clipboard"
             >
               {copied ? (
@@ -99,7 +99,7 @@ function PaymentOptionItem({ option }: { option: PaymentOption }) {
 
         {/* QR Code */}
         {option.qr_code_url && (
-          <div className="flex-shrink-0 text-center">
+          <div className="shrink-0 text-center">
             {/* Mobile: Wrap in link */}
             {paymentUrl ? (
               <a

@@ -21,20 +21,20 @@ function HeroSection() {
   return (
     <section className='relative overflow-hidden py-20 lg:py-28'>
       <div className='absolute inset-0 -z-10'>
-        <div className='absolute inset-0 bg-gradient-to-br from-fundwell-background via-fundwell-surface to-fundwell-background' />
-        <div className='bg-fundwell-primary/10 absolute right-0 top-0 h-[500px] w-[500px] rounded-full blur-3xl' />
-        <div className='bg-fundwell-accent/10 absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-3xl' />
+        <div className='absolute inset-0 bg-linear-to-br/srgb from-fundwell-background via-fundwell-surface to-fundwell-background' />
+        <div className='absolute right-0 top-0 h-[500px] w-[500px] rounded-full blur-3xl' />
+        <div className='absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-3xl' />
       </div>
 
       <Container className='relative z-10'>
         <div className='mx-auto max-w-3xl text-center'>
-          <div className='border-fundwell-primary/30 bg-fundwell-primary/10 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2'>
+          <div className='mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2'>
             <Users className='h-4 w-4 text-fundwell-primary' />
             <span className='text-sm font-medium text-fundwell-primary'>Our Story</span>
           </div>
 
           <h1 className='mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
-            <span className='bg-gradient-to-r from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent'>
+            <span className='bg-linear-to-r/srgb from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent'>
               About Fundwell
             </span>
           </h1>
@@ -99,7 +99,7 @@ function WhoItsForSection() {
 
   return (
     <section className='relative py-20 lg:py-28'>
-      <div className='via-fundwell-surface/30 absolute inset-0 -z-10 bg-gradient-to-b from-transparent to-transparent' />
+      <div className='absolute inset-0 -z-10 bg-linear-to-b/srgb from-transparent to-transparent' />
       <Container>
         <h2 className='mb-12 text-center text-3xl font-bold text-fundwell-text md:text-4xl'>
           Built for your organization
@@ -108,9 +108,9 @@ function WhoItsForSection() {
           {audiences.map((item) => (
             <div
               key={item.title}
-              className='bg-fundwell-surface/80 rounded-xl border border-zinc-800/50 p-6 text-center'
+              className='rounded-xl border border-zinc-800/50 p-6 text-center'
             >
-              <div className='bg-fundwell-primary/10 mb-4 inline-flex rounded-lg p-3'>
+              <div className='mb-4 inline-flex rounded-lg p-3'>
                 <item.icon className='h-6 w-6 text-fundwell-primary' />
               </div>
               <h3 className='mb-2 text-lg font-semibold text-fundwell-text'>{item.title}</h3>
@@ -165,9 +165,9 @@ function ValuesSection() {
           {values.map((item) => (
             <div
               key={item.title}
-              className='bg-fundwell-surface/80 rounded-xl border border-zinc-800/50 p-6 text-center'
+              className='rounded-xl border border-zinc-800/50 p-6 text-center'
             >
-              <div className='bg-fundwell-primary/10 mb-4 inline-flex rounded-lg p-3'>
+              <div className='mb-4 inline-flex rounded-lg p-3'>
                 <item.icon className='h-6 w-6 text-fundwell-primary' />
               </div>
               <h3 className='mb-2 text-lg font-semibold text-fundwell-text'>{item.title}</h3>
@@ -184,9 +184,9 @@ function CTASection() {
   return (
     <section className='py-20 lg:py-28'>
       <Container>
-        <div className='relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20'>
-          <div className='bg-fundwell-primary/10 absolute -left-20 -top-20 h-64 w-64 rounded-full blur-3xl' />
-          <div className='bg-fundwell-accent/10 absolute -bottom-20 -right-20 h-64 w-64 rounded-full blur-3xl' />
+        <div className='relative overflow-hidden rounded-3xl border border-zinc-800 bg-linear-to-br/srgb from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20'>
+          <div className='absolute -left-20 -top-20 h-64 w-64 rounded-full blur-3xl' />
+          <div className='absolute -bottom-20 -right-20 h-64 w-64 rounded-full blur-3xl' />
 
           <div className='relative z-10'>
             <h2 className='mb-8 text-3xl font-bold text-fundwell-text md:text-4xl'>Ready to get started?</h2>

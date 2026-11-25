@@ -22,15 +22,15 @@ function HeroSection() {
     <section className='relative overflow-hidden py-20 lg:py-32'>
       {/* Background gradient */}
       <div className='absolute inset-0 -z-10'>
-        <div className='absolute inset-0 bg-gradient-to-br from-fundwell-background via-fundwell-surface to-fundwell-background' />
-        <div className='bg-fundwell-primary/10 absolute right-0 top-0 h-[500px] w-[500px] rounded-full blur-3xl' />
-        <div className='bg-fundwell-accent/10 absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-3xl' />
+        <div className='absolute inset-0 bg-linear-to-br/srgb from-fundwell-background via-fundwell-surface to-fundwell-background' />
+        <div className='absolute right-0 top-0 h-[500px] w-[500px] rounded-full blur-3xl' />
+        <div className='absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-3xl' />
       </div>
 
       <Container className='relative z-10'>
         <div className='mx-auto max-w-3xl text-center'>
           {/* Badge */}
-          <div className='border-fundwell-primary/30 bg-fundwell-primary/10 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2'>
+          <div className='mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2'>
             <Trophy className='h-4 w-4 text-fundwell-primary' />
             <span className='text-sm font-medium text-fundwell-primary'>
               The easiest way to run squares fundraisers
@@ -40,7 +40,7 @@ function HeroSection() {
           {/* Main headline */}
           <h1 className='mb-6 text-4xl font-bold tracking-tight text-fundwell-text md:text-5xl lg:text-6xl'>
             Host your{' '}
-            <span className='bg-gradient-to-r from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent'>
+            <span className='bg-linear-to-r/srgb from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent'>
               game day
             </span>{' '}
             fundraiser
@@ -72,10 +72,10 @@ function HeroSection() {
         <div className='mt-16 flex justify-center'>
           <div className='relative'>
             {/* Glow effect */}
-            <div className='from-fundwell-primary/20 via-fundwell-accent/20 to-fundwell-secondary/20 absolute inset-0 rounded-2xl bg-gradient-to-r blur-xl' />
+            <div className='absolute inset-0 rounded-2xl bg-linear-to-r/srgb blur-xl' />
 
             {/* Mini grid preview */}
-            <div className='bg-fundwell-surface/80 relative grid grid-cols-10 gap-1 rounded-2xl border border-zinc-700/50 p-4 backdrop-blur-sm'>
+            <div className='relative grid grid-cols-10 gap-1 rounded-2xl border border-zinc-700/50 p-4 backdrop-blur-xs'>
               {Array.from({ length: 100 }).map((_, i) => {
                 const isHighlighted = [12, 34, 45, 67, 78, 89].includes(i);
                 const isClaimed = [3, 15, 22, 38, 41, 56, 63, 71, 84, 92].includes(i);
@@ -83,7 +83,7 @@ function HeroSection() {
                   <div
                     key={i}
                     className={`h-4 w-4 rounded-sm transition-colors sm:h-6 sm:w-6 ${
-                      isHighlighted ? 'bg-fundwell-primary' : isClaimed ? 'bg-fundwell-accent/60' : 'bg-zinc-700/50'
+                      isHighlighted ? 'bg-fundwell-primary' : isClaimed ? '' : 'bg-zinc-700/50'
                     }`}
                   />
                 );
@@ -135,11 +135,11 @@ function HowItWorksSection() {
           {steps.map((step, index) => (
             <div
               key={step.number}
-              className='bg-fundwell-surface/50 hover:border-fundwell-primary/50 group relative rounded-2xl border border-zinc-800 p-8 transition-all hover:bg-fundwell-surface'
+              className='group relative rounded-2xl border border-zinc-800 p-8 transition-all hover:bg-fundwell-surface'
             >
               {/* Step number */}
               <div className='mb-6 flex items-center gap-4'>
-                <span className='text-fundwell-primary/20 group-hover:text-fundwell-primary/40 text-5xl font-bold transition-colors'>
+                <span className='text-5xl font-bold transition-colors'>
                   {step.number}
                 </span>
                 <step.icon className='h-8 w-8 text-fundwell-primary' />
@@ -150,7 +150,7 @@ function HowItWorksSection() {
 
               {/* Connector line (except last item) */}
               {index < steps.length - 1 && (
-                <div className='absolute -right-4 top-1/2 hidden h-px w-8 bg-gradient-to-r from-zinc-700 to-transparent md:block' />
+                <div className='absolute -right-4 top-1/2 hidden h-px w-8 bg-linear-to-r/srgb from-zinc-700 to-transparent md:block' />
               )}
             </div>
           ))}
@@ -196,7 +196,7 @@ function FeaturesSection() {
 
   return (
     <section className='py-20 lg:py-28'>
-      <div className='via-fundwell-surface/30 absolute inset-0 -z-10 bg-gradient-to-b from-transparent to-transparent' />
+      <div className='absolute inset-0 -z-10 bg-linear-to-b/srgb from-transparent to-transparent' />
 
       <Container>
         <div className='mb-16 text-center'>
@@ -212,9 +212,9 @@ function FeaturesSection() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className='from-fundwell-surface/80 group rounded-xl border border-zinc-800/50 bg-gradient-to-br to-fundwell-background p-6 transition-all hover:border-zinc-700'
+              className='group rounded-xl border border-zinc-800/50 p-6 transition-all hover:border-zinc-700'
             >
-              <div className='bg-fundwell-primary/10 mb-4 inline-flex rounded-lg p-3'>
+              <div className='mb-4 inline-flex rounded-lg p-3'>
                 <feature.icon className='h-6 w-6 text-fundwell-primary' />
               </div>
               <h3 className='mb-2 text-lg font-semibold text-fundwell-text'>{feature.title}</h3>
@@ -225,9 +225,9 @@ function FeaturesSection() {
 
         {/* Direct payment callout */}
         <div className='mt-12 flex justify-center'>
-          <div className='border-fundwell-primary/30 bg-fundwell-primary/5 relative max-w-2xl rounded-2xl border p-8 text-center'>
+          <div className='relative max-w-2xl rounded-2xl border p-8 text-center'>
             <div className='mb-4 flex justify-center'>
-              <div className='bg-fundwell-primary/20 rounded-full p-3'>
+              <div className='rounded-full p-3'>
                 <ShieldCheck className='h-8 w-8 text-fundwell-primary' />
               </div>
             </div>
@@ -248,15 +248,15 @@ function CTASection() {
   return (
     <section className='py-20 lg:py-28'>
       <Container>
-        <div className='relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20'>
+        <div className='relative overflow-hidden rounded-3xl border border-zinc-800 bg-linear-to-br/srgb from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20'>
           {/* Background decorations */}
-          <div className='bg-fundwell-primary/10 absolute -left-20 -top-20 h-64 w-64 rounded-full blur-3xl' />
-          <div className='bg-fundwell-accent/10 absolute -bottom-20 -right-20 h-64 w-64 rounded-full blur-3xl' />
+          <div className='absolute -left-20 -top-20 h-64 w-64 rounded-full blur-3xl' />
+          <div className='absolute -bottom-20 -right-20 h-64 w-64 rounded-full blur-3xl' />
 
           <div className='relative z-10'>
             <h2 className='mb-4 text-3xl font-bold text-fundwell-text md:text-4xl lg:text-5xl'>
               Ready to host your{' '}
-              <span className='bg-gradient-to-r from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent'>
+              <span className='bg-linear-to-r/srgb from-fundwell-primary to-fundwell-accent bg-clip-text text-transparent'>
                 game day fundraiser
               </span>
               ?

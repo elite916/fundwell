@@ -165,7 +165,7 @@ function CheckItem({ text, icon: Icon }: { text: string; icon?: React.ComponentT
           <Icon className='h-3 w-3 text-orange-400' />
         </div>
       ) : (
-        <Check className='h-5 w-5 flex-shrink-0 text-green-500' />
+        <Check className='h-5 w-5 shrink-0 text-green-500' />
       )}
       <p className='text-sm font-medium text-zinc-300'>{text}</p>
     </div>
