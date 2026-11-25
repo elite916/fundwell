@@ -63,6 +63,7 @@
   /* Holds Turnstile's space before it loads */
   .captcha {
     min-height: 65px;
+    line-height: 0;
   }
   .form .captcha {
     margin-bottom: 18px;
