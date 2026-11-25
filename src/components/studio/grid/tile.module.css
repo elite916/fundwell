@@ -91,6 +91,13 @@
   .pressable {
     cursor: pointer;
   }
+  .manageable {
+    cursor: pointer;
+  }
+  .manageable:hover:not(:focus-visible) {
+    outline: 2px solid var(--studio-ink);
+    outline-offset: -2px;
+  }
   @media (hover: hover) {
     .claimable:hover {
       z-index: 3;

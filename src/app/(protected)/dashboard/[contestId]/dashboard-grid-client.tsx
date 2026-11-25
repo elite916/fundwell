@@ -3,9 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { SquaresGrid } from '@/features/contests/components';
+import { BoardLegend } from '@/components/studio/grid/board-legend';
+import { ManageBoard } from '@/components/studio/grid/manage-board';
+import { type GridScore, winnersOf } from '@/components/studio/grid/model';
 import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
+
+import css from './run.module.css';
 
 interface DashboardGridClientProps {
   squares: ManageSquare[];
@@ -15,7 +19,7 @@ interface DashboardGridClientProps {
   squarePrice: number;
   rowNumbers?: number[] | null;
   colNumbers?: number[] | null;
-  winningSquareIds?: string[];
+  scores?: GridScore[];
 }
 
 export function DashboardGridClient({
@@ -26,12 +30,14 @@ export function DashboardGridClient({
   squarePrice,
   rowNumbers,
   colNumbers,
-  winningSquareIds = [],
+  scores = [],
 }: DashboardGridClientProps) {
   const router = useRouter();
   const [selectedSquare, setSelectedSquare] = useState<ManageSquare | null>(null);
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
   const realtimeSquares = useRealtimeSquares(contestId, squares);
+
+  const { latestId, quartersById } = winnersOf(scores);
 
   const handleSquareClick = (square: ManageSquare) => {
     setSelectedSquare(square);
@@ -50,15 +56,27 @@ export function DashboardGridClient({
 
   return (
     <>
-      <SquaresGrid
-        squares={realtimeSquares as ManageSquare[]}
-        rowTeamName={rowTeamName}
-        colTeamName={colTeamName}
-        onSquareClick={handleSquareClick}
-        showNumbers={true}
-        rowNumbers={rowNumbers}
-        colNumbers={colNumbers}
-        winningSquareIds={winningSquareIds}
+      <p aria-hidden='true' className={css.top}>
+        {colTeamName}
+      </p>
+      <div className={css.board}>
+        <span aria-hidden='true' className={css.down}>
+          {rowTeamName}
+        </span>
+        <ManageBoard
+          squares={realtimeSquares as ManageSquare[]}
+          rowTeamName={rowTeamName}
+          colTeamName={colTeamName}
+          rowNumbers={rowNumbers}
+          colNumbers={colNumbers}
+          scores={scores}
+          onSelect={handleSquareClick}
+        />
+      </div>
+      <BoardLegend
+        className={css.legend}
+        hasWinner={quartersById.size > 0}
+        hasEarlierWinner={quartersById.size > (latestId ? 1 : 0)}
       />
 
       <ManageSquareModal
