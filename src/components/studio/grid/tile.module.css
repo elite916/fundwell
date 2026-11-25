@@ -1,0 +1,179 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  .tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    border-radius: var(--studio-radius-tile);
+    background: var(--studio-tile-open);
+    color: var(--studio-ink);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    cursor: default;
+    transition:
+      transform 0.16s,
+      background-color 0.16s,
+      box-shadow 0.16s;
+  }
+  .tile:focus-visible {
+    z-index: 4;
+    outline-offset: 1px;
+    border-radius: 6px;
+  }
+
+  /* Claimed: raised */
+  .paid,
+  .pending {
+    background: var(--studio-tile);
+    box-shadow: var(--studio-shadow-tile);
+    transform: translateY(var(--studio-lift-tile));
+  }
+  /* Claimed, not paid yet: a ring under the initials */
+  .pending {
+    padding-bottom: 14%;
+  }
+  .pending::after {
+    content: '';
+    position: absolute;
+    bottom: 14%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    border: 1.5px solid currentcolor;
+    border-radius: 50%;
+  }
+
+  /* Found by name: the organizer's color, underlined */
+  .found {
+    background: var(--org-mark);
+    box-shadow: var(--studio-shadow-tile-mark);
+    color: var(--org-mark-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* An earlier quarter's winner: higher, outlined, heavier */
+  .past {
+    z-index: 2;
+    box-shadow: var(--studio-shadow-tile-past);
+    font-weight: 800;
+    transform: translateY(var(--studio-lift-past));
+  }
+  .past.found {
+    box-shadow:
+      inset 0 0 0 2px var(--org-mark-ink),
+      0 7px 0 var(--org-mark-side),
+      7px 12px 8px rgb(var(--studio-shade) / 0.5);
+  }
+
+  /* The latest winner, or the square being claimed: highest, lime */
+  .winner,
+  .chosen {
+    z-index: 3;
+    background: var(--studio-lime);
+    box-shadow: var(--studio-shadow-tile-win);
+    color: #000;
+    transform: translateY(var(--studio-lift-win));
+  }
+  .winner {
+    font-weight: 700;
+  }
+
+  .pressable {
+    cursor: pointer;
+  }
+  @media (hover: hover) {
+    .claimable:hover {
+      z-index: 3;
+      background: var(--studio-lime);
+      box-shadow: var(--studio-shadow-tile-win);
+      transform: translateY(var(--studio-lift-win));
+    }
+  }
+
+  @media (max-width: 999px) {
+    .tile {
+      font-size: 12px;
+    }
+    .past.found {
+      box-shadow:
+        inset 0 0 0 1.5px var(--org-mark-ink),
+        0 4px 0 var(--org-mark-side),
+        4px 7px 5px rgb(var(--studio-shade) / 0.5);
+    }
+    .pending::after {
+      bottom: 10%;
+      width: 4px;
+      height: 4px;
+      margin-left: -2px;
+      border-width: 1px;
+      background: currentcolor;
+    }
+    .winner,
+    .chosen {
+      transform: translateY(var(--studio-lift-win)) scale(1.12);
+    }
+  }
+  @media (min-width: 600px) and (max-width: 999px) {
+    .tile {
+      font-size: 15px;
+    }
+  }
+
+  /* A loose tile, the size of a line of text: legends and sheet headings */
+  .chip {
+    display: inline-grid;
+    flex: none;
+    width: 24px;
+    padding: 0;
+    border-radius: 4px;
+    box-shadow: 0 0 0 2px var(--studio-bed);
+    vertical-align: -6px;
+  }
+  .chip.paid,
+  .chip.pending {
+    box-shadow:
+      0 2px 0 var(--studio-tile-side),
+      2px 4px 3px rgb(var(--studio-shade) / 0.42);
+    transform: translateY(-2px);
+  }
+  .chip.pending::after {
+    bottom: 50%;
+    width: 6px;
+    height: 6px;
+    margin: 0 0 -3px -3px;
+    border-width: 1.5px;
+    background: none;
+  }
+  @media (max-width: 999px) {
+    .chip.pending::after {
+      width: 5px;
+      height: 5px;
+      margin: 0 0 -2.5px -2.5px;
+      background: currentcolor;
+    }
+  }
+  .chip.past {
+    box-shadow:
+      inset 0 0 0 1.5px var(--studio-ink),
+      0 4px 0 var(--studio-tile-past-side),
+      4px 7px 5px rgb(var(--studio-shade) / 0.5);
+    transform: translateY(-4px);
+  }
+  .chip.winner,
+  .chip.chosen {
+    box-shadow:
+      0 5px 0 var(--studio-lime-side),
+      4px 8px 6px rgb(var(--studio-shade) / 0.45);
+    transform: translateY(-4px);
+  }
+}
