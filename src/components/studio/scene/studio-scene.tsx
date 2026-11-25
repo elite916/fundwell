@@ -40,7 +40,8 @@ function subscribeToReducedMotion(onChange: () => void) {
 
 function hasWebGL(): boolean {
   try {
-    const gl = document.createElement('canvas').getContext('webgl2');
+    // Not when it would be drawn without a graphics card: that froze the page, up to 14 seconds in a test
+    const gl = document.createElement('canvas').getContext('webgl2', { failIfMajorPerformanceCaveat: true });
     gl?.getExtension('WEBGL_lose_context')?.loseContext();
     return !!gl;
   } catch {
