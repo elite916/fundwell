@@ -1,0 +1,62 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  .square {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    gap: 0 18px;
+    align-items: center;
+    margin: 0 0 20px;
+  }
+  .square .tile {
+    width: 48px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .square .open {
+    box-shadow: inset 0 0 0 2px var(--studio-bed);
+  }
+  .square dt {
+    color: var(--studio-soft);
+    font-size: 13px;
+  }
+  .square dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .strong {
+    font-weight: 600;
+  }
+  .soft {
+    color: var(--studio-soft);
+  }
+  .facts {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .facts li {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    overflow-wrap: anywhere;
+  }
+  .facts li > * {
+    min-width: 0;
+  }
+  .facts a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .why {
+    color: var(--studio-soft);
+    font-size: 13px;
+    text-align: center;
+  }
+}

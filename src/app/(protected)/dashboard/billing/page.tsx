@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
+import { DashPage, PageHead } from '@/components/studio/dashboard/dash-page';
 import { getSubscription } from '@/features/account/controllers/get-subscription';
 import { getUser } from '@/features/account/controllers/get-user';
 import { getProducts } from '@/features/pricing/controllers/get-products';
@@ -7,6 +8,8 @@ import { SubscriptionCard } from '@/features/subscriptions/components/subscripti
 import { UsageCard } from '@/features/subscriptions/components/usage-card';
 import { getContestLimit } from '@/features/subscriptions/get-contest-limit';
 import { getUsageStats } from '@/features/subscriptions/queries/get-usage-stats';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 export default async function BillingPage() {
   const user = await getUser();
@@ -23,13 +26,15 @@ export default async function BillingPage() {
   ]);
 
   return (
-    <div>
-      <h1 className='mb-6 text-2xl font-bold text-white lg:text-3xl'>Billing</h1>
+    <DashPage className={css.scale}>
+      <div className={css.noBack}>
+        <PageHead title='Billing' />
+      </div>
 
-      <div className='grid gap-6 sm:grid-cols-2'>
+      <div className={css.cards}>
         <SubscriptionCard subscription={subscription} products={products} />
         <UsageCard activeContests={usageStats.activeContests} limit={contestLimit.limit} />
       </div>
-    </div>
+    </DashPage>
   );
 }

@@ -1,12 +1,11 @@
-'use client';
-
 import Link from 'next/link';
-import { Grid3X3 } from 'lucide-react';
-import { IoAmericanFootball, IoBaseball } from 'react-icons/io5';
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Tag } from '@/components/studio/dashboard/dash-page';
 import type { Database } from '@/libs/supabase/types';
+
+import { formatPrizeAmount } from '../utils';
+
+import css from './contest-card.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'] & {
   sport_type?: 'football' | 'baseball';
@@ -28,69 +27,53 @@ interface ContestCardProps {
   claimedCount?: number;
 }
 
-export function ContestCard({ contest, claimedCount = 0 }: ContestCardProps) {
-  const sportType = contest.sport_type ?? 'football';
-  const SportIcon = sportType === 'baseball' ? IoBaseball : IoAmericanFootball;
+/** A tiny board with as many tiles raised as squares are claimed. The list doesn't load which ones. */
+function MiniBoard({ claimedCount }: { claimedCount: number }) {
+  return (
+    <svg className={css.mini} viewBox='0 0 64 64' aria-hidden='true'>
+      <rect x='5' y='5' width='54' height='54' rx='3' fill='#b3b6b6' />
+      {Array.from({ length: 100 }, (_, i) => (
+        <rect
+          key={i}
+          x={(5.6 + (i % 10) * 5.3).toFixed(1)}
+          y={(5.6 + Math.floor(i / 10) * 5.3 - (i < claimedCount ? 0.5 : 0)).toFixed(1)}
+          width='4.7'
+          height='4.7'
+          rx='0.9'
+          fill={i < claimedCount ? '#fff' : '#cdd0d0'}
+        />
+      ))}
+    </svg>
+  );
+}
 
+export function ContestCard({ contest, claimedCount = 0 }: ContestCardProps) {
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   }).format(new Date(contest.created_at));
 
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(contest.square_price);
-
   return (
-    <Link href={`/dashboard/${contest.id}`} className='group block'>
-      <Card className='h-full border-zinc-800 bg-zinc-800/50 transition-all duration-200 hover:border-orange-500/50 hover:bg-zinc-800/80'>
-        <CardHeader className='pb-3'>
-          <div className='flex items-start justify-between gap-3'>
-            <div className='flex items-center gap-2'>
-              <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500/10'>
-                <SportIcon className='h-5 w-5 text-orange-500' />
-              </div>
-              <h3 className='line-clamp-1 font-semibold text-white transition-colors group-hover:text-orange-400'>
-                {contest.name}
-              </h3>
-            </div>
-            <Badge variant={contest.status}>{statusLabels[contest.status]}</Badge>
-          </div>
-        </CardHeader>
-        <CardContent className='space-y-3 pt-0'>
-          {/* Teams */}
-          <div className='flex items-center gap-2 text-sm text-zinc-400'>
-            <span className='font-medium text-zinc-300'>{contest.row_team_name}</span>
-            <span className='text-zinc-600'>vs</span>
-            <span className='font-medium text-zinc-300'>{contest.col_team_name}</span>
-          </div>
-
-          {/* Stats */}
-          <div className='flex items-center justify-between border-t border-zinc-700/50 pt-3'>
-            <div className='flex items-center gap-4'>
-              {/* Square price */}
-              <div className='text-sm'>
-                <span className='font-semibold text-orange-400'>{formattedPrice}</span>
-                <span className='ml-1 text-zinc-500'>/sq</span>
-              </div>
-              {/* Progress */}
-              <div className='flex items-center gap-1.5 text-sm text-zinc-400'>
-                <Grid3X3 className='h-3.5 w-3.5' />
-                <span>
-                  <span className='font-medium text-zinc-300'>{claimedCount}</span>
-                  <span className='text-zinc-500'>/100</span>
-                </span>
-              </div>
-            </div>
-            {/* Date */}
-            <div className='text-xs text-zinc-500'>{formattedDate}</div>
-          </div>
-        </CardContent>
-      </Card>
+    <Link href={`/dashboard/${contest.id}`} className={css.card}>
+      <MiniBoard claimedCount={claimedCount} />
+      <h2>{contest.name}</h2>
+      <Tag tone={contest.status === 'in_progress' ? 'now' : 'quiet'} className={css.tag}>
+        {statusLabels[contest.status]}
+      </Tag>
+      <p className={css.meta}>
+        <span>
+          {contest.row_team_name} <span className={css.soft}>vs</span> {contest.col_team_name}
+        </span>
+        <span>
+          <b>{formatPrizeAmount(Number(contest.square_price))}</b> <span className={css.soft}>/sq</span>
+        </span>
+        <span className={css.date}>{formattedDate}</span>
+        <span>
+          <b>{claimedCount}</b>
+          <span className={css.soft}>/100</span>
+        </span>
+      </p>
     </Link>
   );
 }

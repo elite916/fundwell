@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/utils/cn';
+import css from '@/components/studio/setup/setup.module.css';
 
 const POSITIONS = [
   ['top-left', 'top-center', 'top-right'],
@@ -39,14 +39,7 @@ const positionLabels: Record<HeroImagePosition, string> = {
 
 export function HeroPositionPicker({ value, onChange, disabled }: HeroPositionPickerProps) {
   return (
-    <div
-      className={cn(
-        'relative grid h-32 w-32 grid-cols-3 place-items-center gap-3 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4',
-        disabled && 'opacity-50'
-      )}
-      role='radiogroup'
-      aria-label='Hero image position'
-    >
+    <div className={css.focus} aria-disabled={disabled || undefined} role='radiogroup' aria-label='Hero image position'>
       {POSITIONS.map((row, rowIndex) =>
         row.map((position) => {
           const isSelected = value === position;
@@ -59,14 +52,6 @@ export function HeroPositionPicker({ value, onChange, disabled }: HeroPositionPi
               aria-label={positionLabels[position]}
               aria-checked={isSelected}
               role='radio'
-              className={cn(
-                'flex items-center justify-center rounded-full transition-all',
-                'focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-800 focus:outline-hidden',
-                !disabled && 'cursor-pointer hover:scale-110',
-                isSelected
-                  ? 'h-3.5 w-3.5 bg-orange-500 ring-2 ring-orange-500 ring-offset-1 ring-offset-zinc-800'
-                  : 'h-2 w-2 bg-zinc-500 hover:bg-zinc-400'
-              )}
             />
           );
         })

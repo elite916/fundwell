@@ -1,0 +1,55 @@
+/* The min-height less the footer, so a short page's footer sits at the bottom of the window. */
+.page {
+  min-height: calc(100svh - 144px);
+  padding: 15vh var(--studio-edge) 6vh;
+}
+.title {
+  text-wrap: balance;
+}
+.intro {
+  display: grid;
+  gap: 10px;
+  max-width: 620px;
+  margin: 9vh 0 0 50%;
+  text-wrap: pretty;
+}
+.section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  margin-top: 72px;
+}
+.intro + .section {
+  margin-top: 14vh;
+}
+.heading {
+  max-width: 16em;
+  padding-right: 32px;
+  text-wrap: balance;
+}
+.text {
+  display: grid;
+  gap: 18px;
+  max-width: 620px;
+  text-wrap: pretty;
+}
+.text > * {
+  justify-self: start;
+}
+@media (max-width: 699px) {
+  .page {
+    min-height: calc(100svh - 176px);
+    padding-top: 104px;
+  }
+  .intro {
+    margin: 32px 0 0;
+  }
+  .intro + .section {
+    margin-top: 72px;
+  }
+  .section {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 56px;
+  }
+}

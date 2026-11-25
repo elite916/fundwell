@@ -1,24 +1,19 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { CheckCircle, Loader2, Lock, Play, Unlock, Users } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
+import { Tag } from '@/components/studio/dashboard/dash-page';
+import { BusyButton } from '@/components/studio/setup/busy-button';
+import { SetupSection } from '@/components/studio/setup/section';
 import { useToast } from '@/components/ui/use-toast';
 import { Database } from '@/libs/supabase/types';
 
 import { updateContestStatus } from '../actions';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
 type ContestStatus = Database['public']['Enums']['contest_status'];
@@ -28,33 +23,27 @@ const STATUS_CONFIG: Record<
   {
     label: string;
     description: string;
-    variant: 'default' | 'secondary' | 'destructive' | 'outline';
   }
 > = {
   draft: {
     label: 'Draft',
     description: 'Contest is not visible to participants',
-    variant: 'secondary',
   },
   open: {
     label: 'Open',
     description: 'Participants can claim squares',
-    variant: 'default',
   },
   locked: {
     label: 'Locked',
     description: 'Square claiming is paused',
-    variant: 'outline',
   },
   in_progress: {
     label: 'In Progress',
     description: 'Game is being played, scores can be entered',
-    variant: 'default',
   },
   completed: {
     label: 'Completed',
     description: 'Contest has ended, winners determined',
-    variant: 'secondary',
   },
 };
 
@@ -62,8 +51,6 @@ interface StatusTransition {
   targetStatus: ContestStatus;
   label: string;
   description: string;
-  icon: React.ReactNode;
-  variant?: 'default' | 'destructive' | 'outline';
 }
 
 const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
@@ -72,7 +59,6 @@ const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
       targetStatus: 'open',
       label: 'Open Contest',
       description: 'This will make your contest visible to participants and allow them to claim squares.',
-      icon: <Users className='mr-2 h-4 w-4' />,
     },
   ],
   open: [
@@ -80,8 +66,6 @@ const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
       targetStatus: 'locked',
       label: 'Lock Contest',
       description: 'This will prevent participants from claiming new squares. You can reopen it later.',
-      icon: <Lock className='mr-2 h-4 w-4' />,
-      variant: 'outline',
     },
   ],
   locked: [
@@ -89,14 +73,11 @@ const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
       targetStatus: 'open',
       label: 'Reopen Contest',
       description: 'This will allow participants to claim squares again.',
-      icon: <Unlock className='mr-2 h-4 w-4' />,
-      variant: 'outline',
     },
     {
       targetStatus: 'in_progress',
       label: 'Start Game',
       description: 'This indicates the game has started. You can begin entering scores.',
-      icon: <Play className='mr-2 h-4 w-4' />,
     },
   ],
   in_progress: [
@@ -104,8 +85,6 @@ const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
       targetStatus: 'completed',
       label: 'Complete Contest',
       description: 'This will mark the contest as finished. This action cannot be undone.',
-      icon: <CheckCircle className='mr-2 h-4 w-4' />,
-      variant: 'destructive',
     },
   ],
   completed: [],
@@ -118,6 +97,7 @@ interface ContestStatusSectionProps {
 export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
   const [isPending, startTransition] = useTransition();
   const [confirmDialog, setConfirmDialog] = useState<StatusTransition | null>(null);
+  const isDoneRef = useRef(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -126,6 +106,7 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
   const availableTransitions = STATUS_TRANSITIONS[currentStatus];
 
   const handleTransition = (transition: StatusTransition) => {
+    isDoneRef.current = false;
     setConfirmDialog(transition);
   };
 
@@ -150,76 +131,59 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
         description: `Contest is now ${STATUS_CONFIG[confirmDialog.targetStatus].label.toLowerCase()}.`,
       });
 
+      isDoneRef.current = true;
       setConfirmDialog(null);
       router.refresh();
     });
   };
 
   return (
-    <>
-      <Card className='border-zinc-800 bg-zinc-900'>
-        <CardHeader>
-          <CardTitle className='text-white'>Contest Status</CardTitle>
-          <CardDescription>Manage your contest lifecycle.</CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-6'>
-          {/* Current Status */}
-          <div className='flex items-center gap-4 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-            <div className='flex-1'>
-              <div className='flex items-center gap-3'>
-                <Badge variant={currentStatus}>{statusConfig.label}</Badge>
-              </div>
-              <p className='mt-2 text-sm text-zinc-400'>{statusConfig.description}</p>
-            </div>
-          </div>
+    <SetupSection id='contest-status' title='Contest Status' description='Manage your contest lifecycle.'>
+      {/* Current Status */}
+      <p className={`${css.row} ${css.statusRow}`}>
+        <Tag tone='now'>{statusConfig.label}</Tag>
+        <span>{statusConfig.description}</span>
+      </p>
 
-          {/* Available Transitions */}
-          {availableTransitions.length > 0 ? (
-            <div className='space-y-3'>
-              <p className='text-sm font-medium text-zinc-300'>Available Actions</p>
-              <div className='flex flex-wrap gap-2'>
-                {availableTransitions.map((transition) => (
-                  <Button
-                    key={transition.targetStatus}
-                    variant={transition.variant ?? 'default'}
-                    onClick={() => handleTransition(transition)}
-                    disabled={isPending}
-                  >
-                    {transition.icon}
-                    {transition.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className='rounded-lg border border-zinc-700 bg-zinc-800/30 p-4 text-center'>
-              <CheckCircle className='mx-auto h-8 w-8 text-green-500' />
-              <p className='mt-2 text-sm text-zinc-400'>
-                This contest has ended. No further status changes are available.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Available Transitions */}
+      {availableTransitions.length > 0 ? (
+        <>
+          <p className={`${css.label} ${css.gapTopSmall}`}>Available Actions</p>
+          <div className={css.row}>
+            {availableTransitions.map((transition) => (
+              <DashButton
+                key={transition.targetStatus}
+                look='quiet'
+                onClick={() => handleTransition(transition)}
+                disabled={isPending}
+              >
+                {transition.label}
+              </DashButton>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className={css.soft}>This contest has ended. No further status changes are available.</p>
+      )}
 
       {/* Confirmation Dialog */}
-      <Dialog open={!!confirmDialog} onOpenChange={() => setConfirmDialog(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Status Change</DialogTitle>
-            <DialogDescription>{confirmDialog?.description}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setConfirmDialog(null)} disabled={isPending}>
-              Cancel
-            </Button>
-            <Button variant={confirmDialog?.variant ?? 'default'} onClick={confirmTransition} disabled={isPending}>
-              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              {confirmDialog?.label}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+      <DashDialog
+        open={!!confirmDialog}
+        onClose={() => setConfirmDialog(null)}
+        title='Confirm Status Change'
+        description={confirmDialog?.description}
+        // The new status has other buttons
+        endFocus={() => (isDoneRef.current ? document.getElementById('contest-status-title') : null)}
+      >
+        <DashDialogFoot>
+          <DashButton look='quiet' onClick={() => setConfirmDialog(null)} disabled={isPending}>
+            Cancel
+          </DashButton>
+          <BusyButton busy={isPending} onClick={confirmTransition}>
+            {confirmDialog?.label}
+          </BusyButton>
+        </DashDialogFoot>
+      </DashDialog>
+    </SetupSection>
   );
 }

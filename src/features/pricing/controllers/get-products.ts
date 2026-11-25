@@ -5,7 +5,7 @@ export async function getProducts() {
 
   const { data, error } = await supabase
     .from('products')
-    .select('*, prices(*)')
+    .select('id, name, metadata, prices(*)')
     .eq('active', true)
     .eq('prices.active', true)
     .order('metadata->index')

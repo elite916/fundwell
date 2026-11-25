@@ -1,0 +1,285 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  .shell {
+    display: grid;
+    grid-template-columns: 224px minmax(0, 1fr);
+    min-height: 100vh;
+    background: #e4e5e5;
+  }
+  body:has(.shell) {
+    background: #e4e5e5;
+  }
+  html:has(.shell) {
+    scroll-padding-top: 84px;
+  }
+
+  .skip {
+    position: absolute;
+    top: -80px;
+    left: 24px;
+    z-index: 60;
+    padding: 12px 18px;
+    border-radius: var(--studio-radius-pill);
+    background: var(--studio-ink);
+    color: var(--studio-on-ink);
+  }
+  .skip:focus {
+    top: 12px;
+  }
+
+  .rail {
+    grid-column: 1;
+    background: var(--dash-side);
+  }
+  .railInner {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 0 12px 16px;
+    overflow-y: auto;
+  }
+  .name {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 64px;
+    padding: 0 14px;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .nav {
+    flex: 1;
+    padding-top: 12px;
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    color: var(--studio-soft);
+    font: inherit;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+  }
+  .item:hover {
+    background: var(--studio-bg);
+    color: var(--studio-ink);
+  }
+  .item[aria-current] {
+    background: var(--dash-panel);
+    color: var(--studio-ink);
+    font-weight: 600;
+  }
+  .item:focus-visible {
+    outline-offset: -3px;
+    border-radius: 10px;
+  }
+
+  .column {
+    display: flex;
+    grid-column: 2;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    height: 64px;
+    padding: 0 40px;
+    background: var(--studio-bg);
+  }
+  .small {
+    display: none;
+  }
+
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 12px 0 6px;
+    border: 0;
+    border-radius: var(--studio-radius-pill);
+    background: none;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .who:hover {
+    background: var(--dash-quiet);
+  }
+  .who:focus-visible {
+    border-radius: var(--studio-radius-pill);
+    outline-offset: 0;
+  }
+  .avatar {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--studio-ink);
+    color: var(--studio-on-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .avatar[data-letter]::before {
+    content: attr(data-letter);
+  }
+  .avatar img {
+    object-fit: cover;
+  }
+  .email {
+    overflow: hidden;
+    max-width: 260px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .menu {
+    z-index: 30;
+    width: 232px;
+    padding: 8px;
+    border-radius: 12px;
+    background: #fafaf9;
+    box-shadow: 0 14px 34px rgb(var(--studio-shade) / 0.3);
+  }
+  .menuEmail {
+    overflow: hidden;
+    margin-bottom: 6px;
+    padding: 8px 12px 10px;
+    border-bottom: 1px solid var(--dash-rule);
+    color: var(--studio-soft);
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .menuItem {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    outline: 0;
+  }
+  .menuItem[data-highlighted] {
+    background: var(--studio-bg);
+  }
+  .menuItem:focus-visible {
+    outline: 3px solid var(--studio-ink);
+    outline-offset: -3px;
+    border-radius: 8px;
+  }
+
+  .shade {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgb(60 62 63 / 0.5);
+  }
+  .drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 51;
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    max-width: 100vw;
+    height: 100dvh;
+    padding: 0 12px 16px;
+    overflow: auto;
+    background: var(--dash-side);
+    box-shadow: 0 30px 90px rgb(var(--studio-shade) / 0.42);
+  }
+  .drawer:focus-visible {
+    outline: 0;
+  }
+  .drawer[data-state='open'] {
+    animation: dash-drawer-in 0.2s;
+  }
+  @keyframes dash-drawer-in {
+    from {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+  }
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  /* The studio look is per page: see DashPage. Any other page keeps today's dark background behind it. */
+  .main {
+    flex: 1;
+    min-width: 0;
+  }
+  .main:focus-visible {
+    outline: 0;
+  }
+  .main:not(:has([data-dash-page])) {
+    padding: 24px;
+    background: var(--color-zinc-900, #18181b);
+  }
+
+  @media (max-width: 1023px) {
+    .shell {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .rail {
+      display: none;
+    }
+    .column {
+      grid-column: 1;
+    }
+    .bar {
+      justify-content: space-between;
+      height: 60px;
+      padding: 0 20px;
+    }
+    .small {
+      display: flex;
+      align-items: center;
+      margin-left: -10px;
+    }
+    .small .name {
+      min-height: 44px;
+      padding: 0;
+    }
+    .main:not(:has([data-dash-page])) {
+      padding: 16px;
+    }
+  }
+  @media (max-width: 699px) {
+    .bar {
+      padding: 0 16px;
+    }
+    .who {
+      justify-content: center;
+      min-width: 44px;
+      padding: 0;
+    }
+    .email {
+      display: none;
+    }
+  }
+}

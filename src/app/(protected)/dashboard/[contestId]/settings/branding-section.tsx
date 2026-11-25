@@ -2,14 +2,14 @@
 
 import { useState, useTransition } from 'react';
 import Image from 'next/image';
-import { HelpCircle, Loader2, Trash2, Upload } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { BusyButton } from '@/components/studio/setup/busy-button';
+import { ColorField } from '@/components/studio/setup/fields';
+import { SetupSection } from '@/components/studio/setup/section';
+import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
 import { deleteContestImage, uploadContestImage } from '@/features/contests/actions/upload-contest-image';
@@ -18,6 +18,8 @@ import { Database } from '@/libs/supabase/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { ImageUploadModal } from './image-upload-modal';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
 
@@ -53,7 +55,6 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
   const { toast } = useToast();
 
   const {
-    register,
     handleSubmit,
     watch,
     setValue,
@@ -265,188 +266,103 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
   };
 
   return (
-    <>
-      <Card className='border-zinc-800 bg-zinc-900'>
-        <CardHeader>
-          <CardTitle className='text-white'>Branding</CardTitle>
-          <CardDescription>Customize the look of your contest page.</CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-8'>
-          {/* Hero Image */}
-          <div className='space-y-4'>
-            <div>
-              <Label className='text-base'>Hero Image</Label>
-              <p className='text-sm text-zinc-400'>Displayed at the top of your contest page.</p>
-            </div>
+    <SetupSection id='branding' title='Branding' description='Customize the look of your contest page.'>
+      {/* Hero Image */}
+      <p className={css.label}>Hero Image</p>
+      <p className={css.hintUp}>Displayed at the top of your contest page.</p>
 
-            {heroImageUrl && (
-              <div className='relative aspect-3/1 w-full max-w-md overflow-hidden rounded-lg border border-zinc-700'>
-                <Image src={heroImageUrl} alt='Hero image' fill className='object-cover' />
-              </div>
-            )}
+      {heroImageUrl && (
+        <div className={css.heroPreview}>
+          <Image src={heroImageUrl} alt='Hero image' fill className='object-cover' />
+        </div>
+      )}
 
-            <div className='flex gap-2'>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => setHeroModalOpen(true)}
-                className='border-zinc-700'
-              >
-                <Upload className='mr-2 h-4 w-4' />
-                {heroImageUrl ? 'Replace' : 'Upload Image'}
-              </Button>
+      <div className={css.row}>
+        <DashButton look='quiet' onClick={() => setHeroModalOpen(true)}>
+          {heroImageUrl ? 'Replace' : 'Upload Image'}
+          <span className={srOnly}> Hero Image</span>
+        </DashButton>
 
-              {heroImageUrl && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={handleHeroDelete}
-                  disabled={heroDeleting}
-                  className='border-zinc-700 text-red-400 hover:bg-red-950 hover:text-red-300'
-                >
-                  {heroDeleting ? (
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  ) : (
-                    <Trash2 className='mr-2 h-4 w-4' />
-                  )}
-                  Remove
-                </Button>
-              )}
-            </div>
+        {heroImageUrl && (
+          <BusyButton busy={heroDeleting} look='quiet' onClick={handleHeroDelete}>
+            Remove<span className={srOnly}> Hero Image</span>
+          </BusyButton>
+        )}
+      </div>
 
-            {/* Hero Image Position Picker */}
-            {heroImageUrl && (
-              <div className='space-y-2'>
-                <div>
-                  <div className='flex items-center gap-2'>
-                    <Label className='text-base'>Image Focus Point</Label>
-                    <div className='group relative'>
-                      <HelpCircle className='h-4 w-4 cursor-help text-zinc-500 transition-colors hover:text-zinc-400' />
-                      <div className='invisible absolute bottom-full left-1/2 mb-2 w-64 -translate-x-1/2 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs text-zinc-300 opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100'>
-                        Set the focal point of your hero image. When the image is cropped on different screen sizes,
-                        this point will stay visible. For example, if your image has a person on the left, select a left
-                        position to keep them in frame.
-                        <div className='absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-800' />
-                      </div>
-                    </div>
-                  </div>
-                  <p className='text-sm text-zinc-400'>Choose which part of the image stays visible when cropped.</p>
-                </div>
-                <HeroPositionPicker
-                  value={heroImagePosition}
-                  onChange={handlePositionChange}
-                  disabled={positionSaving}
-                />
-              </div>
-            )}
-          </div>
+      {/* Hero Image Position Picker */}
+      {heroImageUrl && (
+        <>
+          <p className={`${css.label} ${css.gapTop}`}>Image Focus Point</p>
+          <p className={css.hintUp}>
+            Choose which part of the image stays visible when cropped. Set the focal point of your hero image. When the
+            image is cropped on different screen sizes, this point will stay visible. For example, if your image has a
+            person on the left, select a left position to keep them in frame.
+          </p>
+          <HeroPositionPicker value={heroImagePosition} onChange={handlePositionChange} disabled={positionSaving} />
+        </>
+      )}
 
-          {/* Organization Logo */}
-          <div className='space-y-4'>
-            <div>
-              <Label className='text-base'>Organization Logo</Label>
-              <p className='text-sm text-zinc-400'>Displayed alongside your contest name.</p>
-            </div>
+      {/* Organization Logo */}
+      <p className={`${css.label} ${css.gapTop}`}>Organization Logo</p>
+      <p className={css.hintUp}>Displayed alongside your contest name.</p>
 
-            {logoImageUrl && (
-              <div className='relative h-24 w-24 overflow-hidden rounded-full border border-zinc-700'>
-                <Image src={logoImageUrl} alt='Organization logo' fill className='object-cover' />
-              </div>
-            )}
+      {logoImageUrl && (
+        <div className={css.logoPreview}>
+          <Image src={logoImageUrl} alt='Organization logo' fill className='object-cover' />
+        </div>
+      )}
 
-            <div className='flex gap-2'>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => setLogoModalOpen(true)}
-                className='border-zinc-700'
-              >
-                <Upload className='mr-2 h-4 w-4' />
-                {logoImageUrl ? 'Replace' : 'Upload Image'}
-              </Button>
+      <div className={css.row}>
+        <DashButton look='quiet' onClick={() => setLogoModalOpen(true)}>
+          {logoImageUrl ? 'Replace' : 'Upload Image'}
+          <span className={srOnly}> Organization Logo</span>
+        </DashButton>
 
-              {logoImageUrl && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={handleLogoDelete}
-                  disabled={logoDeleting}
-                  className='border-zinc-700 text-red-400 hover:bg-red-950 hover:text-red-300'
-                >
-                  {logoDeleting ? (
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  ) : (
-                    <Trash2 className='mr-2 h-4 w-4' />
-                  )}
-                  Remove
-                </Button>
-              )}
-            </div>
-          </div>
+        {logoImageUrl && (
+          <BusyButton busy={logoDeleting} look='quiet' onClick={handleLogoDelete}>
+            Remove<span className={srOnly}> Organization Logo</span>
+          </BusyButton>
+        )}
+      </div>
 
-          {/* Colors */}
-          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-            <div>
-              <Label className='text-base'>Brand Colors</Label>
-              <p className='text-sm text-zinc-400'>Customize the colors used on your contest page.</p>
-            </div>
+      {/* Colors */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <p className={`${css.label} ${css.gapTop}`}>Brand Colors</p>
+        <p className={css.hintUp}>Customize the colors used on your contest page.</p>
 
-            <div className='grid gap-4 sm:grid-cols-2'>
-              <div className='space-y-2'>
-                <Label htmlFor='primary_color'>Primary Color</Label>
-                <div className='flex gap-2'>
-                  <Input
-                    id='primary_color'
-                    type='color'
-                    value={primaryColor}
-                    onChange={(e) => setValue('primary_color', e.target.value, { shouldDirty: true })}
-                    className='h-10 w-16 cursor-pointer border-zinc-700 bg-zinc-800 p-1'
-                  />
-                  <Input
-                    type='text'
-                    value={primaryColor}
-                    onChange={(e) => setValue('primary_color', e.target.value.toUpperCase(), { shouldDirty: true })}
-                    className='flex-1 border-zinc-700 bg-zinc-800 font-mono uppercase'
-                    maxLength={7}
-                    placeholder='#F97316'
-                  />
-                </div>
-                {errors.primary_color && <p className='text-sm text-red-500'>{errors.primary_color.message}</p>}
-              </div>
+        <div className={css.two}>
+          <ColorField
+            id='primary_color'
+            label='Primary Color'
+            color={primaryColor}
+            onPick={(color) => setValue('primary_color', color, { shouldDirty: true })}
+            value={primaryColor}
+            onChange={(e) => setValue('primary_color', e.target.value.toUpperCase(), { shouldDirty: true })}
+            maxLength={7}
+            placeholder='#F97316'
+            error={errors.primary_color?.message}
+          />
+          <ColorField
+            id='secondary_color'
+            label='Secondary Color'
+            color={secondaryColor}
+            onPick={(color) => setValue('secondary_color', color, { shouldDirty: true })}
+            value={secondaryColor}
+            onChange={(e) => setValue('secondary_color', e.target.value.toUpperCase(), { shouldDirty: true })}
+            maxLength={7}
+            placeholder='#D97706'
+            error={errors.secondary_color?.message}
+          />
+        </div>
 
-              <div className='space-y-2'>
-                <Label htmlFor='secondary_color'>Secondary Color</Label>
-                <div className='flex gap-2'>
-                  <Input
-                    id='secondary_color'
-                    type='color'
-                    value={secondaryColor}
-                    onChange={(e) => setValue('secondary_color', e.target.value, { shouldDirty: true })}
-                    className='h-10 w-16 cursor-pointer border-zinc-700 bg-zinc-800 p-1'
-                  />
-                  <Input
-                    type='text'
-                    value={secondaryColor}
-                    onChange={(e) => setValue('secondary_color', e.target.value.toUpperCase(), { shouldDirty: true })}
-                    className='flex-1 border-zinc-700 bg-zinc-800 font-mono uppercase'
-                    maxLength={7}
-                    placeholder='#D97706'
-                  />
-                </div>
-                {errors.secondary_color && <p className='text-sm text-red-500'>{errors.secondary_color.message}</p>}
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className='flex justify-end pt-4'>
-              <Button type='submit' disabled={isPending || !isDirty}>
-                {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                Save Colors
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+        {/* Submit Button */}
+        <div className={css.save}>
+          <BusyButton busy={isPending} type='submit' disabled={!isDirty}>
+            Save Colors
+          </BusyButton>
+        </div>
+      </form>
 
       {/* Hero Image Upload Modal */}
       <ImageUploadModal
@@ -465,6 +381,6 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
         imageType='logo'
         isUploading={logoUploading}
       />
-    </>
+    </SetupSection>
   );
 }

@@ -2,12 +2,14 @@
 
 import { useRef, useState, useTransition } from 'react';
 import Image from 'next/image';
-import { Loader2, Upload } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { useToast } from '@/components/ui/use-toast';
 
 import { uploadAvatar } from '../actions/upload-avatar';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 interface AvatarUploadProps {
   currentAvatarUrl: string | null;
@@ -111,25 +113,26 @@ export function AvatarUpload({ currentAvatarUrl, userEmail }: AvatarUploadProps)
   const showFallback = !displayUrl;
 
   return (
-    <div className='space-y-4'>
+    <>
       {/* Avatar Display */}
-      <div className='flex items-center gap-4'>
+      <div className={css.qr}>
         <button
           type='button'
+          aria-label='Upload profile picture'
           onClick={() => fileInputRef.current?.click()}
           disabled={isPending}
-          className='relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-orange-500/20 transition-opacity hover:opacity-80 disabled:opacity-50'
+          className={css.avatar}
         >
           {showFallback ? (
-            <span className='text-xl font-medium text-orange-500 uppercase'>{userEmail.charAt(0)}</span>
+            userEmail.charAt(0)
           ) : (
             <Image src={displayUrl} alt='Avatar' fill className='object-cover' sizes='64px' />
           )}
         </button>
 
-        <div className='flex-1'>
-          <p className='text-sm font-medium text-zinc-200'>Profile Picture</p>
-          <p className='text-xs text-zinc-500'>JPEG, PNG, or WebP. Max 2MB.</p>
+        <div>
+          <p className={css.strong}>Profile Picture</p>
+          <p className={css.small}>JPEG, PNG, or WebP. Max 2MB.</p>
         </div>
       </div>
 
@@ -139,50 +142,33 @@ export function AvatarUpload({ currentAvatarUrl, userEmail }: AvatarUploadProps)
         type='file'
         accept='image/jpeg,image/png,image/webp'
         onChange={handleInputChange}
-        className='hidden'
+        hidden
         disabled={isPending}
       />
 
       {/* Preview and Actions */}
       {selectedFile && (
-        <div className='space-y-3 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-          <div className='flex items-center gap-3'>
-            <div className='relative h-12 w-12 overflow-hidden rounded-full'>
+        <div className={css.chosen}>
+          <div className={css.chosenFile}>
+            <div className={css.chosenImage}>
               {previewUrl && <Image src={previewUrl} alt='Preview' fill className='object-cover' sizes='48px' />}
             </div>
-            <div className='flex-1'>
-              <p className='text-sm font-medium text-zinc-200'>{selectedFile.name}</p>
-              <p className='text-xs text-zinc-500'>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+            <div className={css.grow}>
+              <p className={css.strong}>{selectedFile.name}</p>
+              <p className={css.small}>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
           </div>
 
-          <div className='flex gap-2'>
-            <Button type='button' variant='orange' onClick={handleUpload} disabled={isPending} size='sm'>
-              {isPending ? (
-                <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className='mr-2 h-4 w-4' />
-                  Upload
-                </>
-              )}
-            </Button>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={handleCancel}
-              disabled={isPending}
-              size='sm'
-              className='border-zinc-700'
-            >
+          <div className={css.row}>
+            <BusyButton busy={isPending} onClick={handleUpload}>
+              {isPending ? 'Uploading...' : 'Upload'}
+            </BusyButton>
+            <DashButton look='quiet' onClick={handleCancel} disabled={isPending}>
               Cancel
-            </Button>
+            </DashButton>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -1,9 +1,5 @@
-import { LoadingSpinner } from '@/components/shared';
+import { DashWait } from '@/components/studio/dashboard/dash-page';
 
 export default function ParticipantsLoading() {
-  return (
-    <div className='flex min-h-[50vh] items-center justify-center'>
-      <LoadingSpinner size='lg' text='Loading participants...' />
-    </div>
-  );
+  return <DashWait text='Loading participants...' />;
 }
