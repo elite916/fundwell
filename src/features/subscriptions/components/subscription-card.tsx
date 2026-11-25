@@ -71,8 +71,10 @@ export function SubscriptionCard({ subscription, products }: SubscriptionCardPro
       </CardContent>
       <CardFooter>
         {subscription ? (
+          // A plain <a>, not <Link>: every request opens a Stripe portal session.
+          // Link prefetches it, and on a click requests it twice.
           <Button variant='secondary' size='sm' asChild>
-            <Link href='/manage-subscription'>Manage Subscription</Link>
+            <a href='/manage-subscription'>Manage Subscription</a>
           </Button>
         ) : (
           <Button variant='secondary' size='sm' asChild>
