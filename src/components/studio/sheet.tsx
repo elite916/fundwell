@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 
 import { cn } from '@/utils/cn';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -23,6 +23,8 @@ interface SheetProps {
   footer?: ReactNode;
   /** `side` opens on the left on wide screens. `center` is a dialog. Both come up from the bottom on phones. */
   placement?: 'side' | 'center';
+  /** Change it when the contents are replaced: focus moves to the new title. */
+  step?: string | number;
   /** False for a dialog that has to be answered, such as a PIN. */
   dismissible?: boolean;
   /** The organizer's colors, from `organizerColors()`. The sheet is outside the page that set them. */
@@ -39,11 +41,17 @@ export function Sheet({
   children,
   footer,
   placement = 'side',
+  step,
   dismissible = true,
   style,
 }: SheetProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const openerRef = useRef<Element | null>(null);
+
+  useEffect(() => {
+    titleRef.current?.focus();
+  }, [step]);
+
   const keepOpen = (event: Event) => {
     if (!dismissible) event.preventDefault();
   };

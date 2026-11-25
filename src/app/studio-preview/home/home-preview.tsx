@@ -86,7 +86,7 @@ export function HomePreview() {
             Hit-a-thon
           </Display>
           <div className={css.twoSay}>
-            <Soft>Supporters pledge for every hit. Coming soon.</Soft>
+            <Soft>Supporters pledge per hit or a flat amount. Coming soon.</Soft>
           </div>
         </section>
         <div ref={holdRef} className={css.hold}>

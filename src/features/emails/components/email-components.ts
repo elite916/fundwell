@@ -24,7 +24,7 @@ export function squareDetailsTable({
           <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
             <tr style="${emailStyles.detailRow}">
               <td style="${emailStyles.detailLabel}">Position:</td>
-              <td style="${emailStyles.detailValue}">Row ${rowIndex}, Column ${colIndex}</td>
+              <td style="${emailStyles.detailValue}">Row ${rowIndex + 1}, Column ${colIndex + 1}</td>
             </tr>
             <tr style="${emailStyles.detailRow}">
               <td style="${emailStyles.detailLabel}">Teams:</td>

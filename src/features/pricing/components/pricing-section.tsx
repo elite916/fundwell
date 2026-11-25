@@ -35,8 +35,7 @@ export async function PricingSection({ isPricingPage = false }: { isPricingPage?
       {isPricingPage && (
         <Soft className={css.why}>
           We offer a free plan so anyone can run a fundraiser. You can host one fundraiser at a time, and Pro removes
-          that limit. We price it to cover our costs, not to maximize profit, because our goal is keeping Fundwell
-          accessible for everyone.
+          that limit.
         </Soft>
       )}
     </section>

@@ -78,7 +78,7 @@
     --studio-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
     color: var(--studio-ink);
-    font-family: var(--font-studio), Arial, sans-serif;
+    font-family: var(--font-studio-ext), var(--font-studio), Arial, sans-serif;
     font-size: var(--studio-body);
     font-weight: 400;
     font-feature-settings: normal;

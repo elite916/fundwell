@@ -1,0 +1,11 @@
+.text {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+.lead {
+  text-wrap: balance;
+}
+.button {
+  margin-top: 10px;
+}
