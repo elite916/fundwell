@@ -95,6 +95,8 @@ export type Database = {
           sport_type: Database['public']['Enums']['sport_type'];
           square_price: number;
           status: Database['public']['Enums']['contest_status'];
+          super_bowl_row_team: string | null;
+          super_bowl_season: number | null;
           updated_at: string;
         };
         ComputedFields: never;
@@ -141,6 +143,8 @@ export type Database = {
           sport_type?: Database['public']['Enums']['sport_type'];
           square_price: number;
           status?: Database['public']['Enums']['contest_status'];
+          super_bowl_row_team?: string | null;
+          super_bowl_season?: number | null;
           updated_at?: string;
         };
         Update: {
@@ -186,6 +190,8 @@ export type Database = {
           sport_type?: Database['public']['Enums']['sport_type'];
           square_price?: number;
           status?: Database['public']['Enums']['contest_status'];
+          super_bowl_row_team?: string | null;
+          super_bowl_season?: number | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -209,6 +215,7 @@ export type Database = {
       email_logs: {
         Row: {
           contest_id: string;
+          dedupe_key: string | null;
           email_type: string;
           id: string;
           recipient_email: string;
@@ -220,6 +227,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           contest_id: string;
+          dedupe_key?: string | null;
           email_type: string;
           id?: string;
           recipient_email: string;
@@ -230,6 +238,7 @@ export type Database = {
         };
         Update: {
           contest_id?: string;
+          dedupe_key?: string | null;
           email_type?: string;
           id?: string;
           recipient_email?: string;
@@ -433,6 +442,8 @@ export type Database = {
           home_score: number;
           id: string;
           quarter: Database['public']['Enums']['game_quarter'];
+          source: string | null;
+          winner_rev: number;
           winning_square_id: string | null;
         };
         ComputedFields: never;
@@ -443,6 +454,8 @@ export type Database = {
           home_score: number;
           id?: string;
           quarter: Database['public']['Enums']['game_quarter'];
+          source?: string | null;
+          winner_rev?: number;
           winning_square_id?: string | null;
         };
         Update: {
@@ -452,6 +465,8 @@ export type Database = {
           home_score?: number;
           id?: string;
           quarter?: Database['public']['Enums']['game_quarter'];
+          source?: string | null;
+          winner_rev?: number;
           winning_square_id?: string | null;
         };
         Relationships: [
@@ -658,6 +673,52 @@ export type Database = {
           last_checked_at?: string | null;
           last_period?: number | null;
           last_status?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      super_bowl_games: {
+        Row: {
+          afc_team: string;
+          final_afc: number | null;
+          final_nfc: number | null;
+          nfc_team: string;
+          q1_afc: number | null;
+          q1_nfc: number | null;
+          q2_afc: number | null;
+          q2_nfc: number | null;
+          q3_afc: number | null;
+          q3_nfc: number | null;
+          season: number;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          afc_team: string;
+          final_afc?: number | null;
+          final_nfc?: number | null;
+          nfc_team: string;
+          q1_afc?: number | null;
+          q1_nfc?: number | null;
+          q2_afc?: number | null;
+          q2_nfc?: number | null;
+          q3_afc?: number | null;
+          q3_nfc?: number | null;
+          season: number;
+          updated_at?: string;
+        };
+        Update: {
+          afc_team?: string;
+          final_afc?: number | null;
+          final_nfc?: number | null;
+          nfc_team?: string;
+          q1_afc?: number | null;
+          q1_nfc?: number | null;
+          q2_afc?: number | null;
+          q2_nfc?: number | null;
+          q3_afc?: number | null;
+          q3_nfc?: number | null;
+          season?: number;
           updated_at?: string;
         };
         Relationships: [];
