@@ -97,6 +97,7 @@ export function SquaresFundraiser({
               setPickedName(name === findName ? '' : name);
             }}
             axisNote={axisNote(contest)}
+            className={css.board}
           />
           {names.length > 0 && (
             <div className={css.find}>

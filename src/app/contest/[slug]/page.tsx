@@ -18,6 +18,8 @@ import { OrganizerPrint } from './organizer-print';
 import { PinGate } from './pin-gate';
 import { ShareButton } from './share-button';
 
+import css from './contest.module.css';
+
 interface ContestPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ ref?: string | string[] }>;
@@ -44,7 +46,7 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
   // Check if user has access (either no PIN required or valid cookie)
   if (!(await hasContestAccess(contest.slug, accessPin))) {
     return (
-      <StudioPage style={colors} header={<OrganizerHeader contestName={contest.name} />}>
+      <StudioPage className={css.page} style={colors} header={<OrganizerHeader contestName={contest.name} />}>
         <PinGate contestSlug={contest.slug} />
       </StudioPage>
     );
@@ -104,6 +106,7 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
 
   return (
     <StudioPage
+      className={css.page}
       style={colors}
       header={
         <OrganizerHeader

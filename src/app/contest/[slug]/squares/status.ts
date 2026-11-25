@@ -1,4 +1,5 @@
 import { type GridSquare, squaresOf } from '@/components/studio/grid/model';
+import { QuarterDisplayNames } from '@/features/contests/constants';
 import type { GameQuarter, Score } from '@/features/contests/types';
 import { countSoldSquares, formatPrizeAmount } from '@/features/contests/utils';
 
@@ -41,7 +42,9 @@ export function statusOf(contest: SquaresContest, squares: readonly GridSquare[]
       // Scores are saved as home and away: the rows' team is home
       headline: [`${contest.row_team_name} ${latest.home_score}`, `${contest.col_team_name} ${latest.away_score}`],
       news: name ? `${name} ${WON[latest.quarter]}` : 'Nobody claimed that square.',
-      detail: name && prizeFor(contest, latest.quarter, countSoldSquares([...squares])),
+      detail: name
+        ? prizeFor(contest, latest.quarter, countSoldSquares([...squares]))
+        : QuarterDisplayNames[latest.quarter],
       tone: 'strong',
     };
   }

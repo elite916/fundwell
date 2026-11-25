@@ -48,7 +48,7 @@ export function PaymentOptionItem({ option }: { option: PaymentOption }) {
             <span className={css.paymentName}>{name}</span>
           )}
           <span className={css.handle}>{option.handle_or_link}</span>
-          <Button look='link' onClick={handleCopy} aria-label={`Copy ${name} handle`}>
+          <Button look='link' onClick={handleCopy} aria-label={isCopied ? undefined : `Copy ${name} handle`}>
             {isCopied ? 'Copied!' : 'Copy'}
           </Button>
           <span role='status' className={srOnly}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { type CSSProperties, useId, useState, useTransition } from 'react';
+import { type CSSProperties, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/studio/button';
@@ -43,7 +43,6 @@ export function ClaimSheet({
   colors,
   onClose,
 }: ClaimSheetProps) {
-  const formId = useId();
   const [isClaimed, setIsClaimed] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState('');
@@ -126,13 +125,8 @@ export function ClaimSheet({
       title='Claim your square'
       mark={<TileChip payment='available' chosen />}
       description={spot}
-      footer={
-        <Button type='submit' form={formId} pending={isPending}>
-          {isPending ? 'Claiming...' : 'Claim square'}
-        </Button>
-      }
     >
-      <form id={formId} noValidate onSubmit={handleSubmit(onSubmit)}>
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <TextField
           label='First name'
           autoComplete='given-name'
@@ -177,6 +171,11 @@ export function ClaimSheet({
         <p role='alert' className={css.alert}>
           {serverError}
         </p>
+        <div className={css.submit}>
+          <Button type='submit' pending={isPending}>
+            {isPending ? 'Claiming...' : 'Claim square'}
+          </Button>
+        </div>
       </form>
     </Sheet>
   );
