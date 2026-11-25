@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
   { href: '/dashboard', label: 'My Contests' },
   { href: '/dashboard/account', label: 'Account' },
   { href: '/dashboard/billing', label: 'Billing' },
+  { href: '/dashboard/super-bowl', label: 'Super Bowl', adminOnly: true },
 ];
 
 interface NavItemsProps {

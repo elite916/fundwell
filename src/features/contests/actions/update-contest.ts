@@ -1,7 +1,8 @@
 'use server';
 
-import { ContestErrors, hasGameStarted } from '@/features/contests/constants';
+import { ContestErrors, ContestStatus, hasGameStarted } from '@/features/contests/constants';
 import type { ContestUpdate } from '@/features/contests/types';
+import { isSeasonOpen } from '@/features/super-bowl/queries';
 import { SUPER_BOWL_SEASON } from '@/features/super-bowl/season';
 import type { ActionResponse } from '@/types/action-response';
 
@@ -90,6 +91,14 @@ export async function updateContest(
 
     const season = updates.super_bowl_season ?? null;
     if (season !== null && (season !== SUPER_BOWL_SEASON || contest.sport_type !== 'football')) {
+      throw new Error('Invalid contest update');
+    }
+    // A contest can't join once it's completed or the final is in. It can always leave.
+    if (
+      season !== null &&
+      season !== contest.super_bowl_season &&
+      (contest.status === ContestStatus.COMPLETED || !(await isSeasonOpen()))
+    ) {
       throw new Error('Invalid contest update');
     }
 

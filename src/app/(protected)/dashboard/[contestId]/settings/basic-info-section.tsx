@@ -1,11 +1,11 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { BusyButton } from '@/components/studio/setup/busy-button';
-import { TextArea } from '@/components/studio/setup/fields';
+import { SwitchRow, TextArea } from '@/components/studio/setup/fields';
 import { SetupSection } from '@/components/studio/setup/section';
 import { TextField } from '@/components/studio/text-field';
 import { useToast } from '@/components/ui/use-toast';
@@ -28,6 +28,9 @@ type BasicInfoFormData = z.infer<typeof basicInfoSchema>;
 
 interface BasicInfoSectionProps {
   contest: Contest;
+  /** The Super Bowl Fundwell is scoring. */
+  season: number;
+  canJoinSuperBowl: boolean;
 }
 
 const SPORT_TYPE_LABELS: Record<string, string> = {
@@ -35,8 +38,10 @@ const SPORT_TYPE_LABELS: Record<string, string> = {
   baseball: 'Baseball',
 };
 
-export function BasicInfoSection({ contest }: BasicInfoSectionProps) {
+export function BasicInfoSection({ contest, season, canJoinSuperBowl }: BasicInfoSectionProps) {
   const [isPending, startTransition] = useTransition();
+  const [isSwitching, startSwitching] = useTransition();
+  const [isSuperBowl, setIsSuperBowl] = useState(contest.super_bowl_season === season);
   const { toast } = useToast();
 
   const {
@@ -63,6 +68,28 @@ export function BasicInfoSection({ contest }: BasicInfoSectionProps) {
       });
 
       if (result?.error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: result.error.message,
+        });
+        return;
+      }
+
+      toast({
+        title: 'Settings saved',
+        description: 'Your contest settings have been updated.',
+      });
+    });
+  };
+
+  const handleSuperBowl = (enabled: boolean) => {
+    setIsSuperBowl(enabled);
+    startSwitching(async () => {
+      const result = await updateContest(contest.id, { super_bowl_season: enabled ? season : null });
+
+      if (result?.error) {
+        setIsSuperBowl(!enabled);
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -134,6 +161,19 @@ export function BasicInfoSection({ contest }: BasicInfoSectionProps) {
           </BusyButton>
         </div>
       </form>
+
+      {contest.sport_type === 'football' && (
+        <div className={css.gapTop}>
+          <SwitchRow
+            id='super_bowl'
+            label='Super Bowl contest'
+            hint='Fundwell enters the score after each quarter. You can still enter or correct scores yourself.'
+            checked={isSuperBowl}
+            onCheckedChange={handleSuperBowl}
+            disabled={isSwitching || (!isSuperBowl && !canJoinSuperBowl)}
+          />
+        </div>
+      )}
     </SetupSection>
   );
 }

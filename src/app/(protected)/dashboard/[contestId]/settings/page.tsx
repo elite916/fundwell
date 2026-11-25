@@ -1,8 +1,11 @@
 import { notFound, redirect } from 'next/navigation';
 
 import { BackLink, DashPage, PageHead } from '@/components/studio/dashboard/dash-page';
+import { ContestStatus } from '@/features/contests/constants';
 import { getContestById, getContestPinForOwner, getPaymentOptionsForContest } from '@/features/contests/queries';
 import { getPlayerSalesCounts } from '@/features/contests/queries/get-player-sales-counts';
+import { isSeasonOpen } from '@/features/super-bowl/queries';
+import { SUPER_BOWL_SEASON } from '@/features/super-bowl/season';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
 import { AccessControlSection } from './access-control-section';
@@ -55,6 +58,9 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   // Access PIN (owner-only table)
   const accessPin = await getContestPinForOwner(contestId);
 
+  // Whether the contest can still become a Super Bowl contest
+  const canJoinSuperBowl = contest.status !== ContestStatus.COMPLETED && (await isSeasonOpen());
+
   // The sections below, in order.
   const sections = [
     ['basic-information', 'Basic Information'],
@@ -83,7 +89,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
 
         {/* Settings Sections */}
         <div>
-          <BasicInfoSection contest={contest} />
+          <BasicInfoSection contest={contest} season={SUPER_BOWL_SEASON} canJoinSuperBowl={canJoinSuperBowl} />
           <ContestStatusSection contest={contest} />
           <PricingPayoutsSection contest={contest} />
           <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />

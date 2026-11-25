@@ -29,6 +29,7 @@ interface Contest extends ContestPrizeFields {
   payout_game5_percent: number | null;
   payout_game6_percent: number | null;
   payout_game7_percent: number | null;
+  super_bowl_season: number | null;
 }
 
 interface WinnersSectionProps {
@@ -65,6 +66,12 @@ function getWinnerName(square: GridSquare | undefined): string {
   return name;
 }
 
+function getSourceLabel(contest: Contest, score: Score): string | null {
+  if (contest.super_bowl_season === null) return null;
+  if (score.source === 'fundwell') return 'Entered by Fundwell';
+  return score.source === 'organizer' ? 'Entered by you' : null;
+}
+
 export function WinnersSection({ contest, scores, squares }: WinnersSectionProps) {
   if (scores.length === 0) {
     return null;
@@ -96,6 +103,7 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
         winnerName: getWinnerName(winningSquare),
         payoutAmount,
         prizeText,
+        sourceLabel: getSourceLabel(contest, score),
       };
     })
     .filter(Boolean);
@@ -121,6 +129,7 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
             <span className={css.score}>
               {contest.row_team_name} {item!.homeScore} - {contest.col_team_name} {item!.awayScore}
             </span>
+            {item!.sourceLabel && <span className={css.score}>{item!.sourceLabel}</span>}
           </li>
         ))}
       </ul>

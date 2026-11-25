@@ -19,12 +19,18 @@ export async function getSuperBowlGame(): Promise<SuperBowlGame | null> {
   return data;
 }
 
+/** Contests can join this season until its final is in. */
+export async function isSeasonOpen(): Promise<boolean> {
+  const game = await getSuperBowlGame();
+  return !game?.final_at;
+}
+
 /** This season's contests, oldest first. */
 export async function getSeasonContests() {
   const { data, error } = await supabaseAdminClient
     .from('contests')
     .select(
-      'id, name, slug, status, row_team_name, col_team_name, row_numbers, col_numbers, super_bowl_row_team, scores(quarter, source)'
+      'id, name, slug, status, row_team_name, col_team_name, row_numbers, col_numbers, super_bowl_row_team, scores(quarter, home_score, away_score, source)'
     )
     .eq('super_bowl_season', SUPER_BOWL_SEASON)
     .eq('sport_type', 'football')
@@ -64,6 +70,8 @@ async function countEmails(statuses: string[]): Promise<number> {
   return count;
 }
 
+type SeasonScore = Omit<SeasonContest['scores'][number], 'quarter'>;
+
 /** Everything on the admin page. Throws unless the current user is an admin. */
 export async function getSuperBowlPage() {
   await requireAdmin();
@@ -85,13 +93,15 @@ export async function getSuperBowlPage() {
       name: contest.name,
       slug: contest.slug,
       status: contest.status,
+      rowTeamName: contest.row_team_name,
+      colTeamName: contest.col_team_name,
       problem: getProblem(contest, game),
       // A quarter without a score has no entry
-      sources: Object.fromEntries(
+      scores: Object.fromEntries(
         contest.scores
           .filter(({ quarter }) => (SUPER_BOWL_QUARTERS as readonly string[]).includes(quarter))
-          .map(({ quarter, source }) => [quarter, source])
-      ) as Partial<Record<SuperBowlQuarter, 'fundwell' | 'organizer' | null>>,
+          .map(({ quarter, home_score, away_score, source }) => [quarter, { home_score, away_score, source }])
+      ) as Partial<Record<SuperBowlQuarter, SeasonScore>>,
     })),
     emails: { sent, waiting, refused, notConfirmed },
   };
