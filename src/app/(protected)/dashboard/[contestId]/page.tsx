@@ -280,6 +280,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
             rowTeamName={contest.row_team_name}
             colTeamName={contest.col_team_name}
             contestId={contestId}
+            contestStatus={contest.status}
             squarePrice={Number(contest.square_price)}
             rowNumbers={contest.row_numbers}
             colNumbers={contest.col_numbers}

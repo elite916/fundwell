@@ -7,6 +7,7 @@ import { BoardLegend } from '@/components/studio/grid/board-legend';
 import { ManageBoard } from '@/components/studio/grid/manage-board';
 import { type GridScore, winnersOf } from '@/components/studio/grid/model';
 import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
+import { ContestStatusType } from '@/features/contests/constants';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 
 import css from './run.module.css';
@@ -16,6 +17,7 @@ interface DashboardGridClientProps {
   rowTeamName: string;
   colTeamName: string;
   contestId: string;
+  contestStatus: ContestStatusType;
   squarePrice: number;
   rowNumbers?: number[] | null;
   colNumbers?: number[] | null;
@@ -27,6 +29,7 @@ export function DashboardGridClient({
   rowTeamName,
   colTeamName,
   contestId,
+  contestStatus,
   squarePrice,
   rowNumbers,
   colNumbers,
@@ -84,6 +87,7 @@ export function DashboardGridClient({
         onClose={handleCloseModal}
         square={selectedSquare}
         contestId={contestId}
+        contestStatus={contestStatus}
         squarePrice={squarePrice}
         onSuccess={handleSuccess}
       />

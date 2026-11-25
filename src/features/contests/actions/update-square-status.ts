@@ -11,7 +11,8 @@ import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 import { getURL } from '@/utils/get-url';
 
-import { NotFoundError, withContestOwnership } from '../middleware/auth-middleware';
+import { NotFoundError, ValidationError, withContestOwnership } from '../middleware/auth-middleware';
+import { getSquareChangeRefusal, getSquareChangeRefusalFromDb } from '../utils/square-rules';
 
 interface UpdateSquareStatusInput {
   squareId: string;
@@ -60,6 +61,11 @@ export async function updateSquareStatus(
       throw new NotFoundError(ContestErrors.SQUARE_NOT_FOUND);
     }
 
+    const refusal = getSquareChangeRefusal(contest.status, [square.payment_status], newStatus);
+    if (refusal) {
+      throw new ValidationError(refusal);
+    }
+
     const claimantEmail = square.square_claimants?.email ?? null;
 
     // Build update data based on new status
@@ -101,6 +107,10 @@ export async function updateSquareStatus(
       .eq('contest_id', contestId);
 
     if (updateError) {
+      const dbRefusal = getSquareChangeRefusalFromDb(updateError.message);
+      if (dbRefusal) {
+        throw new ValidationError(dbRefusal);
+      }
       throw new NotFoundError(ContestErrors.SQUARE_NOT_FOUND);
     }
 
