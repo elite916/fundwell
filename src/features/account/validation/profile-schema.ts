@@ -8,4 +8,3 @@ export const updateProfileSchema = z.object({
 });
 
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;
-

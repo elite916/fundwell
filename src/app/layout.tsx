@@ -6,7 +6,7 @@ import { RouteProgress } from '@/components/shared';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/utils/cn';
 import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import '@/styles/globals.css';
 
@@ -25,7 +25,8 @@ const montserratAlternates = Montserrat_Alternates({
 
 export const metadata: Metadata = {
   title: 'Fundwell - Game Day Squares Fundraiser',
-  description: 'Host your game day squares fundraiser with Fundwell. Create contests, let participants claim squares, and manage payments easily.',
+  description:
+    'Host your game day squares fundraiser with Fundwell. Create contests, let participants claim squares, and manage payments easily.',
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

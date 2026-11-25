@@ -39,11 +39,7 @@ export async function updateSquareStatus(
   }
 
   // Validate status value
-  const validStatuses: PaymentStatusType[] = [
-    PaymentStatus.AVAILABLE,
-    PaymentStatus.PENDING,
-    PaymentStatus.PAID,
-  ];
+  const validStatuses: PaymentStatusType[] = [PaymentStatus.AVAILABLE, PaymentStatus.PENDING, PaymentStatus.PAID];
   if (!validStatuses.includes(newStatus)) {
     return {
       data: null,

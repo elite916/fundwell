@@ -10,7 +10,7 @@ import { upsertProduct } from './upsert-product';
 type Price = Database['public']['Tables']['prices']['Row'];
 
 export async function upsertPrice(price: Stripe.Price) {
-   // Ensure the product exists before inserting the price
+  // Ensure the product exists before inserting the price
   // This handles race conditions where price.created arrives before product.created
   const productId = typeof price.product === 'string' ? price.product : price.product.id;
 
@@ -21,7 +21,7 @@ export async function upsertPrice(price: Stripe.Price) {
       .eq('id', productId)
       .single();
 
-      // no rows found, which is expected when product doesn't exist locally
+    // no rows found, which is expected when product doesn't exist locally
     if (queryError && queryError.code !== 'PGRST116') {
       throw queryError;
     }
@@ -39,7 +39,7 @@ export async function upsertPrice(price: Stripe.Price) {
       }
     }
   }
-  
+
   const priceData = toPriceRow(price, productId);
 
   const { error } = await supabaseAdminClient.from('prices').upsert([priceData]);

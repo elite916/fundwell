@@ -24,13 +24,12 @@ export default async function BillingPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-white lg:text-3xl">Billing</h1>
+      <h1 className='mb-6 text-2xl font-bold text-white lg:text-3xl'>Billing</h1>
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className='grid gap-6 sm:grid-cols-2'>
         <SubscriptionCard subscription={subscription} products={products} />
         <UsageCard activeContests={usageStats.activeContests} limit={contestLimit.limit} />
       </div>
     </div>
   );
 }
-

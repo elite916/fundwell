@@ -35,17 +35,16 @@ const nextConfig = {
 
 module.exports = nextConfig;
 
-
 // Injected content via Sentry wizard below
 
-const { withSentryConfig } = require("@sentry/nextjs");
+const { withSentryConfig } = require('@sentry/nextjs');
 
 module.exports = withSentryConfig(module.exports, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: "battlebornusa",
-  project: "fundwell",
+  org: 'battlebornusa',
+  project: 'fundwell',
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
@@ -60,7 +59,7 @@ module.exports = withSentryConfig(module.exports, {
   // This can increase your server load as well as your hosting bill.
   // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
   // side errors will fail.
-  tunnelRoute: "/monitoring",
+  tunnelRoute: '/monitoring',
 
   // These options and Sentry's wrapping of pages, route handlers and the proxy only work in webpack builds,
   // so the build script runs `next build --webpack` (Turbopack is the default from Next 16).

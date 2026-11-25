@@ -39,7 +39,6 @@ interface SaveScoresResult {
  */
 export async function saveScores(contestId: string, scores: ScoreInput[]): Promise<ActionResponse<SaveScoresResult>> {
   return withContestOwnership<SaveScoresResult>(contestId, async (user, supabase, contest) => {
-
     // Verify contest is in progress
     if (contest.status !== ContestStatus.IN_PROGRESS) {
       throw new ValidationError(ContestErrors.SCORES_ONLY_IN_PROGRESS);
@@ -53,7 +52,9 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
     // Fetch all squares for this contest
     const { data: squareRows, error: squaresError } = await supabase
       .from('squares')
-      .select('id, row_index, col_index, payment_status, claimant_first_name, claimant_last_name, square_claimants(email)')
+      .select(
+        'id, row_index, col_index, payment_status, claimant_first_name, claimant_last_name, square_claimants(email)'
+      )
       .eq('contest_id', contestId);
 
     if (squaresError) {

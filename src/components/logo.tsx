@@ -17,7 +17,12 @@ export function Logo({ href = '/', className = '', size = 'lg' }: LogoProps): Re
   };
 
   const content = (
-    <span className={cn('bg-linear-to-r/srgb from-fundwell-primary to-fundwell-accent bg-clip-text font-alt font-bold text-transparent', sizeClasses[size])}>
+    <span
+      className={cn(
+        'bg-linear-to-r/srgb from-fundwell-primary to-fundwell-accent bg-clip-text font-alt font-bold text-transparent',
+        sizeClasses[size]
+      )}
+    >
       Fundwell
     </span>
   );
@@ -30,9 +35,5 @@ export function Logo({ href = '/', className = '', size = 'lg' }: LogoProps): Re
     );
   }
 
-  return (
-    <div className={cn('flex w-fit items-center gap-2', className)}>
-      {content}
-    </div>
-  );
+  return <div className={cn('flex w-fit items-center gap-2', className)}>{content}</div>;
 }

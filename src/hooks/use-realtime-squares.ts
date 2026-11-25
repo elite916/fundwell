@@ -50,4 +50,3 @@ export function useRealtimeSquares<T extends BaseSquare>(contestId: string, init
 
   return squares;
 }
-

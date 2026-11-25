@@ -53,8 +53,8 @@ export function EnterScoresButton({ contest, scores, squares, className }: Enter
 
   return (
     <>
-      <Button variant="default" className={className} onClick={() => setIsModalOpen(true)}>
-        <Gamepad2 className="mr-2 h-4 w-4" />
+      <Button variant='default' className={className} onClick={() => setIsModalOpen(true)}>
+        <Gamepad2 className='mr-2 h-4 w-4' />
         Enter Scores
       </Button>
 
@@ -69,4 +69,3 @@ export function EnterScoresButton({ contest, scores, squares, className }: Enter
     </>
   );
 }
-

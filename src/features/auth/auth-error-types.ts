@@ -41,10 +41,7 @@ export function getUserFriendlyErrorMessage(error: unknown): {
     type = 'email_already_exists';
   } else if (errorMessage.includes('invalid login credentials')) {
     type = 'invalid_credentials';
-  } else if (
-    errorMessage.includes('rate limit') ||
-    errorMessage.includes('too many requests')
-  ) {
+  } else if (errorMessage.includes('rate limit') || errorMessage.includes('too many requests')) {
     type = 'rate_limit_exceeded';
   } else if (
     errorMessage.includes('magic link expired') ||
@@ -61,4 +58,3 @@ export function getUserFriendlyErrorMessage(error: unknown): {
     message: ERROR_MESSAGES[type],
   };
 }
-

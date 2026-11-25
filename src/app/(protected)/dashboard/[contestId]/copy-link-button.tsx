@@ -17,8 +17,8 @@ export function CopyLinkButton({ url, code, contestName }: CopyLinkButtonProps) 
 
   return (
     <>
-      <Button variant="orange" size="sm" className="px-4" onClick={() => setIsModalOpen(true)}>
-        <ShareIcon className="mr-2 size-4 shrink-0" />
+      <Button variant='orange' size='sm' className='px-4' onClick={() => setIsModalOpen(true)}>
+        <ShareIcon className='mr-2 size-4 shrink-0' />
         Share
       </Button>
 

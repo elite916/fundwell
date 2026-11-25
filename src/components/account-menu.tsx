@@ -21,7 +21,7 @@ export function AccountMenu(): ReactElement {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className='rounded-full'>
-        <CircleUser className="h-6 w-6" />
+        <CircleUser className='h-6 w-6' />
       </DropdownMenuTrigger>
       <DropdownMenuContent className='me-4'>
         <DropdownMenuItem asChild>

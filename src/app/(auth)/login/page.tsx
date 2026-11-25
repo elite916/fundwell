@@ -4,11 +4,7 @@ import { getUser } from '@/features/account/controllers/get-user';
 import { signInWithEmail, signInWithOAuth } from '@/features/auth/auth-actions';
 import { AuthUI } from '@/features/auth/auth-ui';
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ redirect?: string }>;
-}) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ redirect?: string }> }) {
   const user = await getUser();
 
   if (user) {

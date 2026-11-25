@@ -56,24 +56,24 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   const accessPin = await getContestPinForOwner(contestId);
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Back link */}
       <Link
         href={`/dashboard/${contestId}`}
-        className="inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
+        className='inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white'
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className='h-4 w-4' />
         Back to Contest
       </Link>
 
       {/* Page Title */}
       <div>
-        <h1 className="text-2xl font-bold text-white lg:text-3xl">Contest Settings</h1>
-        <p className="mt-1 text-sm text-zinc-400">{contest.name}</p>
+        <h1 className='text-2xl font-bold text-white lg:text-3xl'>Contest Settings</h1>
+        <p className='mt-1 text-sm text-zinc-400'>{contest.name}</p>
       </div>
 
       {/* Settings Sections */}
-      <div className="space-y-6">
+      <div className='space-y-6'>
         <BasicInfoSection contest={contest} />
         <ContestStatusSection contest={contest} />
         <PricingPayoutsSection contest={contest} />
@@ -87,4 +87,3 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
     </div>
   );
 }
-

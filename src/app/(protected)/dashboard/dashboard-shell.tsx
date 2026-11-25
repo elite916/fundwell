@@ -64,7 +64,7 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
             </div>
 
             {/* Navigation */}
-            <nav className='flex-1 space-y-1 px-3 py-4'>
+            <nav className='space-y-1 flex-1 px-3 py-4'>
               <NavItems isAdmin={isAdmin} />
             </nav>
 
@@ -94,7 +94,7 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
                       <Logo size='md' href={undefined} />
                     </SheetTitle>
                   </SheetHeader>
-                  <nav className='flex-1 space-y-1 px-3 py-4'>
+                  <nav className='space-y-1 flex-1 px-3 py-4'>
                     <NavItems isAdmin={isAdmin} onClick={() => setMobileNavOpen(false)} />
                   </nav>
                   <div className='border-t border-zinc-800 p-4'>
@@ -140,7 +140,10 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
                   <Link href='/dashboard/billing'>Billing</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className='bg-zinc-700' />
-                <DropdownMenuItem asChild className='cursor-pointer p-0 text-zinc-300 focus:bg-zinc-700 focus:text-white'>
+                <DropdownMenuItem
+                  asChild
+                  className='cursor-pointer p-0 text-zinc-300 focus:bg-zinc-700 focus:text-white'
+                >
                   <form action={handleSignOut} className='w-full'>
                     <button type='submit' className='w-full px-2 py-1.5 text-left'>
                       Log out

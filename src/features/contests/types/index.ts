@@ -16,4 +16,3 @@ export type PaymentOptionType = Database['public']['Enums']['payment_option_type
 
 export type Score = Database['public']['Tables']['scores']['Row'];
 export type GameQuarter = Database['public']['Enums']['game_quarter'];
-

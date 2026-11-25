@@ -5,7 +5,10 @@ import { ContestPrizeFields } from '../types';
 type GameQuarter = Database['public']['Enums']['game_quarter'];
 
 /** @deprecated Use ContestPrizeFields instead */
-export type PrizeTexts = Pick<ContestPrizeFields, 'prize_q1_text' | 'prize_q2_text' | 'prize_q3_text' | 'prize_final_text'>;
+export type PrizeTexts = Pick<
+  ContestPrizeFields,
+  'prize_q1_text' | 'prize_q2_text' | 'prize_q3_text' | 'prize_final_text'
+>;
 
 /**
  * Returns the prize text for a given quarter when prize_type is 'custom', or null otherwise.

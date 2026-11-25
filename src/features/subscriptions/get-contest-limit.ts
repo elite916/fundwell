@@ -13,10 +13,7 @@ type ContestLimitResult = {
 
 export async function getContestLimit(userId: string): Promise<ContestLimitResult> {
   try {
-    const [isSubscribed, supabase] = await Promise.all([
-      hasActiveSubscription(userId),
-      createSupabaseServerClient(),
-    ]);
+    const [isSubscribed, supabase] = await Promise.all([hasActiveSubscription(userId), createSupabaseServerClient()]);
 
     const { count, error } = await supabase
       .from('contests')

@@ -60,4 +60,3 @@ async function logEmail(params: SendEmailSafeParams, status: 'sent' | 'failed', 
     logger.error('logEmail', error, { emailType: params.emailType, contestId: params.contestId });
   }
 }
-

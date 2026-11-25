@@ -31,7 +31,12 @@ export function PlayerTrackingSection({ contest, squaresPerPlayer = {} }: Player
   const [localPlayers, setLocalPlayers] = useState<Player[]>(players);
   const [isEnabled, setIsEnabled] = useState(contest.enable_player_tracking);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<{ name: string; number?: string }>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<{ name: string; number?: string }>({
     defaultValues: { name: '', number: '' },
   });
 
@@ -141,94 +146,85 @@ export function PlayerTrackingSection({ contest, squaresPerPlayer = {} }: Player
   };
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900">
+    <Card className='border-zinc-800 bg-zinc-900'>
       <CardHeader>
-        <CardTitle className="text-white">Player Tracking</CardTitle>
+        <CardTitle className='text-white'>Player Tracking</CardTitle>
         <CardDescription>Track which team members sell squares</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className='space-y-6'>
         {/* Enable Toggle */}
-        <div className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-          <div className="space-y-0.5">
-            <Label htmlFor="enable_tracking" className="text-base">Enable player tracking</Label>
-            <p className="text-sm text-zinc-400">
-              Give each team member a unique link to track their sales
-            </p>
+        <div className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+          <div className='space-y-0.5'>
+            <Label htmlFor='enable_tracking' className='text-base'>
+              Enable player tracking
+            </Label>
+            <p className='text-sm text-zinc-400'>Give each team member a unique link to track their sales</p>
           </div>
-          <Switch
-            id="enable_tracking"
-            checked={isEnabled}
-            onCheckedChange={handleToggle}
-            disabled={isPending}
-          />
+          <Switch id='enable_tracking' checked={isEnabled} onCheckedChange={handleToggle} disabled={isPending} />
         </div>
 
         {/* Player Management */}
         {isEnabled && (
           <>
             {/* Add Player Form */}
-            <form onSubmit={handleSubmit(handleAddPlayer)} className="space-y-3">
+            <form onSubmit={handleSubmit(handleAddPlayer)} className='space-y-3'>
               <Label>Add Team Member</Label>
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Input
-                  placeholder="Name"
+                  placeholder='Name'
                   {...register('name', { required: true })}
-                  className="border-zinc-700 bg-zinc-800 flex-1"
+                  className='flex-1 border-zinc-700 bg-zinc-800'
                 />
                 <Input
-                  placeholder="# (optional)"
-                  type="number"
+                  placeholder='# (optional)'
+                  type='number'
                   {...register('number')}
-                  className="border-zinc-700 bg-zinc-800 w-24"
+                  className='w-24 border-zinc-700 bg-zinc-800'
                 />
-                <Button type="submit" disabled={isPending}>
-                  {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                  <span className="ml-1">Add</span>
+                <Button type='submit' disabled={isPending}>
+                  {isPending ? <Loader2 className='h-4 w-4 animate-spin' /> : <Plus className='h-4 w-4' />}
+                  <span className='ml-1'>Add</span>
                 </Button>
               </div>
             </form>
 
             {/* Player List */}
             {localPlayers.length > 0 && (
-              <div className="space-y-2">
+              <div className='space-y-2'>
                 <Label>Team Members</Label>
-                <div className="space-y-2">
+                <div className='space-y-2'>
                   {localPlayers.map((player) => (
                     <div
                       key={player.slug}
-                      className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-3"
+                      className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-3'
                     >
-                      <div className="flex-1">
-                        <p className="font-medium text-white">
+                      <div className='flex-1'>
+                        <p className='font-medium text-white'>
                           {player.name}
-                          {player.number !== undefined && (
-                            <span className="ml-2 text-zinc-400">#{player.number}</span>
-                          )}
+                          {player.number !== undefined && <span className='ml-2 text-zinc-400'>#{player.number}</span>}
                         </p>
-                        <p className="text-xs text-zinc-500">
-                          {squaresPerPlayer[player.name] || 0} squares sold
-                        </p>
+                        <p className='text-xs text-zinc-500'>{squaresPerPlayer[player.name] || 0} squares sold</p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className='flex items-center gap-2'>
                         <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
+                          type='button'
+                          variant='outline'
+                          size='sm'
                           onClick={() => copyLink(player)}
-                          className="border-zinc-700"
+                          className='border-zinc-700'
                         >
-                          <Copy className="h-3 w-3 mr-1" />
+                          <Copy className='mr-1 h-3 w-3' />
                           Copy Link
                         </Button>
                         <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
+                          type='button'
+                          variant='ghost'
+                          size='sm'
                           onClick={() => handleRemovePlayer(player.slug)}
                           disabled={isPending}
-                          className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                          className='text-red-400 hover:bg-red-900/20 hover:text-red-300'
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className='h-4 w-4' />
                         </Button>
                       </div>
                     </div>
@@ -238,7 +234,7 @@ export function PlayerTrackingSection({ contest, squaresPerPlayer = {} }: Player
             )}
 
             {localPlayers.length === 0 && (
-              <p className="text-sm text-zinc-500 text-center py-4">
+              <p className='py-4 text-center text-sm text-zinc-500'>
                 No team members added yet. Add players above to generate referral links.
               </p>
             )}
@@ -248,4 +244,3 @@ export function PlayerTrackingSection({ contest, squaresPerPlayer = {} }: Player
     </Card>
   );
 }
-

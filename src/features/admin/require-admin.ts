@@ -6,7 +6,11 @@ import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
  * which has RLS on and no policies, so only the service role can read it.
  */
 export async function isAdmin(userId: string): Promise<boolean> {
-  const { data, error } = await supabaseAdminClient.from('admins').select('user_id').eq('user_id', userId).maybeSingle();
+  const { data, error } = await supabaseAdminClient
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', userId)
+    .maybeSingle();
 
   return !error && !!data;
 }

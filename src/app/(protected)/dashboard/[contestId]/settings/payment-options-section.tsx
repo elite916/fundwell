@@ -122,9 +122,7 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
     // Update state with new type and cleared fields
     setOptions(
       options.map((opt) =>
-        opt.id === id
-          ? { ...opt, type: newType, handle_or_link: '', account_last_4_digits: '', qr_code_url: '' }
-          : opt
+        opt.id === id ? { ...opt, type: newType, handle_or_link: '', account_last_4_digits: '', qr_code_url: '' } : opt
       )
     );
     setHasChanges(true);
@@ -238,9 +236,7 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
 
     try {
       // First, update the database to clear qr_code_url
-      const updatedOptions = options.map((opt) =>
-        opt.id === optionId ? { ...opt, qr_code_url: '' } : opt
-      );
+      const updatedOptions = options.map((opt) => (opt.id === optionId ? { ...opt, qr_code_url: '' } : opt));
 
       setIsSavingQr(true);
       const saveResult = await updatePaymentOptions(
@@ -300,9 +296,7 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
   };
 
   const handleChange = (id: string, field: keyof LocalPaymentOption, value: string) => {
-    setOptions(
-      options.map((opt) => (opt.id === id ? { ...opt, [field]: value } : opt))
-    );
+    setOptions(options.map((opt) => (opt.id === id ? { ...opt, [field]: value } : opt)));
     setHasChanges(true);
   };
 
@@ -368,71 +362,60 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
   const getFieldConfig = (type: PaymentOptionType) => PAYMENT_FIELD_CONFIG[type];
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900">
+    <Card className='border-zinc-800 bg-zinc-900'>
       <CardHeader>
-        <CardTitle className="text-white">Payment Options</CardTitle>
-        <CardDescription>
-          Add payment methods for participants to pay for their squares.
-        </CardDescription>
+        <CardTitle className='text-white'>Payment Options</CardTitle>
+        <CardDescription>Add payment methods for participants to pay for their squares.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {options.length === 0 && (
-          <p className="text-sm text-zinc-500">
-            No payment options added yet. Add one below.
-          </p>
-        )}
+      <CardContent className='space-y-4'>
+        {options.length === 0 && <p className='text-sm text-zinc-500'>No payment options added yet. Add one below.</p>}
 
         {options.map((option, index) => (
-          <div
-            key={option.id}
-            className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4 space-y-4"
-          >
-            <div className="flex items-center justify-between">
-              <Label className="text-base">Payment Option {index + 1}</Label>
-              <div className="flex gap-1">
+          <div key={option.id} className='space-y-4 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+            <div className='flex items-center justify-between'>
+              <Label className='text-base'>Payment Option {index + 1}</Label>
+              <div className='flex gap-1'>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                  type='button'
+                  variant='ghost'
+                  size='sm'
                   onClick={() => handleMoveUp(index)}
                   disabled={index === 0}
-                  className="h-8 w-8 p-0 text-zinc-400 hover:text-white"
+                  className='h-8 w-8 p-0 text-zinc-400 hover:text-white'
                 >
-                  <ArrowUp className="h-4 w-4" />
+                  <ArrowUp className='h-4 w-4' />
                 </Button>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                  type='button'
+                  variant='ghost'
+                  size='sm'
                   onClick={() => handleMoveDown(index)}
                   disabled={index === options.length - 1}
-                  className="h-8 w-8 p-0 text-zinc-400 hover:text-white"
+                  className='h-8 w-8 p-0 text-zinc-400 hover:text-white'
                 >
-                  <ArrowDown className="h-4 w-4" />
+                  <ArrowDown className='h-4 w-4' />
                 </Button>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                  type='button'
+                  variant='ghost'
+                  size='sm'
                   onClick={() => handleRemove(option.id)}
-                  className="h-8 w-8 p-0 text-red-400 hover:bg-red-950 hover:text-red-300"
+                  className='h-8 w-8 p-0 text-red-400 hover:bg-red-950 hover:text-red-300'
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className='h-4 w-4' />
                 </Button>
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className='grid gap-4 sm:grid-cols-2'>
               {/* Type */}
-              <div className="space-y-2">
+              <div className='space-y-2'>
                 <Label htmlFor={`type-${option.id}`}>Type</Label>
                 <select
                   id={`type-${option.id}`}
                   value={option.type}
-                  onChange={(e) =>
-                    handleTypeChange(option.id, e.target.value as PaymentOptionType)
-                  }
-                  className="flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                  onChange={(e) => handleTypeChange(option.id, e.target.value as PaymentOptionType)}
+                  className='flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-hidden'
                 >
                   {PAYMENT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -443,25 +426,21 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
               </div>
 
               {/* Dynamic Handle Field */}
-              <div className="space-y-2">
-                <Label htmlFor={`handle-${option.id}`}>
-                  {getFieldConfig(option.type).label} *
-                </Label>
+              <div className='space-y-2'>
+                <Label htmlFor={`handle-${option.id}`}>{getFieldConfig(option.type).label} *</Label>
                 <Input
                   id={`handle-${option.id}`}
                   value={option.handle_or_link}
                   onChange={(e) => handleChange(option.id, 'handle_or_link', e.target.value)}
-                  className="border-zinc-700 bg-zinc-800"
+                  className='border-zinc-700 bg-zinc-800'
                   placeholder={getFieldConfig(option.type).placeholder}
                 />
-                <p className="text-xs text-zinc-500">
-                  {getFieldConfig(option.type).helpText}
-                </p>
+                <p className='text-xs text-zinc-500'>{getFieldConfig(option.type).helpText}</p>
               </div>
 
               {/* Last 4 Digits (Venmo only) */}
               {getFieldConfig(option.type).hasLast4 && (
-                <div className="space-y-2">
+                <div className='space-y-2'>
                   <Label htmlFor={`last4-${option.id}`}>Last 4 Digits of Phone</Label>
                   <Input
                     id={`last4-${option.id}`}
@@ -470,92 +449,92 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
                       const val = e.target.value.replace(/\D/g, '').slice(0, 4);
                       handleChange(option.id, 'account_last_4_digits', val);
                     }}
-                    className="border-zinc-700 bg-zinc-800"
-                    placeholder="1234"
+                    className='border-zinc-700 bg-zinc-800'
+                    placeholder='1234'
                     maxLength={4}
                   />
                 </div>
               )}
 
               {/* Display Name */}
-              <div className="space-y-2">
+              <div className='space-y-2'>
                 <Label htmlFor={`display-${option.id}`}>Display Name</Label>
                 <Input
                   id={`display-${option.id}`}
                   value={option.display_name}
                   onChange={(e) => handleChange(option.id, 'display_name', e.target.value)}
-                  className="border-zinc-700 bg-zinc-800"
-                  placeholder="Optional label shown to participants"
+                  className='border-zinc-700 bg-zinc-800'
+                  placeholder='Optional label shown to participants'
                 />
               </div>
 
               {/* Instructions */}
-              <div className="space-y-2">
+              <div className='space-y-2'>
                 <Label htmlFor={`instructions-${option.id}`}>Instructions</Label>
                 <Input
                   id={`instructions-${option.id}`}
                   value={option.instructions}
                   onChange={(e) => handleChange(option.id, 'instructions', e.target.value)}
-                  className="border-zinc-700 bg-zinc-800"
-                  placeholder="Include your name in the note"
+                  className='border-zinc-700 bg-zinc-800'
+                  placeholder='Include your name in the note'
                 />
               </div>
             </div>
 
             {/* QR Code Upload */}
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>QR Code (Optional)</Label>
-              <div className="flex items-center gap-4">
+              <div className='flex items-center gap-4'>
                 {option.qr_code_url ? (
-                  <div className="relative">
+                  <div className='relative'>
                     <Image
                       src={option.qr_code_url}
-                      alt="Payment QR Code"
+                      alt='Payment QR Code'
                       width={80}
                       height={80}
-                      className="rounded-md border border-zinc-700"
+                      className='rounded-md border border-zinc-700'
                     />
                     <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
+                      type='button'
+                      variant='ghost'
+                      size='sm'
                       onClick={() => handleQrDelete(option.id, option.qr_code_url)}
-                      className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-red-600 p-0 text-white hover:bg-red-700"
+                      className='absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-600 p-0 text-white hover:bg-red-700'
                     >
-                      <X className="h-3 w-3" />
+                      <X className='h-3 w-3' />
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex h-20 w-20 items-center justify-center rounded-md border border-dashed border-zinc-700 bg-zinc-800/50">
-                    <ImagePlus className="h-6 w-6 text-zinc-500" />
+                  <div className='flex h-20 w-20 items-center justify-center rounded-md border border-dashed border-zinc-700 bg-zinc-800/50'>
+                    <ImagePlus className='h-6 w-6 text-zinc-500' />
                   </div>
                 )}
-                <div className="flex flex-col gap-2">
+                <div className='flex flex-col gap-2'>
                   <input
                     ref={(el) => {
                       fileInputRefs.current[option.id] = el;
                     }}
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp"
+                    type='file'
+                    accept='image/png,image/jpeg,image/webp'
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleQrUpload(option.id, file);
                       e.target.value = '';
                     }}
-                    className="hidden"
+                    className='hidden'
                     disabled={option.id.startsWith('new-')}
                   />
                   <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
+                    type='button'
+                    variant='outline'
+                    size='sm'
                     onClick={() => fileInputRefs.current[option.id]?.click()}
                     disabled={uploadingQrId === option.id || option.id.startsWith('new-')}
-                    className="border-zinc-700"
+                    className='border-zinc-700'
                   >
                     {uploadingQrId === option.id ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                         Uploading...
                       </>
                     ) : option.qr_code_url ? (
@@ -565,9 +544,9 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
                     )}
                   </Button>
                   {option.id.startsWith('new-') ? (
-                    <p className="text-xs text-amber-500">Save the payment option first</p>
+                    <p className='text-xs text-amber-500'>Save the payment option first</p>
                   ) : (
-                    <p className="text-xs text-zinc-500">PNG, JPG, or WebP. Max 2MB.</p>
+                    <p className='text-xs text-zinc-500'>PNG, JPG, or WebP. Max 2MB.</p>
                   )}
                 </div>
               </div>
@@ -576,20 +555,15 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
         ))}
 
         {/* Add Button */}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleAdd}
-          className="w-full border-dashed border-zinc-700"
-        >
-          <Plus className="mr-2 h-4 w-4" />
+        <Button type='button' variant='outline' onClick={handleAdd} className='w-full border-dashed border-zinc-700'>
+          <Plus className='mr-2 h-4 w-4' />
           Add Payment Option
         </Button>
 
         {/* Save Button */}
-        <div className="flex justify-end pt-4">
+        <div className='flex justify-end pt-4'>
           <Button onClick={handleSave} disabled={isPending || !hasChanges}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             Save Changes
           </Button>
         </div>
@@ -597,4 +571,3 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
     </Card>
   );
 }
-

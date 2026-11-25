@@ -22,14 +22,9 @@ export default async function NewContestPage() {
 
   // User cannot create - fetch products to get Pro pricing
   const products = await getProducts();
-  const proProduct = products.find(
-    (p) => (p.metadata as Record<string, string> | null)?.price_card_variant === 'pro'
-  );
+  const proProduct = products.find((p) => (p.metadata as Record<string, string> | null)?.price_card_variant === 'pro');
 
-  const monthlyPrice = proProduct?.prices?.find(
-    (price) => price.interval === 'month'
-  ) ?? null;
+  const monthlyPrice = proProduct?.prices?.find((price) => price.interval === 'month') ?? null;
 
   return <UpgradeLimitReached currentCount={currentCount} proPrice={monthlyPrice} />;
 }
-

@@ -23,10 +23,7 @@ function sanitizeHandle(handle: string): string | null {
   return trimmed;
 }
 
-export function generatePaymentUrl(
-  type: PaymentType,
-  handle: string
-): string | null {
+export function generatePaymentUrl(type: PaymentType, handle: string): string | null {
   const sanitized = sanitizeHandle(handle);
 
   if (!sanitized) {
@@ -46,4 +43,3 @@ export function generatePaymentUrl(
       return null;
   }
 }
-

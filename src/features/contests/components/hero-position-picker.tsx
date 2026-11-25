@@ -30,7 +30,7 @@ const positionLabels: Record<HeroImagePosition, string> = {
   'top-center': 'Top Center',
   'top-right': 'Top Right',
   'center-left': 'Center Left',
-  'center': 'Center',
+  center: 'Center',
   'center-right': 'Center Right',
   'bottom-left': 'Bottom Left',
   'bottom-center': 'Bottom Center',
@@ -44,8 +44,8 @@ export function HeroPositionPicker({ value, onChange, disabled }: HeroPositionPi
         'relative grid h-32 w-32 grid-cols-3 place-items-center gap-3 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4',
         disabled && 'opacity-50'
       )}
-      role="radiogroup"
-      aria-label="Hero image position"
+      role='radiogroup'
+      aria-label='Hero image position'
     >
       {POSITIONS.map((row, rowIndex) =>
         row.map((position) => {
@@ -53,15 +53,15 @@ export function HeroPositionPicker({ value, onChange, disabled }: HeroPositionPi
           return (
             <button
               key={position}
-              type="button"
+              type='button'
               onClick={() => !disabled && onChange(position)}
               disabled={disabled}
               aria-label={positionLabels[position]}
               aria-checked={isSelected}
-              role="radio"
+              role='radio'
               className={cn(
                 'flex items-center justify-center rounded-full transition-all',
-                'focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-800',
+                'focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-800 focus:outline-hidden',
                 !disabled && 'cursor-pointer hover:scale-110',
                 isSelected
                   ? 'h-3.5 w-3.5 bg-orange-500 ring-2 ring-orange-500 ring-offset-1 ring-offset-zinc-800'
@@ -74,4 +74,3 @@ export function HeroPositionPicker({ value, onChange, disabled }: HeroPositionPi
     </div>
   );
 }
-

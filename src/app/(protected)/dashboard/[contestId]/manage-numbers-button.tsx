@@ -31,8 +31,8 @@ export function ManageNumbersButton({ contest }: ManageNumbersButtonProps) {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
-        <Hash className="mr-2 h-4 w-4" />
+      <Button variant='outline' size='sm' onClick={() => setIsOpen(true)}>
+        <Hash className='mr-2 h-4 w-4' />
         Manage Numbers
       </Button>
 
@@ -45,4 +45,3 @@ export function ManageNumbersButton({ contest }: ManageNumbersButtonProps) {
     </>
   );
 }
-

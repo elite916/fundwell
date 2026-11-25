@@ -11,10 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/components/ui/use-toast';
 import { createContest } from '@/features/contests/actions/create-contest';
 import type { CreateContestInput } from '@/features/contests/models/contest';
-import {
-  createContestSchema,
-  defaultContestValues,
-} from '@/features/contests/models/contest';
+import { createContestSchema, defaultContestValues } from '@/features/contests/models/contest';
 import { cn } from '@/utils/cn';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -122,70 +119,55 @@ export function NewContestForm() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className='mx-auto max-w-3xl'>
       {/* Header */}
-      <div className="mb-8">
+      <div className='mb-8'>
         <Link
-          href="/dashboard"
-          className="mb-4 inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
+          href='/dashboard'
+          className='mb-4 inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white'
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className='h-4 w-4' />
           Back to Dashboard
         </Link>
-        <h1 className="text-2xl font-bold text-white lg:text-3xl">Create New Contest</h1>
-        <p className="mt-2 text-zinc-400">Set up your game day squares fundraiser in a few easy steps.</p>
+        <h1 className='text-2xl font-bold text-white lg:text-3xl'>Create New Contest</h1>
+        <p className='mt-2 text-zinc-400'>Set up your game day squares fundraiser in a few easy steps.</p>
       </div>
 
       {/* Step Indicator */}
-      <nav aria-label="Progress" className="mb-8">
-        <ol className="flex items-center">
+      <nav aria-label='Progress' className='mb-8'>
+        <ol className='flex items-center'>
           {STEPS.map((step, index) => (
             <li key={step.id} className={cn('relative', index !== STEPS.length - 1 && 'flex-1')}>
-              <div className="flex items-center">
+              <div className='flex items-center'>
                 {/* Step Circle */}
                 <button
-                  type="button"
+                  type='button'
                   onClick={() => step.id < currentStep && setCurrentStep(step.id)}
                   disabled={step.id > currentStep}
                   className={cn(
                     'relative flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all',
-                    step.id === currentStep &&
-                      'bg-orange-500 text-white ring-4 ring-orange-500/20',
-                    step.id < currentStep &&
-                      'bg-orange-500 text-white hover:bg-orange-400',
-                    step.id > currentStep &&
-                      'border-2 border-zinc-700 bg-zinc-900 text-zinc-500'
+                    step.id === currentStep && 'bg-orange-500 text-white ring-4 ring-orange-500/20',
+                    step.id < currentStep && 'bg-orange-500 text-white hover:bg-orange-400',
+                    step.id > currentStep && 'border-2 border-zinc-700 bg-zinc-900 text-zinc-500'
                   )}
                 >
-                  {step.id < currentStep ? (
-                    <Check className="h-5 w-5" />
-                  ) : (
-                    step.id
-                  )}
+                  {step.id < currentStep ? <Check className='h-5 w-5' /> : step.id}
                 </button>
 
                 {/* Connector Line */}
                 {index !== STEPS.length - 1 && (
-                  <div
-                    className={cn(
-                      'ml-4 h-0.5 flex-1',
-                      step.id < currentStep ? 'bg-orange-500' : 'bg-zinc-700'
-                    )}
-                  />
+                  <div className={cn('ml-4 h-0.5 flex-1', step.id < currentStep ? 'bg-orange-500' : 'bg-zinc-700')} />
                 )}
               </div>
 
               {/* Step Label (visible on md+) */}
-              <div className="mt-2 hidden md:block">
+              <div className='mt-2 hidden md:block'>
                 <span
-                  className={cn(
-                    'text-sm font-medium',
-                    step.id === currentStep ? 'text-orange-500' : 'text-zinc-400'
-                  )}
+                  className={cn('text-sm font-medium', step.id === currentStep ? 'text-orange-500' : 'text-zinc-400')}
                 >
                   {step.name}
                 </span>
-                <p className="text-xs text-zinc-500">{step.description}</p>
+                <p className='text-xs text-zinc-500'>{step.description}</p>
               </div>
             </li>
           ))}
@@ -195,12 +177,12 @@ export function NewContestForm() {
       {/* Form Card */}
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Card className="border-zinc-800 bg-zinc-900">
+          <Card className='border-zinc-800 bg-zinc-900'>
             <CardHeader>
-              <CardTitle className="text-white">{STEPS[currentStep - 1].name}</CardTitle>
+              <CardTitle className='text-white'>{STEPS[currentStep - 1].name}</CardTitle>
               <CardDescription>{STEPS[currentStep - 1].description}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className='space-y-6'>
               {/* Step Content */}
               {currentStep === 1 && <BasicInfoStep />}
               {currentStep === 2 && <SettingsStep />}
@@ -209,41 +191,33 @@ export function NewContestForm() {
           </Card>
 
           {/* Navigation Buttons */}
-          <div className="mt-6 flex items-center justify-between">
+          <div className='mt-6 flex items-center justify-between'>
             <Button
-              type="button"
-              variant="default"
+              type='button'
+              variant='default'
               onClick={handleBack}
               disabled={currentStep === 1}
               className={cn(currentStep === 1 && 'invisible')}
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className='mr-2 h-4 w-4' />
               Back
             </Button>
 
             {currentStep < STEPS.length ? (
-              <Button
-                type="button"
-                variant="orange"
-                onClick={handleNext}
-              >
+              <Button type='button' variant='orange' onClick={handleNext}>
                 Next
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className='ml-2 h-4 w-4' />
               </Button>
             ) : (
-              <Button
-                type="submit"
-                variant="orange"
-                disabled={isSubmitting}
-              >
+              <Button type='submit' variant='orange' disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent' />
                     Creating...
                   </>
                 ) : (
                   <>
-                    <Check className="mr-2 h-4 w-4" />
+                    <Check className='mr-2 h-4 w-4' />
                     Create Contest
                   </>
                 )}
@@ -255,4 +229,3 @@ export function NewContestForm() {
     </div>
   );
 }
-
