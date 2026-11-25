@@ -1,3 +1,4 @@
+import { MarketingHeader } from '@/components/layout/marketing-header';
 import { organizerColors } from '@/components/studio/color';
 import { OrganizerHeader } from '@/components/studio/shell/organizer-header';
 import { StudioPage } from '@/components/studio/shell/studio-page';
@@ -32,7 +33,11 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
 
   if (!contest) {
     return (
-      <ContestMessage title='Contest Not Found' action={<TextLink href='/'>Back to Home</TextLink>}>
+      <ContestMessage
+        header={<MarketingHeader />}
+        title='Contest Not Found'
+        action={<TextLink href='/'>Back to Home</TextLink>}
+      >
         The contest you&apos;re looking for doesn&apos;t exist or may have been removed.
       </ContestMessage>
     );
@@ -137,6 +142,7 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
             contestName={contest.name}
             imageUrl={contest.hero_image_url}
             imagePosition={contest.hero_image_position}
+            logoUrl={contest.org_image_url}
             description={contest.description}
           />
         }
