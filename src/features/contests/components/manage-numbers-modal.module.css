@@ -112,6 +112,7 @@
     grid-row: 3 / 13;
     grid-column: 3 / -1;
     place-items: center;
+    aspect-ratio: 1;
     border-radius: 8px;
     background: var(--studio-bed);
   }

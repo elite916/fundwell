@@ -20,16 +20,6 @@ async function handleSignOut() {
   await signOut();
 }
 
-function LogoutButton({ onClick }: { onClick?: () => void }) {
-  return (
-    <form action={handleSignOut}>
-      <button type='submit' onClick={onClick} className={css.item}>
-        Log out
-      </button>
-    </form>
-  );
-}
-
 interface DashboardShellProps {
   children: React.ReactNode;
   userEmail: string;
@@ -39,7 +29,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: DashboardShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const menuLogoutRef = useRef<HTMLFormElement>(null);
+  const logoutRef = useRef<HTMLFormElement>(null);
 
   return (
     <div className={css.shell}>
@@ -56,7 +46,11 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
           <nav aria-label='Main' className={css.nav}>
             <NavItems isAdmin={isAdmin} className={css.item} />
           </nav>
-          <LogoutButton />
+          <form action={handleSignOut}>
+            <button type='submit' className={css.item}>
+              Log out
+            </button>
+          </form>
         </div>
       </aside>
 
@@ -77,7 +71,16 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
                   <nav aria-label='Menu' className={css.nav}>
                     <NavItems isAdmin={isAdmin} className={css.item} onClick={() => setMobileNavOpen(false)} />
                   </nav>
-                  <LogoutButton onClick={() => setMobileNavOpen(false)} />
+                  <button
+                    type='button'
+                    onClick={() => {
+                      logoutRef.current?.requestSubmit();
+                      setMobileNavOpen(false);
+                    }}
+                    className={css.item}
+                  >
+                    Log out
+                  </button>
                   <Dialog.Close asChild>
                     <IconButton label='Close' className={css.close}>
                       <X aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
@@ -113,14 +116,14 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
                 <DropdownMenu.Item asChild className={css.menuItem}>
                   <Link href='/dashboard/billing'>Billing</Link>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item className={css.menuItem} onSelect={() => menuLogoutRef.current?.requestSubmit()}>
+                <DropdownMenu.Item className={css.menuItem} onSelect={() => logoutRef.current?.requestSubmit()}>
                   Log out
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
-          {/* Outside the menu, so the menu closing doesn't take the form away before it is sent */}
-          <form ref={menuLogoutRef} action={handleSignOut} hidden />
+          {/* Outside the menu and the drawer, so closing one doesn't take the form away before it is sent */}
+          <form ref={logoutRef} action={handleSignOut} hidden />
         </header>
 
         <main id='main' tabIndex={-1} className={css.main}>

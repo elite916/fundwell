@@ -51,7 +51,8 @@ export function ManageBoard<T extends GridSquare>({ onSelect, className, ...data
             type='button'
             data-cell={index}
             tabIndex={index === tabStop ? 0 : -1}
-            aria-label={cell.label}
+            // Starts with the letters on the tile, so people who use their voice can say what they see
+            aria-label={[cell.initials, cell.label].filter(Boolean).join(', ')}
             title={titleOf(cell)}
             className={tileClass(cell, css.manageable)}
             onFocus={() => setTabStop(index)}

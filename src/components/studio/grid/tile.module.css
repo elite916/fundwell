@@ -134,6 +134,11 @@
     .tile {
       font-size: 15px;
     }
+    .pending::after {
+      width: 6px;
+      height: 6px;
+      margin-left: -3px;
+    }
   }
 
   /* A loose tile, the size of a line of text: legends and sheet headings */

@@ -89,7 +89,7 @@ export function DashWait({ text }: { text: string }) {
 
 interface DashEmptyProps {
   title: ReactNode;
-  text: ReactNode;
+  text?: ReactNode;
   /** Small print under the buttons. */
   fine?: ReactNode;
   /** Buttons. */
@@ -110,7 +110,7 @@ function Blank({ title, text, fine, buttons }: Omit<DashEmptyProps, 'children'> 
   return (
     <div className={css.empty}>
       {title}
-      <p className={css.soft}>{text}</p>
+      {text && <p className={css.soft}>{text}</p>}
       {buttons && <div className={css.buttons}>{buttons}</div>}
       {fine && <p className={css.fine}>{fine}</p>}
     </div>
