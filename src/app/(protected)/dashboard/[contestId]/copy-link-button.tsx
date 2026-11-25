@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ShareIcon } from 'lucide-react';
 
-import { ShareQrModal } from '@/components/shared';
-import { Button } from '@/components/ui/button';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
+
+import { ShareDialog } from './share-dialog';
 
 interface CopyLinkButtonProps {
   url: string;
@@ -17,12 +17,11 @@ export function CopyLinkButton({ url, code, contestName }: CopyLinkButtonProps) 
 
   return (
     <>
-      <Button variant='orange' size='sm' className='px-4' onClick={() => setIsModalOpen(true)}>
-        <ShareIcon className='mr-2 size-4 shrink-0' />
+      <DashButton look='quiet' onClick={() => setIsModalOpen(true)}>
         Share
-      </Button>
+      </DashButton>
 
-      <ShareQrModal
+      <ShareDialog
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         contestUrl={url}

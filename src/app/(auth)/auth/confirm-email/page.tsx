@@ -4,10 +4,12 @@ import { useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-import { Logo } from '@/components/logo';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/studio/button';
 import { toast } from '@/components/ui/use-toast';
 import { resendMagicLink } from '@/features/auth/auth-actions';
+import { useTurnstile } from '@/features/auth/turnstile';
+
+import css from '@/features/auth/auth.module.css';
 
 export default function ConfirmEmailPage() {
   const searchParams = useSearchParams();
@@ -16,6 +18,7 @@ export default function ConfirmEmailPage() {
   const [canResend, setCanResend] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [isPending, startTransition] = useTransition();
+  const captcha = useTurnstile();
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -34,7 +37,8 @@ export default function ConfirmEmailPage() {
     if (!email) return;
 
     startTransition(async () => {
-      const response = await resendMagicLink(email, redirectTo);
+      const response = await resendMagicLink(email, redirectTo, captcha.token);
+      captcha.reset();
 
       if (response?.error) {
         toast({
@@ -52,53 +56,29 @@ export default function ConfirmEmailPage() {
   }
 
   return (
-    <section className='py-xl m-auto flex h-full max-w-lg items-center'>
-      <div className='relative mt-16 flex w-full flex-col gap-8 overflow-hidden rounded-2xl border border-zinc-800 p-8 text-center md:p-12'>
-        {/* Background decorative elements */}
-        <div className='absolute inset-0 -z-10'>
-          <div className='absolute top-0 right-0 h-[300px] w-[300px] rounded-full blur-3xl' />
-          <div className='absolute bottom-0 left-0 h-[250px] w-[250px] rounded-full blur-3xl' />
-        </div>
+    <section className={css.wrap}>
+      <div className={css.box}>
+        <h1 className={css.title}>Check your email</h1>
+        <p className={css.lead}>
+          We sent a magic link to <b>{email}</b>. Click the link in the email to continue.
+        </p>
 
-        <div className='flex flex-col gap-4'>
-          <Logo size='lg' className='m-auto' />
-          <h1 className='text-2xl font-bold text-fundwell-text md:text-3xl'>Check your email</h1>
-          <p className='text-zinc-400'>
-            We sent a magic link to <span className='font-medium text-fundwell-text'>{email}</span>. Click the link in
-            the email to continue.
-          </p>
-        </div>
-
-        <ul className='space-y-2 text-left text-sm text-zinc-400'>
-          <li className='flex items-start gap-2'>
-            <span className='text-fundwell-primary'>•</span>
-            The link expires in 1 hour
-          </li>
-          <li className='flex items-start gap-2'>
-            <span className='text-fundwell-primary'>•</span>
-            Check your spam folder if you don&apos;t see it
-          </li>
-          <li className='flex items-start gap-2'>
-            <span className='text-fundwell-primary'>•</span>
-            You can close this page after clicking the link
-          </li>
+        <ul className={css.list}>
+          <li>The link expires in 1 hour</li>
+          <li>Check your spam folder if you don&apos;t see it</li>
+          <li>You can close this page after clicking the link</li>
         </ul>
 
-        <div className='flex flex-col gap-4'>
-          <Button
-            variant='orange'
-            size='lg'
-            className='w-full text-base font-semibold'
-            onClick={handleResend}
-            disabled={!canResend || isPending || !email}
-          >
+        <div className={css.stack}>
+          {captcha.widget}
+          <Button onClick={handleResend} disabled={!canResend || isPending || !email || captcha.waiting}>
             {canResend ? 'Resend email' : `Resend email in ${countdown}s`}
           </Button>
-
-          <Link href='/login' className='text-sm text-zinc-400 underline transition-colors hover:text-fundwell-primary'>
-            Back to login
-          </Link>
         </div>
+
+        <p className={css.small}>
+          <Link href='/login'>Back to login</Link>
+        </p>
       </div>
     </section>
   );

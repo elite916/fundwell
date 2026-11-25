@@ -114,7 +114,7 @@ function generateNumbersRevealedEmail({
                           (square) => `
                       <tr>
                         <td style="padding: 8px 0; color: #fafafa; font-size: 14px;">
-                          Row ${square.rowIndex}, Column ${square.colIndex}
+                          Row ${square.rowIndex + 1}, Column ${square.colIndex + 1}
                         </td>
                         <td style="padding: 8px 0; color: #F97316; font-size: 24px; font-weight: bold; text-align: center;">
                           ${square.rowNumber}

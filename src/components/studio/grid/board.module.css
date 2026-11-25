@@ -1,0 +1,114 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: var(--studio-board);
+  }
+  .axis {
+    margin: 0 0 14px 4px;
+    color: var(--studio-soft);
+  }
+
+  /* A flat tool that sits in the same light as the scene: white slab, sunk bed, raised tiles */
+  .board {
+    position: relative;
+    padding: 1.5% 2.6% 2.6% 1%;
+    border-radius: var(--studio-radius-board);
+    background: var(--studio-slab);
+    box-shadow: var(--studio-shadow-board);
+  }
+  .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+  }
+  .table th {
+    height: 36px;
+    padding: 0 0 5px;
+    color: var(--studio-soft);
+    font-size: 15px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .table tbody th,
+  .table thead td {
+    width: 30px;
+    height: auto;
+    padding: 0;
+  }
+  .table tbody th {
+    padding-bottom: 5px;
+  }
+  .table th.on {
+    color: var(--studio-ink);
+    font-weight: 800;
+  }
+  .table tbody td {
+    position: relative;
+    padding: 2px;
+    background: var(--studio-bed);
+  }
+  .table tbody tr:first-child td:first-of-type {
+    border-top-left-radius: var(--studio-radius-bed);
+  }
+  .table tbody tr:first-child td:last-child {
+    border-top-right-radius: var(--studio-radius-bed);
+  }
+  .table tbody tr:last-child td:first-of-type {
+    border-bottom-left-radius: var(--studio-radius-bed);
+  }
+  .table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: var(--studio-radius-bed);
+  }
+  .noNumbers tbody th,
+  .noNumbers thead td {
+    width: 2%;
+  }
+  .noNumbers thead th {
+    height: 10px;
+  }
+
+  @media (max-width: 999px) {
+    .axis {
+      margin: 0 0 12px;
+    }
+    .board {
+      padding: 4px 8px 9px 2px;
+    }
+    .table th {
+      height: 28px;
+      padding-bottom: 4px;
+      font-size: 13px;
+    }
+    .table tbody th,
+    .table thead td {
+      width: 22px;
+    }
+    .table tbody td {
+      padding: 1px;
+    }
+    .noNumbers tbody th,
+    .noNumbers thead td {
+      width: 6px;
+    }
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    margin: 34px 0 0;
+    padding: 0;
+    color: var(--studio-soft);
+    font-size: var(--studio-small);
+    list-style: none;
+  }
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}

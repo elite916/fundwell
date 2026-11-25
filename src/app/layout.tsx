@@ -12,15 +12,18 @@ import '@/styles/globals.css';
 
 export const dynamic = 'force-dynamic';
 
+// Not preloaded: only pages outside the studio look use them
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
+  preload: false,
 });
 
 const montserratAlternates = Montserrat_Alternates({
   variable: '--font-montserrat-alternates',
   weight: ['500', '600', '700'],
   subsets: ['latin'],
+  preload: false,
 });
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { PlusCircle } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { DashEmpty, DashPage } from '@/components/studio/dashboard/dash-page';
 import { ContestCard } from '@/features/contests/components/contest-card';
 import { ContestStatus } from '@/features/contests/constants/status';
 import { listContestsForOwner } from '@/features/contests/queries';
@@ -9,50 +9,18 @@ import { UpgradeBanner } from '@/features/subscriptions/components/upgrade-banne
 import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
-function ContestCardSkeleton() {
-  return (
-    <div className='animate-pulse rounded-xl border border-zinc-800 bg-zinc-800/50 p-6'>
-      <div className='mb-3 flex items-start justify-between gap-3'>
-        <div className='flex items-center gap-2'>
-          <div className='h-9 w-9 rounded-lg bg-zinc-700' />
-          <div className='h-5 w-32 rounded bg-zinc-700' />
-        </div>
-        <div className='h-5 w-16 rounded-full bg-zinc-700' />
-      </div>
-      <div className='mb-4 h-4 w-40 rounded bg-zinc-700/50' />
-      <div className='flex items-center justify-between border-t border-zinc-700/50 pt-3'>
-        <div className='flex items-center gap-4'>
-          <div className='h-4 w-12 rounded bg-zinc-700/50' />
-          <div className='h-4 w-16 rounded bg-zinc-700/50' />
-        </div>
-        <div className='h-3 w-20 rounded bg-zinc-700/50' />
-      </div>
-    </div>
-  );
-}
+import css from './contest-list.module.css';
 
 function EmptyState() {
   return (
-    <div className='rounded-lg border border-zinc-800 bg-zinc-800/50 p-8 text-center'>
-      <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-700/50'>
-        <PlusCircle className='h-8 w-8 text-zinc-400' />
-      </div>
-      <p className='text-zinc-400'>You haven&apos;t created any contests yet.</p>
-      <p className='mt-2 text-sm text-zinc-500'>Create your first game day squares contest to get started!</p>
-      <Button variant='orange' asChild className='mt-6'>
+    <DashEmpty
+      title="You haven't created any contests yet."
+      text='Create your first game day squares contest to get started!'
+    >
+      <DashButton asChild look='quiet'>
         <Link href='/dashboard/new'>Create Your First Contest</Link>
-      </Button>
-    </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-      {[...Array(6)].map((_, i) => (
-        <ContestCardSkeleton key={i} />
-      ))}
-    </div>
+      </DashButton>
+    </DashEmpty>
   );
 }
 
@@ -88,29 +56,28 @@ export default async function DashboardPage() {
   ).length;
 
   return (
-    <div>
+    <DashPage>
       {/* Show upgrade banner only for free users */}
       {!userHasSubscription && <UpgradeBanner activeContestCount={activeContestCount} />}
 
-      <div className='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <h1 className='text-2xl font-bold text-white lg:text-3xl'>My Contests</h1>
-        <Button variant='orange' asChild>
-          <Link href='/dashboard/new'>
-            <PlusCircle className='mr-2 h-5 w-5' />
-            Create Contest
-          </Link>
-        </Button>
+      <div className={css.head}>
+        <h1>My Contests</h1>
+        <DashButton asChild>
+          <Link href='/dashboard/new'>Create Contest</Link>
+        </DashButton>
       </div>
 
       {contestsWithCounts.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+        <ul className={css.list}>
           {contestsWithCounts.map((contest) => (
-            <ContestCard key={contest.id} contest={contest} claimedCount={contest.claimedCount} />
+            <li key={contest.id}>
+              <ContestCard contest={contest} claimedCount={contest.claimedCount} />
+            </li>
           ))}
-        </div>
+        </ul>
       )}
-    </div>
+    </DashPage>
   );
 }

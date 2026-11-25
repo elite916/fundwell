@@ -1,23 +1,16 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { AlertTriangle, Dices, Loader2, Lock, Pencil } from 'lucide-react';
+import { useId, useState, useTransition } from 'react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from '@/components/ui/use-toast';
+import { DashButton, DashCheckbox, DashInput } from '@/components/studio/dashboard/dash-button';
+import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
+import { Note } from '@/components/studio/dashboard/dash-page';
+import { say, sayProblem } from '@/components/studio/dashboard/dash-toast';
+import * as Tabs from '@radix-ui/react-tabs';
 
 import { assignGridNumbers } from '../actions/assign-grid-numbers';
+
+import css from './manage-numbers-modal.module.css';
 
 interface Contest {
   id: string;
@@ -51,52 +44,22 @@ function GridPreview({
   colTeamName: string | null;
 }) {
   return (
-    <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-      <h4 className='mb-3 text-sm font-medium text-zinc-300'>Preview</h4>
-      <div className='flex flex-col items-center gap-2'>
-        {/* Column team name */}
-        <div className='text-xs font-medium text-orange-400'>{colTeamName || 'Column Team'}</div>
-
-        {/* Grid header with column numbers */}
-        <div className='flex gap-1'>
-          <div className='h-6 w-6' /> {/* Corner spacer */}
-          {colNumbers.map((num, idx) => (
-            <div
-              key={idx}
-              className='flex h-6 w-6 items-center justify-center rounded bg-zinc-700 text-xs font-medium text-zinc-300'
-            >
-              {num}
-            </div>
-          ))}
-        </div>
-
-        {/* Grid with row numbers */}
-        <div className='flex items-center gap-2'>
-          {/* Row team name (rotated) */}
-          <div
-            className='text-xs font-medium text-orange-400'
-            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-          >
-            {rowTeamName || 'Row Team'}
-          </div>
-
-          {/* Row numbers */}
-          <div className='flex flex-col gap-1'>
-            {rowNumbers.map((num, idx) => (
-              <div
-                key={idx}
-                className='flex h-6 w-6 items-center justify-center rounded bg-zinc-700 text-xs font-medium text-zinc-300'
-              >
-                {num}
-              </div>
-            ))}
-          </div>
-
-          {/* Grid placeholder */}
-          <div className='flex h-[268px] w-[268px] items-center justify-center rounded border border-zinc-700 bg-zinc-900/50'>
-            <span className='text-xs text-zinc-500'>10x10 Grid</span>
-          </div>
-        </div>
+    <div className={css.preview}>
+      <h3>Preview</h3>
+      <div aria-hidden='true' className={css.grid}>
+        <div className={css.across}>{colTeamName || 'Column Team'}</div>
+        {colNumbers.map((num, idx) => (
+          <b key={idx} style={{ gridColumn: idx + 3 }}>
+            {num}
+          </b>
+        ))}
+        <div className={css.down}>{rowTeamName || 'Row Team'}</div>
+        {rowNumbers.map((num, idx) => (
+          <i key={idx} style={{ gridRow: idx + 3 }}>
+            {num}
+          </i>
+        ))}
+        <div className={css.bed}>10x10 Grid</div>
       </div>
     </div>
   );
@@ -107,18 +70,61 @@ function GridPreview({
  */
 function NumbersDisplay({ label, numbers }: { label: string; numbers: number[] }) {
   return (
-    <div className='space-y-2'>
-      <Label className='text-zinc-300'>{label}</Label>
-      <div className='flex flex-wrap gap-1'>
+    <div>
+      <p className={css.label}>{label}</p>
+      <div className={css.digits}>
         {numbers.map((num, idx) => (
-          <div
-            key={idx}
-            className='flex h-8 w-8 items-center justify-center rounded border border-zinc-600 bg-zinc-800 text-sm font-medium text-zinc-300'
-          >
-            {num}
-          </div>
+          <span key={idx}>{num}</span>
         ))}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Ten inputs for one team's numbers
+ */
+function NumbersInput({
+  label,
+  numbers,
+  error,
+  onChange,
+}: {
+  label: string;
+  numbers: (number | null)[];
+  error: string | null;
+  onChange: (index: number, value: string) => void;
+}) {
+  const id = useId();
+
+  return (
+    <div role='group' aria-labelledby={`${id}-label`}>
+      <p id={`${id}-label`} className={css.label}>
+        {label}
+      </p>
+      <div className={css.digits}>
+        {numbers.map((num, idx) => (
+          <DashInput
+            key={idx}
+            type='text'
+            inputMode='numeric'
+            maxLength={1}
+            autoComplete='off'
+            aria-label={`${label}, position ${idx + 1}`}
+            aria-invalid={(error && (num === null || numbers.indexOf(num) !== idx)) || undefined}
+            aria-describedby={error ? `${id}-error` : undefined}
+            value={num ?? ''}
+            onChange={(e) => onChange(idx, e.target.value)}
+            className={css.digit}
+            placeholder={String(idx)}
+          />
+        ))}
+      </div>
+      {error && (
+        <p id={`${id}-error`} role='alert' className={css.error}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -223,11 +229,7 @@ export function ManageNumbersModal({ isOpen, onClose, contest, onSuccess }: Mana
       });
 
       if (result?.error) {
-        toast({
-          title: 'Error',
-          description: result.error.message,
-          variant: 'destructive',
-        });
+        sayProblem(result.error.message);
         return;
       }
 
@@ -237,10 +239,7 @@ export function ManageNumbersModal({ isOpen, onClose, contest, onSuccess }: Mana
           col: result.data.colNumbers,
         });
 
-        toast({
-          title: 'Numbers Assigned',
-          description: 'Grid numbers have been randomly generated.',
-        });
+        say('Grid numbers have been randomly generated.');
 
         onSuccess?.();
       }
@@ -252,13 +251,9 @@ export function ManageNumbersModal({ isOpen, onClose, contest, onSuccess }: Mana
     const rowValidation = validateNumbers(rowInputs);
     const colValidation = validateNumbers(colInputs);
 
-    if (!rowValidation.valid) {
-      setRowError(rowValidation.error ?? 'Invalid row numbers');
-      return;
-    }
-
-    if (!colValidation.valid) {
-      setColError(colValidation.error ?? 'Invalid column numbers');
+    if (!rowValidation.valid || !colValidation.valid) {
+      setRowError(rowValidation.valid ? null : (rowValidation.error ?? 'Invalid row numbers'));
+      setColError(colValidation.valid ? null : (colValidation.error ?? 'Invalid column numbers'));
       return;
     }
 
@@ -272,11 +267,7 @@ export function ManageNumbersModal({ isOpen, onClose, contest, onSuccess }: Mana
       });
 
       if (result?.error) {
-        toast({
-          title: 'Error',
-          description: result.error.message,
-          variant: 'destructive',
-        });
+        sayProblem(result.error.message);
         return;
       }
 
@@ -286,10 +277,7 @@ export function ManageNumbersModal({ isOpen, onClose, contest, onSuccess }: Mana
           col: result.data.colNumbers,
         });
 
-        toast({
-          title: 'Numbers Saved',
-          description: 'Grid numbers have been saved.',
-        });
+        say('Grid numbers have been saved.');
 
         onSuccess?.();
       }
@@ -297,165 +285,98 @@ export function ManageNumbersModal({ isOpen, onClose, contest, onSuccess }: Mana
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-lg'>
-        <DialogHeader>
-          <DialogTitle>Manage Grid Numbers</DialogTitle>
-          <DialogDescription>Assign numbers 0-9 to each row and column of the grid.</DialogDescription>
-        </DialogHeader>
+    <DashDialog
+      open={isOpen}
+      onClose={handleClose}
+      size='mid'
+      title='Manage Grid Numbers'
+      description='Assign numbers 0-9 to each row and column of the grid.'
+    >
+      {isLocked ? (
+        <>
+          {/* Locked state - read only */}
+          <Note tone='warn'>Numbers cannot be changed after the game has started.</Note>
 
-        {isLocked ? (
-          <>
-            {/* Locked state - read only */}
-            <div className='flex items-start gap-3 rounded-lg border border-amber-500/50 bg-amber-500/10 p-4'>
-              <Lock className='mt-0.5 h-5 w-5 shrink-0 text-amber-400' />
-              <p className='text-sm text-amber-200'>Numbers cannot be changed after the game has started.</p>
-            </div>
+          {hasExistingNumbers && (
+            <>
+              <NumbersDisplay label={contest.row_team_name ?? 'Row Numbers'} numbers={contest.row_numbers!} />
+              <NumbersDisplay label={contest.col_team_name ?? 'Column Numbers'} numbers={contest.col_numbers!} />
+            </>
+          )}
 
-            {hasExistingNumbers && (
-              <div className='space-y-4'>
-                <NumbersDisplay label={contest.row_team_name ?? 'Row Numbers'} numbers={contest.row_numbers!} />
-                <NumbersDisplay label={contest.col_team_name ?? 'Column Numbers'} numbers={contest.col_numbers!} />
-              </div>
-            )}
+          <DashDialogFoot>
+            <DashButton onClick={handleClose}>Close</DashButton>
+          </DashDialogFoot>
+        </>
+      ) : (
+        <>
+          {/* Warning if numbers exist */}
+          {hasExistingNumbers && <Note tone='warn'>This will replace the current numbers.</Note>}
 
-            <DialogFooter>
-              <Button onClick={handleClose}>Close</Button>
-            </DialogFooter>
-          </>
-        ) : (
-          <>
-            {/* Warning if numbers exist */}
-            {hasExistingNumbers && (
-              <div className='flex items-start gap-3 rounded-lg border border-amber-500/50 bg-amber-500/10 p-3'>
-                <AlertTriangle className='mt-0.5 h-5 w-5 shrink-0 text-amber-400' />
-                <p className='text-sm text-amber-200'>This will replace the current numbers.</p>
-              </div>
-            )}
+          {hasExistingNumbers && (
+            <label className={css.email}>
+              <DashCheckbox checked={emailPlayers} onChange={(e) => setEmailPlayers(e.target.checked)} />
+              Email players their new numbers
+            </label>
+          )}
 
-            {hasExistingNumbers && (
-              <div className='flex items-center gap-2'>
-                <input
-                  id='emailPlayers'
-                  type='checkbox'
-                  checked={emailPlayers}
-                  onChange={(e) => setEmailPlayers(e.target.checked)}
-                  className='h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-orange-500 focus:ring-orange-500 focus:ring-offset-0'
-                />
-                <Label htmlFor='emailPlayers' className='text-zinc-300'>
-                  Email players their new numbers
-                </Label>
-              </div>
-            )}
+          <Tabs.Root value={activeTab} onValueChange={(v) => setActiveTab(v as 'auto' | 'manual')}>
+            <Tabs.List aria-label='Manage Grid Numbers' className={css.tabs}>
+              <Tabs.Trigger value='auto'>Auto-Generate</Tabs.Trigger>
+              <Tabs.Trigger value='manual'>Manual Entry</Tabs.Trigger>
+            </Tabs.List>
 
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'auto' | 'manual')}>
-              <TabsList className='w-full'>
-                <TabsTrigger value='auto' className='flex-1 gap-2'>
-                  <Dices className='h-4 w-4' />
-                  Auto-Generate
-                </TabsTrigger>
-                <TabsTrigger value='manual' className='flex-1 gap-2'>
-                  <Pencil className='h-4 w-4' />
-                  Manual Entry
-                </TabsTrigger>
-              </TabsList>
+            <Tabs.Content value='auto' className={css.panel}>
+              <p className={css.how}>
+                Randomly assign numbers 0-9 to each row and column. The order will be shuffled for fairness.
+              </p>
 
-              <TabsContent value='auto' className='space-y-4'>
-                <p className='text-sm text-zinc-400'>
-                  Randomly assign numbers 0-9 to each row and column. The order will be shuffled for fairness.
-                </p>
+              <DashButton onClick={handleAutoGenerate} disabled={isPending}>
+                {isPending ? 'Generating...' : 'Generate Random Numbers'}
+              </DashButton>
+            </Tabs.Content>
 
-                <Button onClick={handleAutoGenerate} disabled={isPending} className='w-full'>
-                  {isPending ? (
-                    <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Dices className='mr-2 h-4 w-4' />
-                      Generate Random Numbers
-                    </>
-                  )}
-                </Button>
-              </TabsContent>
+            <Tabs.Content value='manual' className={css.panel}>
+              <p className={css.how}>
+                Enter your own number order for each axis. Each number 0-9 must appear exactly once.
+              </p>
 
-              <TabsContent value='manual' className='space-y-4'>
-                <p className='text-sm text-zinc-400'>
-                  Enter your own number order for each axis. Each number 0-9 must appear exactly once.
-                </p>
-
-                {/* Row inputs */}
-                <div className='space-y-2'>
-                  <Label className='text-zinc-300'>{contest.row_team_name ?? 'Row'} Numbers</Label>
-                  <div className='flex flex-wrap gap-1'>
-                    {rowInputs.map((num, idx) => (
-                      <Input
-                        key={idx}
-                        type='text'
-                        inputMode='numeric'
-                        maxLength={1}
-                        value={num ?? ''}
-                        onChange={(e) => handleInputChange('row', idx, e.target.value)}
-                        className={`h-9 w-9 p-0 text-center ${rowError ? 'border-red-500' : ''}`}
-                        placeholder={String(idx)}
-                      />
-                    ))}
-                  </div>
-                  {rowError && <p className='text-sm text-red-400'>{rowError}</p>}
-                </div>
-
-                {/* Column inputs */}
-                <div className='space-y-2'>
-                  <Label className='text-zinc-300'>{contest.col_team_name ?? 'Column'} Numbers</Label>
-                  <div className='flex flex-wrap gap-1'>
-                    {colInputs.map((num, idx) => (
-                      <Input
-                        key={idx}
-                        type='text'
-                        inputMode='numeric'
-                        maxLength={1}
-                        value={num ?? ''}
-                        onChange={(e) => handleInputChange('col', idx, e.target.value)}
-                        className={`h-9 w-9 p-0 text-center ${colError ? 'border-red-500' : ''}`}
-                        placeholder={String(idx)}
-                      />
-                    ))}
-                  </div>
-                  {colError && <p className='text-sm text-red-400'>{colError}</p>}
-                </div>
-
-                <Button onClick={handleManualSave} disabled={isPending} className='w-full'>
-                  {isPending ? (
-                    <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save Numbers'
-                  )}
-                </Button>
-              </TabsContent>
-            </Tabs>
-
-            {/* Preview section */}
-            {previewNumbers && (
-              <GridPreview
-                rowNumbers={previewNumbers.row}
-                colNumbers={previewNumbers.col}
-                rowTeamName={contest.row_team_name}
-                colTeamName={contest.col_team_name}
+              <NumbersInput
+                label={`${contest.row_team_name ?? 'Row'} Numbers`}
+                numbers={rowInputs}
+                error={rowError}
+                onChange={(index, value) => handleInputChange('row', index, value)}
               />
-            )}
+              <NumbersInput
+                label={`${contest.col_team_name ?? 'Column'} Numbers`}
+                numbers={colInputs}
+                error={colError}
+                onChange={(index, value) => handleInputChange('col', index, value)}
+              />
 
-            <DialogFooter>
-              <Button variant='outline' onClick={handleClose}>
-                Close
-              </Button>
-            </DialogFooter>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+              <DashButton onClick={handleManualSave} disabled={isPending}>
+                {isPending ? 'Saving...' : 'Save Numbers'}
+              </DashButton>
+            </Tabs.Content>
+          </Tabs.Root>
+
+          {/* Preview section */}
+          {previewNumbers && (
+            <GridPreview
+              rowNumbers={previewNumbers.row}
+              colNumbers={previewNumbers.col}
+              rowTeamName={contest.row_team_name}
+              colTeamName={contest.col_team_name}
+            />
+          )}
+
+          <DashDialogFoot>
+            <DashButton look='quiet' onClick={handleClose}>
+              Close
+            </DashButton>
+          </DashDialogFoot>
+        </>
+      )}
+    </DashDialog>
   );
 }
