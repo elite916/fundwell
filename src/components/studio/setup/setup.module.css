@@ -80,7 +80,7 @@
   .gapTopSmall {
     margin-top: 14px;
   }
-  .gapBottom {
+  .gapBottom.gapBottom {
     margin-bottom: 14px;
   }
 
@@ -249,6 +249,7 @@
     justify-content: space-between;
     gap: 20px;
     min-height: 60px;
+    padding: 8px 0;
   }
   .switchRow + .switchRow {
     border-top: 1px solid var(--dash-hair);
@@ -917,7 +918,7 @@
       justify-content: space-between;
     }
     .addMember {
-      grid-template-columns: minmax(0, 1fr) 100px;
+      grid-template-columns: minmax(0, 1fr) 124px;
     }
     .addMember button {
       grid-column: 1 / 2;
