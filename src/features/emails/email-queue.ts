@@ -282,7 +282,7 @@ async function buildOrganizerQuarterEmail(email: QueuedEmail): Promise<EmailCont
     contestName: contest.name,
     isCorrected: score.winner_rev > 1,
     ...getQuarterResult(contestData, score),
-    contestUrl: `${getURL()}/contest/${contest.slug}`,
+    contestUrl: `${getURL()}/dashboard/${contest.id}`,
   });
 }
 
@@ -310,7 +310,7 @@ async function buildOrganizerSummaryEmail(email: QueuedEmail): Promise<EmailCont
     ),
     isCompleted: contest.status === ContestStatus.COMPLETED,
     closesAt: await getClosingTime(contest),
-    contestUrl: `${getURL()}/contest/${contest.slug}`,
+    contestUrl: `${getURL()}/dashboard/${contest.id}`,
   });
 }
 
