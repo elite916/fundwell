@@ -61,7 +61,7 @@ export function HeroPositionPicker({ value, onChange, disabled }: HeroPositionPi
               role="radio"
               className={cn(
                 'flex items-center justify-center rounded-full transition-all',
-                'focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-800',
+                'focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-800',
                 !disabled && 'cursor-pointer hover:scale-110',
                 isSelected
                   ? 'h-3.5 w-3.5 bg-orange-500 ring-2 ring-orange-500 ring-offset-1 ring-offset-zinc-800'

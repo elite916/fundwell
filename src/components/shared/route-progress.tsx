@@ -73,7 +73,7 @@ export function RouteProgress() {
     <div className="fixed top-0 left-0 right-0 z-50 h-0.5">
       <div
         className={cn(
-          'h-full bg-gradient-to-r from-orange-500 to-amber-400 transition-all duration-200 ease-out',
+          'h-full bg-linear-to-r/srgb from-orange-500 to-amber-400 transition-all duration-200 ease-out',
           progress === 100 && 'opacity-0'
         )}
         style={{ width: `${progress}%` }}

@@ -17,7 +17,7 @@ export function Logo({ href = '/', className = '', size = 'lg' }: LogoProps): Re
   };
 
   const content = (
-    <span className={cn('bg-gradient-to-r from-fundwell-primary to-fundwell-accent bg-clip-text font-alt font-bold text-transparent', sizeClasses[size])}>
+    <span className={cn('bg-linear-to-r/srgb from-fundwell-primary to-fundwell-accent bg-clip-text font-alt font-bold text-transparent', sizeClasses[size])}>
       Fundwell
     </span>
   );

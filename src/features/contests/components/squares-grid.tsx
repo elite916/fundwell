@@ -77,8 +77,8 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
   return (
     <div className="relative">
       {/* Scroll shadow indicators - hint that content is scrollable (mobile only) */}
-      <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-6 bg-gradient-to-r from-zinc-800 to-transparent opacity-50 lg:hidden" />
-      <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-6 bg-gradient-to-l from-zinc-800 to-transparent opacity-50 lg:hidden" />
+      <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-6 bg-linear-to-r/srgb from-zinc-800 to-transparent opacity-50 lg:hidden" />
+      <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-6 bg-linear-to-l/srgb from-zinc-800 to-transparent opacity-50 lg:hidden" />
       
       {/* Scrollable container on mobile, centered on desktop */}
       <div className="overflow-x-auto lg:overflow-visible lg:flex lg:justify-center">
@@ -87,7 +87,7 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
           {/* Main layout: Row team label + Grid */}
           <div className="flex gap-1 lg:gap-2">
             {/* Row team label - vertical, outside the grid */}
-            <div className="flex w-5 flex-shrink-0 items-center justify-center sm:w-6 lg:w-8">
+            <div className="flex w-5 shrink-0 items-center justify-center sm:w-6 lg:w-8">
               <span
                 className="whitespace-nowrap text-[10px] font-medium text-zinc-400 sm:text-xs lg:text-sm"
                 style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}

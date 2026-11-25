@@ -280,7 +280,7 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
             </div>
 
             {heroImageUrl && (
-              <div className="relative aspect-[3/1] w-full max-w-md overflow-hidden rounded-lg border border-zinc-700">
+              <div className="relative aspect-3/1 w-full max-w-md overflow-hidden rounded-lg border border-zinc-700">
                 <Image src={heroImageUrl} alt="Hero image" fill className="object-cover" />
               </div>
             )}

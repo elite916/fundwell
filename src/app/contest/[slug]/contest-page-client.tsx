@@ -302,7 +302,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
             />
           )}
           {/* Dark gradient overlay at bottom for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t/srgb from-zinc-900/80 to-transparent" />
         </div>
 
         {/* Circle Logo Overlay */}
@@ -350,7 +350,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
 
           {/* Team Matchup */}
           <div className="mt-4 flex items-center gap-4">
-            <div className="flex items-center gap-3 rounded-lg bg-zinc-800/50 px-4 py-3 backdrop-blur-sm">
+            <div className="flex items-center gap-3 rounded-lg bg-zinc-800/50 px-4 py-3 backdrop-blur-xs">
               <span className="text-lg font-semibold text-white">{contest.row_team_name}</span>
               <span className="text-zinc-500">vs</span>
               <span className="text-lg font-semibold text-white">{contest.col_team_name}</span>

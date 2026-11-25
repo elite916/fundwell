@@ -432,7 +432,7 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
                   onChange={(e) =>
                     handleTypeChange(option.id, e.target.value as PaymentOptionType)
                   }
-                  className="flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+                  className="flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                 >
                   {PAYMENT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>

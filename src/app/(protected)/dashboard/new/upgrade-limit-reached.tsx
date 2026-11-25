@@ -36,7 +36,7 @@ export function UpgradeLimitReached({ currentCount, proPrice }: UpgradeLimitReac
       <Card className="border-zinc-800 bg-zinc-900">
         <CardContent className="flex flex-col items-center p-8 text-center">
           {/* Icon */}
-          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-600">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br/srgb from-orange-500 to-amber-600">
             <Crown className="h-8 w-8 text-white" />
           </div>
 

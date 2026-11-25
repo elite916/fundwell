@@ -21,7 +21,7 @@ export async function Navigation() {
               Pricing
             </Link>
           </nav>
-          <Button variant="orange" className="hidden flex-shrink-0 lg:flex" asChild>
+          <Button variant="orange" className="hidden shrink-0 lg:flex" asChild>
             <Link href="/signup">Get started for free</Link>
           </Button>
           <Sheet>
@@ -38,7 +38,7 @@ export async function Navigation() {
                   >
                     Pricing
                   </Link>
-                  <Button variant="orange" className="flex-shrink-0" asChild>
+                  <Button variant="orange" className="shrink-0" asChild>
                     <Link href="/signup">Get started for free</Link>
                   </Button>
                 </SheetDescription>
