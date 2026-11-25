@@ -1,6 +1,11 @@
 import { PaymentStatus } from '@/features/contests/constants';
 import { findWinningSquare } from '@/features/contests/utils/find-winning-square';
-import { drainEmailQueue, enqueueWinnerEmail } from '@/features/emails/email-queue';
+import {
+  drainEmailQueue,
+  enqueueOrganizerQuarterEmails,
+  enqueueOrganizerSummaryEmail,
+  enqueueWinnerEmail,
+} from '@/features/emails/email-queue';
 import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 import { getCurrentISOString } from '@/utils/date-formatters';
 import { logger } from '@/utils/logger';
@@ -118,9 +123,9 @@ async function applyToContest(contest: SeasonContest, game: SuperBowlGame): Prom
 
   // Read again for the winner revisions, which the database sets. Every Fundwell score is newer
   // than the email queue, so a winner without a queued email hasn't been emailed.
-  for (const score of await loadScores(contest.id)) {
-    if (score.source !== 'fundwell') continue;
+  const fundwellScores = (await loadScores(contest.id)).filter(({ source }) => source === 'fundwell');
 
+  for (const score of fundwellScores) {
     const recipientEmail = winnerEmailOf(squares, score.winning_square_id);
     if (!recipientEmail || !score.winning_square_id) continue;
 
@@ -132,6 +137,9 @@ async function applyToContest(contest: SeasonContest, game: SuperBowlGame): Prom
       recipientEmail,
     });
   }
+
+  await enqueueOrganizerQuarterEmails({ contestId: contest.id, ownerId: contest.owner_id, scores: fundwellScores });
+  await enqueueOrganizerSummaryEmail(contest.id, contest.owner_id);
 
   return isUpdated;
 }

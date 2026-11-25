@@ -4,7 +4,12 @@ import { after } from 'next/server';
 
 import { ContestStatus, PaymentStatus } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
-import { drainEmailQueue, enqueueWinnerEmail } from '@/features/emails/email-queue';
+import {
+  drainEmailQueue,
+  enqueueOrganizerQuarterEmails,
+  enqueueOrganizerSummaryEmail,
+  enqueueWinnerEmail,
+} from '@/features/emails/email-queue';
 import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 
@@ -81,6 +86,8 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
     after(() => drainEmailQueue(contestId));
 
     const winners: WinnerInfo[] = [];
+    const isSuperBowl = contest.super_bowl_season !== null;
+    let isSaved = false;
 
     // Process each score entry
     for (const score of scores) {
@@ -132,12 +139,13 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
             onConflict: 'contest_id,quarter',
           }
         )
-        .select('winner_rev')
+        .select('quarter, winner_rev')
         .single();
 
       if (upsertError) {
         throw new Error(`Failed to save score for ${score.quarter}`);
       }
+      isSaved = true;
 
       // Queue the winner notification email if this is a new winner
       const isNewWinner = !existingScore || winningSquareId !== existingScore.winning_square_id;
@@ -151,7 +159,13 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
           recipientEmail: winningSquare.claimant_email,
         });
       }
+
+      if (isNewWinner && isSuperBowl) {
+        await enqueueOrganizerQuarterEmails({ contestId, ownerId: contest.owner_id, scores: [savedScore] });
+      }
     }
+
+    if (isSaved && isSuperBowl) await enqueueOrganizerSummaryEmail(contestId, contest.owner_id);
 
     return { winners };
   })();
