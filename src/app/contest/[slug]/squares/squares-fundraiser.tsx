@@ -11,6 +11,7 @@ import { underSheet } from '@/components/studio/theme';
 import { Display, Mid } from '@/components/studio/type';
 import type { PaymentOption, Player, Score } from '@/features/contests/types';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
+import { useRefreshOnScores } from '@/hooks/use-refresh-on-scores';
 import { cn } from '@/utils/cn';
 
 import { ClaimSheet } from './claim-sheet';
@@ -43,6 +44,7 @@ export function SquaresFundraiser({
   organizer,
 }: SquaresFundraiserProps) {
   const squares = useRealtimeSquares(contest.id, initialSquares);
+  useRefreshOnScores(contest.id);
   const [pickedName, setPickedName] = useState('');
   const [chosen, setChosen] = useState<GridSquare | null>(null);
 

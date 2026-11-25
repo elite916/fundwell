@@ -2,17 +2,15 @@
 
 import { after } from 'next/server';
 
-import { ContestStatus, QuarterDisplayNames } from '@/features/contests/constants';
+import { ContestStatus, PaymentStatus } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
-import { sendEmailSafe } from '@/features/emails/send-email-safe';
-import { winnerEmail } from '@/features/emails/templates/winner-email';
+import { drainEmailQueue, enqueueWinnerEmail } from '@/features/emails/email-queue';
 import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
-import { getURL } from '@/utils/get-url';
 
 import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
 import { GameQuarter } from '../types';
-import { calculatePrizeAmount, countSoldSquares, getPrizeText } from '../utils/prize-helpers';
+import { findWinningSquare } from '../utils/find-winning-square';
 
 interface ScoreInput {
   quarter: GameQuarter;
@@ -66,56 +64,34 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
       claimant_email: claimant?.email ?? null,
     }));
 
-    // Fetch existing scores to determine which quarters are new
-    const { data: existingScores } = await supabase
+    // Fetch existing scores to determine which quarters are new or changed. Without them, every quarter
+    // would look new and its winner would be emailed again.
+    const { data: existingScores, error: existingScoresError } = await supabase
       .from('scores')
-      .select('quarter, winning_square_id')
+      .select('quarter, home_score, away_score, winning_square_id')
       .eq('contest_id', contestId);
 
-    const existingScoreMap = new Map(existingScores?.map((s) => [s.quarter, s.winning_square_id]) || []);
+    if (existingScoresError) {
+      throw new Error('Failed to fetch scores');
+    }
+
+    const existingScoreMap = new Map(existingScores.map((s) => [s.quarter, s]));
+
+    // Runs after the response, whatever happens below, so a saved quarter's email still goes out
+    after(() => drainEmailQueue(contestId));
 
     const winners: WinnerInfo[] = [];
 
     // Process each score entry
     for (const score of scores) {
-      // Calculate winning position based on last digit of scores
-      const homeLastDigit = score.homeScore % 10;
-      const awayLastDigit = score.awayScore % 10;
-
-      // Find the index in row_numbers where the value matches homeLastDigit
-      // This index is the winning row
-      const winningRowIndex = contest.row_numbers.indexOf(homeLastDigit);
-
-      // Find the index in col_numbers where the value matches awayLastDigit
-      // This index is the winning column
-      const winningColIndex = contest.col_numbers.indexOf(awayLastDigit);
-
-      // Find the square at the intersection
-      let winningSquare = null;
-      if (winningRowIndex !== -1 && winningColIndex !== -1) {
-        winningSquare = squares?.find((sq) => sq.row_index === winningRowIndex && sq.col_index === winningColIndex);
-      }
-
-      const winningSquareId = winningSquare?.id || null;
-
-      // Upsert the score (update if quarter exists, insert if not)
-      const { error: upsertError } = await supabase.from('scores').upsert(
-        {
-          contest_id: contestId,
-          quarter: score.quarter,
-          home_score: score.homeScore,
-          away_score: score.awayScore,
-          winning_square_id: winningSquareId,
-          entered_at: getCurrentISOString(),
-        },
-        {
-          onConflict: 'contest_id,quarter',
-        }
+      const winningSquare = findWinningSquare(
+        squares ?? [],
+        contest.row_numbers,
+        contest.col_numbers,
+        score.homeScore,
+        score.awayScore
       );
-
-      if (upsertError) {
-        throw new Error(`Failed to save score for ${score.quarter}`);
-      }
+      const winningSquareId = winningSquare?.id || null;
 
       // Build winner name if square was claimed
       let winnerName: string | null = null;
@@ -135,38 +111,45 @@ export async function saveScores(contestId: string, scores: ScoreInput[]): Promi
         winnerEmail: winningSquare?.claimant_email || null,
       });
 
-      // Send winner notification email if this is a new winner
-      const previousWinningSquareId = existingScoreMap.get(score.quarter);
-      const isNewWinner = winningSquareId && winningSquareId !== previousWinningSquareId;
+      const existingScore = existingScoreMap.get(score.quarter);
+      if (existingScore?.home_score === score.homeScore && existingScore.away_score === score.awayScore) {
+        continue;
+      }
 
-      if (isNewWinner && winningSquare?.claimant_email) {
-        // Calculate prize amount based on squares sold and payout percentage
-        const payoutPercentKey = `payout_${score.quarter}_percent` as keyof typeof contest;
-        const payoutPercent = (contest[payoutPercentKey] as number | null) || 0;
-        const prizeAmount = calculatePrizeAmount(countSoldSquares(squares ?? []), contest.square_price, payoutPercent);
-        const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
-        const winnerAddress = winningSquare.claimant_email;
+      // Upsert the score (update if quarter exists, insert if not)
+      const { data: savedScore, error: upsertError } = await supabase
+        .from('scores')
+        .upsert(
+          {
+            contest_id: contestId,
+            quarter: score.quarter,
+            home_score: score.homeScore,
+            away_score: score.awayScore,
+            winning_square_id: winningSquareId,
+            entered_at: getCurrentISOString(),
+          },
+          {
+            onConflict: 'contest_id,quarter',
+          }
+        )
+        .select('winner_rev')
+        .single();
 
-        after(() =>
-          sendEmailSafe({
-            to: winnerAddress,
-            template: winnerEmail({
-              participantName: winningSquare.claimant_first_name || 'Winner',
-              contestName: contest.name,
-              quarterName: QuarterDisplayNames[score.quarter] || score.quarter,
-              homeTeamName: contest.row_team_name,
-              awayTeamName: contest.col_team_name,
-              homeScore: score.homeScore,
-              awayScore: score.awayScore,
-              prizeAmount,
-              prizeText,
-              contestUrl: `${getURL()}/contest/${contest.slug}`,
-            }),
-            contestId,
-            squareId: winningSquare.id,
-            emailType: 'winner_notification',
-          })
-        );
+      if (upsertError) {
+        throw new Error(`Failed to save score for ${score.quarter}`);
+      }
+
+      // Queue the winner notification email if this is a new winner
+      const isNewWinner = !existingScore || winningSquareId !== existingScore.winning_square_id;
+
+      if (isNewWinner && winningSquare?.claimant_email && winningSquare.payment_status !== PaymentStatus.AVAILABLE) {
+        await enqueueWinnerEmail({
+          contestId,
+          quarter: score.quarter,
+          winnerRev: savedScore.winner_rev,
+          squareId: winningSquare.id,
+          recipientEmail: winningSquare.claimant_email,
+        });
       }
     }
 

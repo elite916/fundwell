@@ -39,7 +39,6 @@ const UPDATABLE_COLUMNS = [
   'org_image_url',
   'primary_color',
   'secondary_color',
-  'is_super_bowl',
   'enable_player_tracking',
   'players',
 ] as const satisfies readonly (keyof ContestUpdate)[];
