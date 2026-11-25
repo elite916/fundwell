@@ -1,20 +1,19 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { Eye, EyeOff, Loader2, RefreshCw } from 'lucide-react';
+import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { BusyButton } from '@/components/studio/setup/busy-button';
+import { PinField, SwitchRow } from '@/components/studio/setup/fields';
+import { SetupSection } from '@/components/studio/setup/section';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
 import { updateContestPin } from '@/features/contests/actions/update-contest-pin';
 import { Database } from '@/libs/supabase/types';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
 
@@ -57,7 +56,6 @@ function generatePin(): string {
 
 export function AccessControlSection({ contest, accessPin }: AccessControlSectionProps) {
   const [isPending, startTransition] = useTransition();
-  const [showPin, setShowPin] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -109,84 +107,62 @@ export function AccessControlSection({ contest, accessPin }: AccessControlSectio
   };
 
   return (
-    <Card className='border-zinc-800 bg-zinc-900'>
-      <CardHeader>
-        <CardTitle className='text-white'>Access Control</CardTitle>
-        <CardDescription>Control who can view and access your contest.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-          {/* Public Visibility */}
-          <div className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-            <div className='space-y-0.5'>
-              <Label htmlFor='is_public' className='text-base'>
-                Make contest public
-              </Label>
-              <p className='text-sm text-zinc-400'>When enabled, anyone with the link can view the contest</p>
-            </div>
-            <Controller
-              name='is_public'
-              control={control}
-              render={({ field }) => <Switch id='is_public' checked={field.value} onCheckedChange={field.onChange} />}
+    <SetupSection
+      id='access-control'
+      title='Access Control'
+      description='Control who can view and access your contest.'
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Public Visibility */}
+        <Controller
+          name='is_public'
+          control={control}
+          render={({ field }) => (
+            <SwitchRow
+              id='is_public'
+              label='Make contest public'
+              hint='When enabled, anyone with the link can view the contest'
+              checked={field.value}
+              onCheckedChange={field.onChange}
             />
-          </div>
-
-          {/* Require PIN */}
-          <div className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-            <div className='space-y-0.5'>
-              <Label htmlFor='require_pin' className='text-base'>
-                Require PIN to access
-              </Label>
-              <p className='text-sm text-zinc-400'>When enabled, participants must enter a PIN to view your contest</p>
-            </div>
-            <Controller
-              name='require_pin'
-              control={control}
-              render={({ field }) => <Switch id='require_pin' checked={field.value} onCheckedChange={field.onChange} />}
-            />
-          </div>
-
-          {/* Access PIN Input */}
-          {requirePin && (
-            <div className='space-y-2'>
-              <Label htmlFor='access_pin'>Access PIN</Label>
-              <div className='flex gap-2'>
-                <div className='relative flex-1'>
-                  <Input
-                    id='access_pin'
-                    type={showPin ? 'text' : 'password'}
-                    maxLength={6}
-                    {...register('access_pin')}
-                    className='border-zinc-700 bg-zinc-800 pr-10 font-mono tracking-widest uppercase'
-                    placeholder='XXXXXX'
-                  />
-                  <button
-                    type='button'
-                    onClick={() => setShowPin(!showPin)}
-                    className='absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400 hover:text-white'
-                  >
-                    {showPin ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-                  </button>
-                </div>
-                <Button type='button' variant='outline' onClick={handleGeneratePin} className='border-zinc-700'>
-                  <RefreshCw className='mr-2 h-4 w-4' />
-                  Generate
-                </Button>
-              </div>
-              {errors.access_pin && <p className='text-sm text-red-500'>{errors.access_pin.message}</p>}
-              <p className='text-xs text-zinc-500'>6 characters max, letters and numbers only</p>
-            </div>
           )}
+        />
 
-          {/* Submit Button */}
-          <div className='flex justify-end pt-4'>
-            <Button type='submit' disabled={isPending || !isDirty}>
-              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              Save Changes
-            </Button>
+        {/* Require PIN */}
+        <Controller
+          name='require_pin'
+          control={control}
+          render={({ field }) => (
+            <SwitchRow
+              id='require_pin'
+              label='Require PIN to access'
+              hint='When enabled, participants must enter a PIN to view your contest'
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+
+        {/* Access PIN Input */}
+        {requirePin && (
+          <div className={css.gapTopSmall}>
+            <PinField
+              id='access_pin'
+              hint='6 characters max, letters and numbers only'
+              error={errors.access_pin?.message}
+              onGenerate={handleGeneratePin}
+              {...register('access_pin')}
+            />
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        )}
+
+        {/* Submit Button */}
+        <div className={css.save}>
+          <BusyButton busy={isPending} type='submit' disabled={!isDirty}>
+            Save Changes
+          </BusyButton>
+        </div>
+      </form>
+    </SetupSection>
   );
 }

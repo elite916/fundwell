@@ -1,19 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, X, Zap } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
 import { createCheckoutAction } from '@/features/pricing/actions/create-checkout-action';
 import type { Price } from '@/features/pricing/types';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -47,64 +41,40 @@ export function UpgradeModal({ isOpen, onClose, proPrice, currentCount }: Upgrad
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className='border-zinc-800 bg-zinc-900'>
-        <DialogHeader>
-          <DialogTitle className='flex items-center gap-2 text-white'>
-            <Zap className='h-5 w-5 text-orange-500' />
-            Upgrade to Create More Contests
-          </DialogTitle>
-          <DialogDescription className='text-zinc-400'>
-            You&apos;ve reached the limit for free accounts (1 contest)
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className='grid grid-cols-2 gap-4 py-4'>
-          {/* Free Plan */}
-          <div className='space-y-3 rounded-lg border border-zinc-800 bg-zinc-950 p-4'>
-            <h3 className='font-medium text-zinc-400'>Free Plan</h3>
-            <ul className='space-y-2 text-sm'>
-              <li className='flex items-center gap-2 text-zinc-400'>
-                <X className='h-4 w-4 text-red-500' />1 active contest ({currentCount}/1)
-              </li>
-              <li className='flex items-center gap-2 text-zinc-400'>
-                <X className='h-4 w-4 text-red-500' />
-                Ads displayed
-              </li>
-            </ul>
-          </div>
-
-          {/* Pro Plan */}
-          <div className='space-y-3 rounded-lg border border-orange-500/50 bg-zinc-950 p-4'>
-            <h3 className='font-medium text-white'>Pro Plan</h3>
-            <ul className='space-y-2 text-sm'>
-              <li className='flex items-center gap-2 text-zinc-300'>
-                <Check className='h-4 w-4 text-green-500' />
-                Unlimited contests
-              </li>
-              <li className='flex items-center gap-2 text-zinc-300'>
-                <Check className='h-4 w-4 text-green-500' />
-                No ads
-              </li>
-              <li className='flex items-center gap-2 text-zinc-300'>
-                <Check className='h-4 w-4 text-green-500' />
-                Priority support
-              </li>
-            </ul>
-          </div>
+    <DashDialog
+      open={isOpen}
+      onClose={onClose}
+      title='Upgrade to Create More Contests'
+      description="You've reached the limit for free accounts (1 contest)"
+    >
+      <div className={css.plans}>
+        {/* Free Plan */}
+        <div>
+          <h3>Free Plan</h3>
+          <ul className={css.soft}>
+            <li>1 active contest ({currentCount}/1)</li>
+          </ul>
         </div>
 
-        {proPrice && <p className='text-center text-lg font-semibold text-white'>{formatPrice()}</p>}
+        {/* Pro Plan */}
+        <div>
+          <h3>Pro Plan</h3>
+          <ul>
+            <li>Unlimited contests</li>
+          </ul>
+        </div>
+      </div>
 
-        <DialogFooter className='gap-2 sm:gap-0'>
-          <Button variant='ghost' onClick={onClose} disabled={isLoading}>
-            Cancel
-          </Button>
-          <Button variant='orange' onClick={handleUpgrade} disabled={isLoading || !proPrice}>
-            {isLoading ? 'Redirecting...' : 'Upgrade to Pro'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      {proPrice && <p className={css.planPrice}>{formatPrice()}</p>}
+
+      <DashDialogFoot>
+        <DashButton look='quiet' onClick={onClose} disabled={isLoading}>
+          Cancel
+        </DashButton>
+        <DashButton onClick={handleUpgrade} disabled={isLoading || !proPrice} aria-busy={isLoading}>
+          {isLoading ? 'Redirecting...' : 'Upgrade to Pro'}
+        </DashButton>
+      </DashDialogFoot>
+    </DashDialog>
   );
 }

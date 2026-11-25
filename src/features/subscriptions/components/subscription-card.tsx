@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { Panel, Tag } from '@/components/studio/dashboard/dash-page';
 import { ProductWithPrices, SubscriptionWithProduct } from '@/features/pricing/types';
 import { formatDate } from '@/utils/date-formatters';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 interface SubscriptionCardProps {
   subscription: SubscriptionWithProduct | null;
@@ -22,16 +23,8 @@ const STATUS_LABELS: Record<string, string> = {
   paused: 'Paused',
 };
 
-const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive'> = {
-  active: 'default',
-  trialing: 'secondary',
-  canceled: 'destructive',
-  incomplete: 'secondary',
-  incomplete_expired: 'destructive',
-  past_due: 'destructive',
-  unpaid: 'destructive',
-  paused: 'secondary',
-};
+/** Something to sort out: shown on black. */
+const PROBLEM_STATUSES = ['canceled', 'incomplete_expired', 'past_due', 'unpaid'];
 
 export function SubscriptionCard({ subscription, products }: SubscriptionCardProps) {
   const productId = subscription?.prices?.products?.id;
@@ -51,37 +44,29 @@ export function SubscriptionCard({ subscription, products }: SubscriptionCardPro
   const nextBillingDate = subscription?.current_period_end ? formatDate(subscription.current_period_end) : null;
 
   return (
-    <Card className='border-zinc-800 bg-zinc-800/50'>
-      <CardHeader>
-        <div className='flex items-start justify-between'>
-          <div>
-            <CardTitle className='text-white'>{planName}</CardTitle>
-            {price && <CardDescription className='mt-1 text-base text-zinc-300'>{formatPrice()}</CardDescription>}
-          </div>
-          {status && <Badge variant={STATUS_VARIANTS[status] ?? 'default'}>{STATUS_LABELS[status] ?? status}</Badge>}
-        </div>
-      </CardHeader>
-      <CardContent className='space-y-2'>
-        {nextBillingDate && (
-          <div className='text-sm text-zinc-400'>
-            <span className='text-zinc-500'>Next billing:</span> {nextBillingDate}
-          </div>
+    <Panel>
+      <div className={css.spread}>
+        <h2>{planName}</h2>
+        {status && (
+          <Tag className={PROBLEM_STATUSES.includes(status) ? css.tagDark : undefined}>
+            {STATUS_LABELS[status] ?? status}
+          </Tag>
         )}
-        {!subscription && <p className='text-sm text-zinc-400'>Upgrade to unlock unlimited contests</p>}
-      </CardContent>
-      <CardFooter>
-        {subscription ? (
-          // A plain <a>, not <Link>: every request opens a Stripe portal session.
-          // Link prefetches it, and on a click requests it twice.
-          <Button variant='secondary' size='sm' asChild>
-            <a href='/manage-subscription'>Manage Subscription</a>
-          </Button>
-        ) : (
-          <Button variant='secondary' size='sm' asChild>
-            <Link href='/pricing'>Upgrade</Link>
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+      </div>
+      {price && <p className={css.price}>{formatPrice()}</p>}
+      {nextBillingDate && <p className={css.soft}>Next billing: {nextBillingDate}</p>}
+      {!subscription && <p className={css.soft}>Upgrade to unlock unlimited contests</p>}
+      {subscription ? (
+        // A plain <a>, not <Link>: every request opens a Stripe portal session.
+        // Link prefetches it, and on a click requests it twice.
+        <DashButton asChild className={css.cardAction}>
+          <a href='/manage-subscription'>Manage Subscription</a>
+        </DashButton>
+      ) : (
+        <DashButton asChild className={css.cardAction}>
+          <Link href='/pricing'>Upgrade</Link>
+        </DashButton>
+      )}
+    </Panel>
   );
 }

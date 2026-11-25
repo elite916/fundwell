@@ -1,16 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Fragment, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { PinField, Segmented, SwitchRow, UnitField } from '@/components/studio/setup/fields';
+import { TextField } from '@/components/studio/text-field';
 import { FOOTBALL_QUARTER_LABELS, PRIZE_TEXT_MAX_LENGTH } from '@/features/contests/constants';
 import { CreateContestInput, SportType } from '@/features/contests/models/contest';
-import { cn } from '@/utils/cn';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 /**
  * Generates a random 6-character alphanumeric PIN
@@ -27,23 +25,21 @@ function generateRandomPin(): string {
 type PayoutField = {
   name: keyof CreateContestInput;
   label: string;
-  color: string;
 };
 
 const FOOTBALL_PAYOUT_FIELDS: PayoutField[] = FOOTBALL_QUARTER_LABELS.map((q) => ({
   name: q.formField as keyof CreateContestInput,
   label: q.label,
-  color: q.color,
 }));
 
 const BASEBALL_PAYOUT_FIELDS: PayoutField[] = [
-  { name: 'payoutGame1Percent', label: 'Game 1', color: 'bg-blue-500' },
-  { name: 'payoutGame2Percent', label: 'Game 2', color: 'bg-blue-600' },
-  { name: 'payoutGame3Percent', label: 'Game 3', color: 'bg-indigo-500' },
-  { name: 'payoutGame4Percent', label: 'Game 4', color: 'bg-indigo-600' },
-  { name: 'payoutGame5Percent', label: 'Game 5', color: 'bg-violet-500' },
-  { name: 'payoutGame6Percent', label: 'Game 6', color: 'bg-violet-600' },
-  { name: 'payoutGame7Percent', label: 'Game 7', color: 'bg-purple-600' },
+  { name: 'payoutGame1Percent', label: 'Game 1' },
+  { name: 'payoutGame2Percent', label: 'Game 2' },
+  { name: 'payoutGame3Percent', label: 'Game 3' },
+  { name: 'payoutGame4Percent', label: 'Game 4' },
+  { name: 'payoutGame5Percent', label: 'Game 5' },
+  { name: 'payoutGame6Percent', label: 'Game 6' },
+  { name: 'payoutGame7Percent', label: 'Game 7' },
 ];
 
 const FOOTBALL_PAYOUT_NAMES = ['payoutQ1Percent', 'payoutQ2Percent', 'payoutQ3Percent', 'payoutFinalPercent'] as const;
@@ -65,7 +61,6 @@ export function SettingsStep() {
     setValue,
   } = useFormContext<CreateContestInput>();
 
-  const [showPin, setShowPin] = useState(false);
   const [hasGeneratedPin, setHasGeneratedPin] = useState(false);
 
   const sportType = useWatch({ control, name: 'sportType' }) as SportType;
@@ -108,351 +103,207 @@ export function SettingsStep() {
   const totalPot = (Number(squarePrice) || 0) * 100;
 
   return (
-    <div className='space-y-8'>
-      {/* Square Price */}
-      <div className='space-y-2'>
-        <Label htmlFor='squarePrice' className='text-zinc-200'>
-          Price Per Square <span className='text-orange-500'>*</span>
-        </Label>
-        <div className='relative'>
-          <span className='absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400'>$</span>
-          <Input
-            id='squarePrice'
-            type='number'
-            min='1'
-            step='1'
-            placeholder='10'
-            {...register('squarePrice')}
-            className={cn('pl-7', errors.squarePrice && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
-          />
-        </div>
-        {errors.squarePrice && <p className='text-sm text-red-500'>{errors.squarePrice.message}</p>}
-        {totalPot > 0 && (
-          <p className='text-xs text-zinc-500'>
-            Total pot if all squares sell:{' '}
-            <span className='font-medium text-orange-400'>${totalPot.toLocaleString()}</span>
-          </p>
-        )}
-      </div>
-
-      {/* Max Squares Per Person */}
-      <div className='space-y-2'>
-        <Label htmlFor='maxSquaresPerPerson' className='text-zinc-200'>
-          Max Squares Per Person
-        </Label>
-        <Input
+    <>
+      <div className={css.two}>
+        <UnitField
+          id='squarePrice'
+          label='Price Per Square *'
+          unit='$'
+          min='1'
+          step='1'
+          placeholder='10'
+          hint={totalPot > 0 && `Total pot if all squares sell: $${totalPot.toLocaleString()}`}
+          error={errors.squarePrice?.message}
+          {...register('squarePrice')}
+        />
+        <TextField
           id='maxSquaresPerPerson'
+          label='Max Squares Per Person'
           type='number'
           min='1'
           max='100'
           placeholder='No limit'
+          hint='Leave blank to allow unlimited squares per participant.'
+          error={errors.maxSquaresPerPerson?.message}
           {...register('maxSquaresPerPerson')}
-          className={cn(errors.maxSquaresPerPerson && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
         />
-        {errors.maxSquaresPerPerson && <p className='text-sm text-red-500'>{errors.maxSquaresPerPerson.message}</p>}
-        <p className='text-xs text-zinc-500'>Leave blank to allow unlimited squares per participant.</p>
       </div>
 
       {/* Prize Type Selection */}
-      <div className='space-y-2'>
-        <Label className='text-zinc-200'>Prize Type</Label>
-        <div className='flex gap-2'>
-          <button
-            type='button'
-            onClick={() => setValue('prizeType', 'percentage')}
-            className={cn(
-              'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
-              prizeType === 'percentage'
-                ? 'border-orange-500 bg-orange-500/10 text-orange-400'
-                : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
-            )}
-          >
-            Cash Payouts
-          </button>
-          <button
-            type='button'
-            onClick={() => setValue('prizeType', 'custom')}
-            className={cn(
-              'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
-              prizeType === 'custom'
-                ? 'border-orange-500 bg-orange-500/10 text-orange-400'
-                : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
-            )}
-          >
-            Custom Prizes
-          </button>
-        </div>
-        <input type='hidden' {...register('prizeType')} />
-        {errors.prizeType && <p className='text-sm text-red-500'>{errors.prizeType.message}</p>}
-      </div>
+      <p className={css.label}>Prize Type</p>
+      <Segmented
+        legend='Prize Type'
+        name='prize-type'
+        value={prizeType ?? 'percentage'}
+        onChange={(value) => setValue('prizeType', value)}
+        options={[
+          { value: 'percentage', label: 'Cash Payouts' },
+          { value: 'custom', label: 'Custom Prizes' },
+        ]}
+      />
+      <input type='hidden' {...register('prizeType')} />
+      {errors.prizeType && <p className={css.error}>{errors.prizeType.message}</p>}
 
       {/* Payout Distribution - Show when prizeType is 'percentage' */}
       {prizeType === 'percentage' && (
-        <div className='space-y-4'>
-          <div>
-            <Label className='text-zinc-200'>Payout Distribution</Label>
-            <p className='text-xs text-zinc-500'>
+        <>
+          <div className={css.groupFirst}>
+            <h3>Payout Distribution</h3>
+            <p>
               {isFootball
                 ? 'How winnings are split between quarters. The rest goes to your fundraiser.'
                 : 'How winnings are split between games. The rest goes to your fundraiser.'}
             </p>
-            {!isFootball && (
-              <p className='mt-1 text-xs text-amber-400'>
-                💡 If the series ends early, remaining game payouts go to the fundraiser.
-              </p>
-            )}
+            {!isFootball && <p>If the series ends early, remaining game payouts go to the fundraiser.</p>}
           </div>
 
           {/* Visual Progress Bar */}
-          <div className='h-4 overflow-hidden rounded-full bg-zinc-800'>
-            <div className='flex h-full'>
-              {payoutFields.map((field, index) => {
-                const value = Number(payoutValues[index]) || 0;
-                return (
-                  <div
-                    key={field.name}
-                    className={cn('h-full transition-all duration-300', field.color)}
-                    style={{ width: `${value}%` }}
-                  />
-                );
-              })}
-            </div>
+          <div className={css.bars} aria-hidden='true'>
+            {payoutFields.map((field, index) => (
+              <i key={field.name} style={{ width: `${Number(payoutValues[index]) || 0}%` }} />
+            ))}
           </div>
 
           {/* Payout Inputs */}
-          <div
-            className={cn(
-              'grid gap-4',
-              isFootball ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-7'
-            )}
-          >
+          <div className={css.four}>
             {payoutFields.map((field) => (
-              <div key={field.name} className='space-y-2'>
-                <Label htmlFor={field.name} className='text-xs text-zinc-200'>
-                  {field.label}
-                </Label>
-                <div className='relative'>
-                  <Input
-                    id={field.name}
-                    type='number'
-                    min='0'
-                    max='100'
-                    {...register(field.name)}
-                    className={cn(
-                      'pr-7',
-                      errors[field.name] && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                    )}
-                  />
-                  <span className='absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400'>%</span>
-                </div>
-              </div>
+              <UnitField
+                key={field.name}
+                id={field.name}
+                label={field.label}
+                unit='%'
+                min='0'
+                max='100'
+                aria-invalid={errors[field.name] ? true : undefined}
+                {...register(field.name)}
+              />
             ))}
           </div>
 
           {/* Total Indicator */}
-          <div
-            className={cn(
-              'flex items-center justify-between rounded-lg border p-3',
-              totalPayout <= 100 ? 'border-green-500/50 bg-green-500/10' : 'border-red-500/50 bg-red-500/10'
-            )}
-          >
-            <span className={cn('text-sm', totalPayout <= 100 ? 'text-green-400' : 'text-red-400')}>
-              Total Payouts: {totalPayout}%
-            </span>
+          <p className={css.totalLine} role='status'>
+            <span>Total Payouts: {totalPayout}%</span>
             {totalPayout <= 100 ? (
-              <span className='text-xs text-green-400'>✓ Valid ({100 - totalPayout}% to fundraiser)</span>
+              <span>✓ Valid ({100 - totalPayout}% to fundraiser)</span>
             ) : (
-              <span className='text-xs text-red-400'>{totalPayout - 100}% over limit</span>
+              <span>{totalPayout - 100}% over limit</span>
             )}
-          </div>
+          </p>
 
-          {errors.payoutFinalPercent && <p className='text-sm text-red-500'>{errors.payoutFinalPercent.message}</p>}
-          {errors.payoutGame7Percent && <p className='text-sm text-red-500'>{errors.payoutGame7Percent.message}</p>}
+          {errors.payoutFinalPercent && <p className={css.error}>{errors.payoutFinalPercent.message}</p>}
+          {errors.payoutGame7Percent && <p className={css.error}>{errors.payoutGame7Percent.message}</p>}
 
           {/* Payout Breakdown */}
           {totalPot > 0 && totalPayout <= 100 && (
-            <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-              <p className='mb-4 text-sm font-medium text-zinc-200'>Payout Breakdown</p>
+            <>
+              <h3>Payout Breakdown</h3>
+              <dl className={css.breakdown}>
+                <dt>Total Pot (100 squares × ${Number(squarePrice).toLocaleString()})</dt>
+                <dd>${totalPot.toLocaleString()}</dd>
 
-              {/* Total Pot */}
-              <div className='mb-4 flex items-center justify-between border-b border-zinc-700 pb-3'>
-                <span className='text-sm text-zinc-400'>
-                  Total Pot (100 squares × ${Number(squarePrice).toLocaleString()})
-                </span>
-                <span className='text-lg font-semibold text-white'>${totalPot.toLocaleString()}</span>
-              </div>
-
-              {/* Payouts by quarter/game */}
-              <div className='space-y-2'>
+                {/* Payouts by quarter/game */}
                 {payoutFields.map((field, index) => {
                   const percent = Number(payoutValues[index]) || 0;
                   const amount = (totalPot * percent) / 100;
                   return (
-                    <div key={field.name} className='flex items-center justify-between'>
-                      <span className='text-sm text-zinc-400'>
+                    <Fragment key={field.name}>
+                      <dt className={css.soft}>
                         {field.label}: {percent}%
-                      </span>
-                      <span className='font-medium text-orange-400'>${amount.toLocaleString()}</span>
-                    </div>
+                      </dt>
+                      <dd>${amount.toLocaleString()}</dd>
+                    </Fragment>
                   );
                 })}
-              </div>
 
-              {/* Total Payouts */}
-              <div className='mt-3 flex items-center justify-between border-t border-zinc-700 pt-3'>
-                <span className='text-sm text-zinc-400'>Total Payouts ({totalPayout}%)</span>
-                <span className='font-medium text-orange-400'>
-                  ${((totalPot * totalPayout) / 100).toLocaleString()}
-                </span>
-              </div>
+                {/* Total Payouts */}
+                <dt data-line='rule'>Total Payouts ({totalPayout}%)</dt>
+                <dd data-line='rule'>${((totalPot * totalPayout) / 100).toLocaleString()}</dd>
 
-              {/* Fundraiser Keeps */}
-              <div className='mt-2 flex items-center justify-between rounded-lg bg-green-500/10 p-3'>
-                <span className='text-sm font-medium text-green-400'>🎉 Fundraiser Keeps ({100 - totalPayout}%)</span>
-                <span className='text-lg font-bold text-green-400'>
-                  ${((totalPot * (100 - totalPayout)) / 100).toLocaleString()}
-                </span>
-              </div>
-            </div>
+                {/* Fundraiser Keeps */}
+                <dt data-line='total'>Fundraiser Keeps ({100 - totalPayout}%)</dt>
+                <dd data-line='total'>${((totalPot * (100 - totalPayout)) / 100).toLocaleString()}</dd>
+              </dl>
+            </>
           )}
-        </div>
+        </>
       )}
 
       {/* Custom Prize Text Inputs - Show when prizeType is 'custom' */}
       {prizeType === 'custom' && (
-        <div className='space-y-4'>
-          <div>
-            <Label className='text-zinc-200'>Custom Prize Descriptions</Label>
-            <p className='text-xs text-zinc-500'>
-              Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).
-            </p>
+        <>
+          <div className={css.groupFirst}>
+            <h3>Custom Prize Descriptions</h3>
+            <p>Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).</p>
           </div>
 
-          <div className='grid gap-4 sm:grid-cols-2'>
-            <div className='space-y-2'>
-              <Label htmlFor='prizeQ1Text' className='text-xs text-zinc-200'>
-                Q1 Prize
-              </Label>
-              <Input
-                id='prizeQ1Text'
-                type='text'
-                maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder='e.g., $100 Gift Card'
-                {...register('prizeQ1Text')}
-                className={cn(errors.prizeQ1Text && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
-              />
-              {errors.prizeQ1Text && <p className='text-sm text-red-500'>{errors.prizeQ1Text.message}</p>}
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='prizeQ2Text' className='text-xs text-zinc-200'>
-                Halftime Prize
-              </Label>
-              <Input
-                id='prizeQ2Text'
-                type='text'
-                maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder='e.g., $200 Gift Card'
-                {...register('prizeQ2Text')}
-                className={cn(errors.prizeQ2Text && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
-              />
-              {errors.prizeQ2Text && <p className='text-sm text-red-500'>{errors.prizeQ2Text.message}</p>}
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='prizeQ3Text' className='text-xs text-zinc-200'>
-                Q3 Prize
-              </Label>
-              <Input
-                id='prizeQ3Text'
-                type='text'
-                maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder='e.g., $300 Gift Card'
-                {...register('prizeQ3Text')}
-                className={cn(errors.prizeQ3Text && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
-              />
-              {errors.prizeQ3Text && <p className='text-sm text-red-500'>{errors.prizeQ3Text.message}</p>}
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='prizeFinalText' className='text-xs text-zinc-200'>
-                Final Prize
-              </Label>
-              <Input
-                id='prizeFinalText'
-                type='text'
-                maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder='e.g., $500 Gift Card'
-                {...register('prizeFinalText')}
-                className={cn(errors.prizeFinalText && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
-              />
-              {errors.prizeFinalText && <p className='text-sm text-red-500'>{errors.prizeFinalText.message}</p>}
-            </div>
+          <div className={css.two}>
+            <TextField
+              id='prizeQ1Text'
+              label='Q1 Prize'
+              type='text'
+              maxLength={PRIZE_TEXT_MAX_LENGTH}
+              placeholder='e.g., $100 Gift Card'
+              error={errors.prizeQ1Text?.message}
+              {...register('prizeQ1Text')}
+            />
+            <TextField
+              id='prizeQ2Text'
+              label='Halftime Prize'
+              type='text'
+              maxLength={PRIZE_TEXT_MAX_LENGTH}
+              placeholder='e.g., $200 Gift Card'
+              error={errors.prizeQ2Text?.message}
+              {...register('prizeQ2Text')}
+            />
+            <TextField
+              id='prizeQ3Text'
+              label='Q3 Prize'
+              type='text'
+              maxLength={PRIZE_TEXT_MAX_LENGTH}
+              placeholder='e.g., $300 Gift Card'
+              error={errors.prizeQ3Text?.message}
+              {...register('prizeQ3Text')}
+            />
+            <TextField
+              id='prizeFinalText'
+              label='Final Prize'
+              type='text'
+              maxLength={PRIZE_TEXT_MAX_LENGTH}
+              placeholder='e.g., $500 Gift Card'
+              error={errors.prizeFinalText?.message}
+              {...register('prizeFinalText')}
+            />
           </div>
-        </div>
+        </>
       )}
 
       {/* Access Control */}
-      <div className='space-y-4'>
-        <div>
-          <Label className='text-zinc-200'>Access Control</Label>
-          <p className='text-xs text-zinc-500'>Restrict who can view your contest.</p>
-        </div>
-
-        {/* Require PIN Toggle */}
-        <div className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-          <div className='space-y-1'>
-            <Label htmlFor='requirePin' className='cursor-pointer text-zinc-200'>
-              Require PIN to access
-            </Label>
-            <p className='text-xs text-zinc-500'>When enabled, participants must enter a PIN to view your contest</p>
-          </div>
-          <Switch id='requirePin' checked={requirePin ?? false} onCheckedChange={handleRequirePinChange} />
-        </div>
-
-        {/* PIN Input (shown when toggle is ON) */}
-        {requirePin && (
-          <div className='space-y-2 animate-in duration-200 fade-in slide-in-from-top-2'>
-            <Label htmlFor='accessPin' className='text-zinc-200'>
-              Access PIN
-            </Label>
-            <div className='flex gap-2'>
-              <div className='relative flex-1'>
-                <Input
-                  id='accessPin'
-                  type={showPin ? 'text' : 'password'}
-                  maxLength={6}
-                  placeholder='XXXXXX'
-                  {...register('accessPin')}
-                  className={cn(
-                    'pr-10 font-mono tracking-widest uppercase',
-                    errors.accessPin && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                  )}
-                />
-                <button
-                  type='button'
-                  onClick={() => setShowPin(!showPin)}
-                  className='absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-200'
-                >
-                  {showPin ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-                </button>
-              </div>
-              <Button
-                type='button'
-                variant='outline'
-                size='icon'
-                onClick={handleGeneratePin}
-                title='Generate new PIN'
-                className='shrink-0'
-              >
-                <RefreshCw className='h-4 w-4' />
-              </Button>
-            </div>
-            {errors.accessPin && <p className='text-sm text-red-500'>{errors.accessPin.message}</p>}
-            <p className='text-xs text-zinc-500'>6 characters max, letters and numbers only.</p>
-          </div>
-        )}
+      <div className={css.group}>
+        <h3>Access Control</h3>
+        <p>Restrict who can view your contest.</p>
       </div>
-    </div>
+
+      {/* Require PIN Toggle */}
+      <SwitchRow
+        id='requirePin'
+        label='Require PIN to access'
+        hint='When enabled, participants must enter a PIN to view your contest'
+        checked={requirePin ?? false}
+        onCheckedChange={handleRequirePinChange}
+      />
+
+      {/* PIN Input (shown when toggle is ON) */}
+      {requirePin && (
+        <div className={css.gapTopSmall}>
+          <PinField
+            id='accessPin'
+            hint='6 characters max, letters and numbers only.'
+            error={errors.accessPin?.message}
+            onGenerate={handleGeneratePin}
+            {...register('accessPin')}
+          />
+        </div>
+      )}
+    </>
   );
 }

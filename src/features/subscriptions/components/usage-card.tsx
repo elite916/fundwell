@@ -1,5 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
-import { cn } from '@/utils/cn';
+import { Panel } from '@/components/studio/dashboard/dash-page';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 interface UsageCardProps {
   activeContests: number;
@@ -15,31 +16,18 @@ export function UsageCard({ activeContests, limit }: UsageCardProps) {
   const displayCount = isUnlimited ? `${activeContests} / ∞` : `${activeContests} / ${limit}`;
 
   return (
-    <Card
-      className={cn(
-        'border-zinc-800 bg-zinc-900',
-        isAtLimit && 'border-amber-500/50 bg-amber-500/10',
-        isNearLimit && !isAtLimit && 'border-orange-500/30'
-      )}
-    >
-      <CardHeader className='pb-2'>
-        <CardDescription className='text-zinc-500'>Active Contests</CardDescription>
-      </CardHeader>
-      <CardContent className='space-y-3'>
-        <p className={cn('text-3xl font-bold', isAtLimit ? 'text-amber-400' : 'text-white')}>{displayCount}</p>
-        {!isUnlimited && (
-          <div className='space-y-1'>
-            <div className='h-2 overflow-hidden rounded-full bg-zinc-800'>
-              <div
-                className={cn('h-full transition-all duration-300', isAtLimit ? 'bg-amber-500' : 'bg-orange-500')}
-                style={{ width: `${percentage}%` }}
-              />
-            </div>
-            {isAtLimit && <p className='text-xs text-amber-400'>Limit reached</p>}
-            {isNearLimit && !isAtLimit && <p className='text-xs text-orange-400'>Approaching limit</p>}
+    <Panel>
+      <h2 className={css.figureLabel}>Active Contests</h2>
+      <p className={css.figure}>{displayCount}</p>
+      {!isUnlimited && (
+        <>
+          <div className={`${css.bars} ${css.usage}`} aria-hidden='true'>
+            <i style={{ width: `${percentage}%` }} />
           </div>
-        )}
-      </CardContent>
-    </Card>
+          {isAtLimit && <p>Limit reached</p>}
+          {isNearLimit && !isAtLimit && <p>Approaching limit</p>}
+        </>
+      )}
+    </Panel>
   );
 }

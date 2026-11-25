@@ -2,23 +2,17 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, Loader2, Trash2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { DashButton, DashInput } from '@/components/studio/dashboard/dash-button';
+import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
+import { BusyButton } from '@/components/studio/setup/busy-button';
+import { SetupSection } from '@/components/studio/setup/section';
+import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
 import { deleteContest } from '@/features/contests/actions/delete-contest';
 import { Database } from '@/libs/supabase/types';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
 
@@ -66,77 +60,47 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
   };
 
   return (
-    <>
-      <Card className='border-red-500/30 bg-zinc-900'>
-        <CardHeader>
-          <CardTitle className='flex items-center gap-2 text-red-400'>
-            <AlertTriangle className='h-5 w-5' />
-            Danger Zone
-          </CardTitle>
-          <CardDescription>Irreversible and destructive actions.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className='flex items-start justify-between gap-4 rounded-lg border border-red-500/20 bg-red-950/20 p-4'>
-            <div className='flex-1'>
-              <h4 className='font-medium text-white'>Delete Contest</h4>
-              <p className='mt-1 text-sm text-zinc-400'>
-                Deleting a contest is permanent and cannot be undone. All squares and participant data will be removed.
-              </p>
-            </div>
-            <Button variant='destructive' onClick={handleOpenDialog}>
-              <Trash2 className='mr-2 h-4 w-4' />
-              Delete Contest
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <SetupSection id='danger-zone' title='Danger Zone' description='Irreversible and destructive actions.'>
+      <h3>Delete Contest</h3>
+      <p className={`${css.soft} ${css.gapBottom}`}>
+        Deleting a contest is permanent and cannot be undone. All squares and participant data will be removed.
+      </p>
+      <DashButton className={css.outline} onClick={handleOpenDialog}>
+        Delete Contest
+      </DashButton>
 
       {/* Confirmation Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className='flex items-center gap-2 text-red-400'>
-              <AlertTriangle className='h-5 w-5' />
-              Delete Contest
-            </DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. All contest data, squares, and participant information will be deleted.
-            </DialogDescription>
-          </DialogHeader>
+      <DashDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title='Delete Contest'
+        description='This action cannot be undone. All contest data, squares, and participant information will be deleted.'
+      >
+        <div className={css.scale}>
+          <p className={css.confirm}>
+            To confirm, type <b>{contest.name}</b> below:
+          </p>
+          <label htmlFor='confirmation' className={srOnly}>
+            Contest name confirmation
+          </label>
+          <DashInput
+            id='confirmation'
+            value={confirmationText}
+            onChange={(e) => setConfirmationText(e.target.value)}
+            placeholder='Type contest name to confirm'
+            autoComplete='off'
+          />
+        </div>
 
-          <div className='space-y-4 py-4'>
-            <div className='rounded-lg border border-red-500/20 bg-red-950/20 p-3'>
-              <p className='text-sm text-zinc-300'>
-                To confirm, type <span className='font-mono font-bold text-white'>{contest.name}</span> below:
-              </p>
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='confirmation' className='sr-only'>
-                Contest name confirmation
-              </Label>
-              <Input
-                id='confirmation'
-                value={confirmationText}
-                onChange={(e) => setConfirmationText(e.target.value)}
-                placeholder='Type contest name to confirm'
-                className='border-zinc-700 bg-zinc-800'
-                autoComplete='off'
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setIsDialogOpen(false)} disabled={isPending}>
-              Cancel
-            </Button>
-            <Button variant='destructive' onClick={handleDelete} disabled={!isConfirmationValid || isPending}>
-              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              Delete Contest
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+        <DashDialogFoot>
+          <DashButton look='quiet' onClick={() => setIsDialogOpen(false)} disabled={isPending}>
+            Cancel
+          </DashButton>
+          <BusyButton busy={isPending} onClick={handleDelete} disabled={!isConfirmationValid}>
+            Delete Contest
+          </BusyButton>
+        </DashDialogFoot>
+      </DashDialog>
+    </SetupSection>
   );
 }
