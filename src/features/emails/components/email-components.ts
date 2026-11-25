@@ -47,3 +47,17 @@ export function ctaButton(text: string, url: string): string {
       </tr>
     </table>`;
 }
+
+export function gradientCtaButton(text: string, url: string): string {
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center" style="padding: 8px 0;">
+          <a href="${url}" style="display: inline-block; background: linear-gradient(135deg, #F97316 0%, #FBBF24 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 6px; font-size: 16px; font-weight: 600;">
+            ${text}
+          </a>
+        </td>
+      </tr>
+    </table>
+  `;
+}

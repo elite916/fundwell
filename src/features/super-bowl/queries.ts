@@ -30,7 +30,7 @@ export async function getSeasonContests() {
   const { data, error } = await supabaseAdminClient
     .from('contests')
     .select(
-      'id, name, slug, status, row_team_name, col_team_name, row_numbers, col_numbers, super_bowl_row_team, scores(quarter, home_score, away_score, source)'
+      'id, owner_id, name, slug, status, row_team_name, col_team_name, row_numbers, col_numbers, super_bowl_row_team, scores(quarter, home_score, away_score, source)'
     )
     .eq('super_bowl_season', SUPER_BOWL_SEASON)
     .eq('sport_type', 'football')
