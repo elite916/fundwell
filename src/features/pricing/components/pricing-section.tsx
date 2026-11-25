@@ -1,12 +1,14 @@
 import { getUser } from '@/features/account/controllers/get-user';
 import { PricingCard } from '@/features/pricing/components/price-card';
 import { getProducts } from '@/features/pricing/controllers/get-products';
+import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
 
 import { createCheckoutAction } from '../actions/create-checkout-action';
 
 export async function PricingSection({ isPricingPage }: { isPricingPage?: boolean }) {
   const [products, user] = await Promise.all([getProducts(), getUser()]);
   const isLoggedIn = !!user;
+  const hasPro = await hasActiveSubscription(user?.id ?? null);
 
   const HeadingLevel = isPricingPage ? 'h1' : 'h2';
 
@@ -39,6 +41,7 @@ export async function PricingSection({ isPricingPage }: { isPricingPage?: boolea
                 product={product}
                 createCheckoutAction={createCheckoutAction}
                 isLoggedIn={isLoggedIn}
+                hasPro={hasPro}
               />
             );
           })}

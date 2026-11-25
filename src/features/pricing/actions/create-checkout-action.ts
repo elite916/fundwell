@@ -6,6 +6,7 @@ import { getOrCreateCustomer } from '@/features/account/controllers/get-or-creat
 import { getUser } from '@/features/account/controllers/get-user';
 import { isCheckoutablePrice } from '@/features/pricing/checkout-price';
 import { stripeAdmin } from '@/libs/stripe/stripe-admin';
+import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 import { getURL } from '@/utils/get-url';
 
@@ -37,13 +38,25 @@ export async function createCheckoutAction({ priceId }: { priceId: string }) {
     throw Error('Invalid price');
   }
 
-  // 3. Retrieve or create the customer in Stripe
+  // 3. A user who already has Pro can't start a second subscription. If the lookup fails, stop.
+  // Same rule as hasActiveSubscription, which returns false on error.
+  const { data: hasPro, error: subscriptionError } = await supabaseAdminClient.rpc('owner_has_pro', { uid: user.id });
+
+  if (subscriptionError || typeof hasPro !== 'boolean') {
+    throw Error('Could not check subscription');
+  }
+
+  if (hasPro) {
+    return redirect(`${getURL()}/dashboard/billing`);
+  }
+
+  // 4. Retrieve or create the customer in Stripe
   const customer = await getOrCreateCustomer({
     userId: user.id,
     email: user.email,
   });
 
-  // 4. Create a checkout session in Stripe
+  // 5. Create a checkout session in Stripe
   const checkoutSession = await stripeAdmin.checkout.sessions.create({
     allowed_payment_method_types: ['card'],
     billing_address_collection: 'required',
@@ -67,6 +80,6 @@ export async function createCheckoutAction({ priceId }: { priceId: string }) {
     throw Error('checkoutSession is not defined');
   }
 
-  // 5. Redirect to checkout url
+  // 6. Redirect to checkout url
   redirect(checkoutSession.url);
 }
