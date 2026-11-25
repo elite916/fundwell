@@ -13,6 +13,8 @@ interface BoardFrameProps<T extends GridSquare> {
   rowTeamName: string;
   colTeamName: string;
   axisNote?: ReactNode;
+  /** Shown in place of each number until the numbers are in. Without it the axes are left out until then. */
+  numberPlaceholder?: string;
   className?: string;
   renderCell: (cell: Cell<T>) => ReactNode;
   tableRef?: Ref<HTMLTableElement>;
@@ -25,6 +27,7 @@ export function BoardFrame<T extends GridSquare>({
   rowTeamName,
   colTeamName,
   axisNote,
+  numberPlaceholder,
   className,
   renderCell,
   tableRef,
@@ -32,12 +35,14 @@ export function BoardFrame<T extends GridSquare>({
 }: BoardFrameProps<T>) {
   const { rows, rowNumbers, colNumbers, winner } = grid;
   const hasNumbers = !!rowNumbers && !!colNumbers;
+  const hasAxes = hasNumbers || !!numberPlaceholder;
+  const placeholder = numberPlaceholder && <span aria-hidden='true'>{numberPlaceholder}</span>;
 
   return (
     <div className={cn(css.wrap, className)}>
       {axisNote && <p className={css.axis}>{axisNote}</p>}
       <div className={css.board}>
-        <table ref={tableRef} className={cn(css.table, !hasNumbers && css.noNumbers)} {...tableProps}>
+        <table ref={tableRef} className={cn(css.table, !hasAxes && css.noNumbers)} {...tableProps}>
           <caption className={srOnly}>
             Squares, {rowTeamName} down and {colTeamName} across
           </caption>
@@ -46,7 +51,14 @@ export function BoardFrame<T extends GridSquare>({
               <td />
               {rows[0].map(({ col }) => (
                 <th key={col} scope='col' className={winner?.col === col ? css.on : undefined}>
-                  {hasNumbers ? colNumbers[col] : <span className={srOnly}>Column {col + 1}</span>}
+                  {hasNumbers ? (
+                    colNumbers[col]
+                  ) : (
+                    <>
+                      {placeholder}
+                      <span className={srOnly}>Column {col + 1}</span>
+                    </>
+                  )}
                 </th>
               ))}
             </tr>
@@ -55,7 +67,14 @@ export function BoardFrame<T extends GridSquare>({
             {rows.map((cells, row) => (
               <tr key={row}>
                 <th scope='row' className={winner?.row === row ? css.on : undefined}>
-                  {hasNumbers ? rowNumbers[row] : <span className={srOnly}>Row {row + 1}</span>}
+                  {hasNumbers ? (
+                    rowNumbers[row]
+                  ) : (
+                    <>
+                      {placeholder}
+                      <span className={srOnly}>Row {row + 1}</span>
+                    </>
+                  )}
                 </th>
                 {cells.map((cell) => (
                   <td key={cell.col}>{renderCell(cell)}</td>

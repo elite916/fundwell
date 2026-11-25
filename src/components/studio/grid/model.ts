@@ -159,7 +159,8 @@ export function buildGrid<T extends GridSquare>(data: BoardData<T>): Grid<T> {
   return { rows, rowNumbers, colNumbers, winner };
 }
 
-function initialsOf(square: GridSquare | null): string {
+/** "JE", from the claimant's names. */
+export function initialsOf(square: GridSquare | null): string {
   return [square?.claimant_first_name, square?.claimant_last_name]
     .map((part) => [...(part?.trim() ?? '')][0]?.toUpperCase() ?? '')
     .join('');

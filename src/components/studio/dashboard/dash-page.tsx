@@ -87,7 +87,7 @@ export function DashWait({ text }: { text: string }) {
   );
 }
 
-interface DashProblemProps {
+interface DashEmptyProps {
   title: ReactNode;
   text: ReactNode;
   /** Small print under the buttons. */
@@ -96,13 +96,22 @@ interface DashProblemProps {
   children?: ReactNode;
 }
 
+/** Nothing to show yet, inside a page. */
+export function DashEmpty({ title, text, fine, children }: DashEmptyProps) {
+  return <Blank title={<h2>{title}</h2>} text={text} fine={fine} buttons={children} />;
+}
+
 /** A page with nothing to show because something is wrong. */
-export function DashProblem({ title, text, fine, children }: DashProblemProps) {
+export function DashProblem({ title, text, fine, children }: DashEmptyProps) {
+  return <Blank title={<h1>{title}</h1>} text={text} fine={fine} buttons={children} />;
+}
+
+function Blank({ title, text, fine, buttons }: Omit<DashEmptyProps, 'children'> & { buttons: ReactNode }) {
   return (
     <div className={css.empty}>
-      <h1>{title}</h1>
+      {title}
       <p className={css.soft}>{text}</p>
-      {children && <div className={css.buttons}>{children}</div>}
+      {buttons && <div className={css.buttons}>{buttons}</div>}
       {fine && <p className={css.fine}>{fine}</p>}
     </div>
   );

@@ -1,13 +1,13 @@
 'use client';
 
-import { Trophy } from 'lucide-react';
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FOOTBALL_QUARTER_LABELS } from '@/features/contests/constants';
 import { GridSquare } from '@/features/contests/queries/get-squares';
 import { ContestPrizeFields } from '@/features/contests/types';
 import { calculatePrizeAmount, countSoldSquares, formatPrizeAmount, getPrizeText } from '@/features/contests/utils';
 import { Database } from '@/libs/supabase/types';
+import { cn } from '@/utils/cn';
+
+import css from './run.module.css';
 
 type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
@@ -96,7 +96,6 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
         winnerName: getWinnerName(winningSquare),
         payoutAmount,
         prizeText,
-        hasClaimed: !!winningSquare?.claimant_first_name,
       };
     })
     .filter(Boolean);
@@ -106,44 +105,25 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
   }
 
   return (
-    <Card className='border-zinc-800 bg-zinc-900'>
-      <CardHeader>
-        <CardTitle className='flex items-center gap-2 text-white'>
-          <Trophy className='h-5 w-5 text-amber-400' />
-          Winners
-        </CardTitle>
-        <CardDescription>
-          Scores and winners for each {contest.sport_type === 'football' ? 'quarter' : 'game'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className='space-y-3'>
-          {scoresWithWinners.map((item) => (
-            <div key={item!.quarter} className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-3'>
-              {/* Header row: Quarter label + Payout */}
-              <div className='flex items-center justify-between'>
-                <span className='font-semibold text-white'>{item!.label}</span>
-                {contest.prize_type === 'custom' && item!.prizeText ? (
-                  <span className='text-sm font-medium text-orange-400'>{item!.prizeText}</span>
-                ) : item!.payoutAmount != null ? (
-                  <span className='text-sm font-medium text-orange-400'>{formatPrizeAmount(item!.payoutAmount)}</span>
-                ) : null}
-              </div>
-              {/* Score */}
-              <p className='mt-1 text-sm text-zinc-400'>
-                {contest.row_team_name} {item!.homeScore} - {contest.col_team_name} {item!.awayScore}
-              </p>
-              {/* Winner */}
-              <div className='mt-1.5 flex items-center gap-1.5'>
-                <Trophy className='h-3.5 w-3.5 text-amber-400' />
-                <span className={`text-sm ${item!.hasClaimed ? 'text-green-400' : 'text-zinc-500'}`}>
-                  {item!.winnerName}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <section aria-labelledby='winners' className={cn(css.card, css.winners)}>
+      <h2 id='winners'>Winners</h2>
+      <p>Scores and winners for each {contest.sport_type === 'football' ? 'quarter' : 'game'}</p>
+      <ul className={css.wins}>
+        {scoresWithWinners.map((item) => (
+          <li key={item!.quarter}>
+            <b>{item!.label}</b>
+            {contest.prize_type === 'custom' && item!.prizeText ? (
+              <span className={css.prize}>{item!.prizeText}</span>
+            ) : item!.payoutAmount != null ? (
+              <span className={css.prize}>{formatPrizeAmount(item!.payoutAmount)}</span>
+            ) : null}
+            <span className={css.won}>{item!.winnerName}</span>
+            <span className={css.score}>
+              {contest.row_team_name} {item!.homeScore} - {contest.col_team_name} {item!.awayScore}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

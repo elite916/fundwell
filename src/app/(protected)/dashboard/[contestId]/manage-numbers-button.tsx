@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Hash } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { ManageNumbersModal } from '@/features/contests/components/manage-numbers-modal';
 
 interface Contest {
@@ -31,10 +30,9 @@ export function ManageNumbersButton({ contest }: ManageNumbersButtonProps) {
 
   return (
     <>
-      <Button variant='outline' size='sm' onClick={() => setIsOpen(true)}>
-        <Hash className='mr-2 h-4 w-4' />
+      <DashButton look='quiet' onClick={() => setIsOpen(true)}>
         Manage Numbers
-      </Button>
+      </DashButton>
 
       <ManageNumbersModal
         isOpen={isOpen}

@@ -1,0 +1,136 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  .email {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    margin-bottom: 16px;
+    cursor: pointer;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 18px;
+    padding: 4px;
+    border-radius: var(--studio-radius-pill);
+    background: var(--dash-quiet);
+  }
+  .tabs button {
+    min-height: 44px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: var(--studio-radius-pill);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .tabs button[aria-selected='true'] {
+    background: var(--studio-tile);
+    box-shadow: 0 1px 4px rgb(var(--studio-shade) / 0.25);
+  }
+  .tabs button:focus-visible {
+    border-radius: var(--studio-radius-pill);
+    outline-offset: 2px;
+  }
+  .panel:focus-visible {
+    border-radius: 6px;
+  }
+  .how {
+    margin-bottom: 14px;
+    color: var(--studio-soft);
+  }
+  .label {
+    margin-bottom: 6px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .digits {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .digit.digit {
+    padding: 0;
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+  }
+  .digits > span {
+    display: grid;
+    place-items: center;
+    height: 44px;
+    border-radius: 6px;
+    background: var(--dash-field);
+    font-weight: 500;
+  }
+  .error {
+    margin: -10px 0 14px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .preview {
+    margin-top: 22px;
+  }
+  .preview h3 {
+    font-weight: 600;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 22px 22px repeat(10, minmax(0, 1fr));
+    gap: 3px;
+    max-width: 342px;
+    margin: 8px auto 0;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .across {
+    grid-row: 1;
+    grid-column: 3 / -1;
+    font-size: 14px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .down {
+    grid-row: 3 / 13;
+    grid-column: 1;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+  .bed {
+    display: grid;
+    grid-row: 3 / 13;
+    grid-column: 3 / -1;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--studio-bed);
+  }
+  .grid > i {
+    grid-column: 2;
+    font-style: normal;
+  }
+  .grid > b {
+    grid-row: 2;
+    font-weight: 400;
+  }
+
+  @media (max-width: 699px) {
+    .digits {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .digit.digit {
+      height: 48px;
+      font-size: 20px;
+    }
+  }
+}

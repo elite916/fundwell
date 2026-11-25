@@ -1,15 +1,15 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Copy, Download, Search } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from '@/components/ui/use-toast';
+import { DashButton, DashInput } from '@/components/studio/dashboard/dash-button';
+import { say } from '@/components/studio/dashboard/dash-toast';
+import { srOnly } from '@/components/studio/theme';
 import { Player } from '@/features/contests/types/player';
+import { cn } from '@/utils/cn';
 import { getURL } from '@/utils/get-url';
+
+import css from '../table.module.css';
 
 interface TeamMembersTableClientProps {
   players: Player[];
@@ -24,11 +24,6 @@ function slugify(text: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
-}
-
-function truncateUrl(url: string, maxLength: number = 50): string {
-  if (url.length <= maxLength) return url;
-  return url.substring(0, maxLength - 3) + '...';
 }
 
 export function TeamMembersTableClient({
@@ -58,14 +53,7 @@ export function TeamMembersTableClient({
   const copyLink = async (player: Player) => {
     const url = getReferralLink(player);
     await navigator.clipboard.writeText(url);
-    toast({
-      title: 'Link copied',
-      description: `Link copied for ${player.name}`,
-    });
-  };
-
-  const handleRowClick = (player: Player) => {
-    copyLink(player);
+    say(`Link copied for ${player.name}`);
   };
 
   const handleExportCSV = () => {
@@ -92,89 +80,73 @@ export function TeamMembersTableClient({
   return (
     <>
       {/* Controls Row */}
-      <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        {/* Search */}
-        <div className='relative max-w-sm flex-1'>
-          <Search className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500' />
-          <Input
-            placeholder='Search by name or number...'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='pl-9'
-          />
-        </div>
-
-        {/* Export Button */}
-        <Button variant='secondary' onClick={handleExportCSV}>
-          <Download className='mr-2 h-4 w-4' />
+      <div className={css.tools}>
+        <DashInput
+          type='search'
+          aria-label='Search by name or number'
+          placeholder='Search by name or number...'
+          autoComplete='off'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <DashButton look='quiet' onClick={handleExportCSV}>
           Export CSV
-        </Button>
+        </DashButton>
       </div>
 
       {/* Table */}
-      <div className='rounded-lg border border-zinc-800 bg-zinc-900'>
-        <Table>
-          <TableHeader>
-            <TableRow className='border-zinc-800 hover:bg-transparent'>
-              <TableHead>Name</TableHead>
-              <TableHead>Referral Link</TableHead>
-              <TableHead>Squares Sold</TableHead>
-              <TableHead className='w-[150px]'>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPlayers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className='h-24 text-center text-zinc-500'>
-                  {searchQuery ? 'No team members match your search.' : 'No team members yet.'}
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredPlayers.map((player) => {
-                const salesCount = salesCounts[player.name] || 0;
-                const referralLink = getReferralLink(player);
-                return (
-                  <TableRow
-                    key={player.slug}
-                    className='cursor-pointer border-zinc-800'
-                    onClick={() => handleRowClick(player)}
-                  >
-                    <TableCell className='font-medium text-white'>
-                      {player.name}
-                      {player.number !== undefined && <span className='ml-2 text-zinc-400'>#{player.number}</span>}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <div className='flex items-center gap-2'>
-                        <span className='font-mono text-sm text-zinc-400'>{truncateUrl(referralLink)}</span>
-                        <Button
-                          variant='ghost'
-                          size='sm'
-                          onClick={() => copyLink(player)}
-                          className='h-6 w-6 p-0 text-zinc-400 hover:text-white'
-                        >
-                          <Copy className='h-3 w-3' />
-                          <span className='sr-only'>Copy link</span>
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className='border-orange-500/30 bg-orange-500/20 text-orange-300'>
-                        {salesCount} {salesCount === 1 ? 'square' : 'squares'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Button variant='outline' size='sm' onClick={() => copyLink(player)} className='border-zinc-700'>
-                        <Copy className='mr-1 h-3 w-3' />
-                        Copy Link
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <table role='table' className={cn(css.table, css.team)}>
+        <caption className={srOnly}>Team Members</caption>
+        <thead role='rowgroup'>
+          <tr role='row'>
+            {['Name', 'Referral Link', 'Squares Sold', 'Actions'].map((heading) => (
+              <th key={heading} role='columnheader' scope='col'>
+                {heading}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody role='rowgroup'>
+          {filteredPlayers.length === 0 ? (
+            <tr role='row' className={css.blank}>
+              <td role='cell' colSpan={4}>
+                {searchQuery ? 'No team members match your search.' : 'No team members yet.'}
+              </td>
+            </tr>
+          ) : (
+            filteredPlayers.map((player) => {
+              const salesCount = salesCounts[player.name] || 0;
+              return (
+                <tr
+                  key={player.slug}
+                  role='row'
+                  onClick={(e) => {
+                    // A press anywhere on the row copies the link, except on the button, which does the same
+                    if ((e.target as HTMLElement).closest('button')) return;
+                    copyLink(player);
+                  }}
+                >
+                  <td role='cell' className={css.member}>
+                    {player.name}
+                    {player.number !== undefined && <span className={css.soft}> #{player.number}</span>}
+                  </td>
+                  <td role='cell' className={css.url}>
+                    {getReferralLink(player)}
+                  </td>
+                  <td role='cell'>
+                    {salesCount} {salesCount === 1 ? 'square' : 'squares'}
+                  </td>
+                  <td role='cell'>
+                    <DashButton look='quiet' onClick={() => copyLink(player)}>
+                      Copy Link<span className={srOnly}> for {player.name}</span>
+                    </DashButton>
+                  </td>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
     </>
   );
 }

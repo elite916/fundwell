@@ -1,0 +1,106 @@
+@layer theme, base, components, utilities;
+
+@layer components {
+  .scores {
+    display: grid;
+    gap: 10px;
+  }
+  .labels,
+  .quarter {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: 14px;
+    align-items: center;
+  }
+  .labels {
+    color: var(--studio-soft);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .labels :last-child {
+    text-align: left;
+  }
+  .about {
+    overflow-wrap: anywhere;
+  }
+  .about b {
+    display: block;
+    font-weight: 600;
+  }
+  .about small {
+    color: var(--studio-soft);
+    font-size: 13px;
+  }
+  .team > span {
+    display: none;
+  }
+  .score.score {
+    height: 54px;
+    font-size: 22px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .winner {
+    color: var(--studio-soft);
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .won {
+    color: var(--studio-ink);
+    font-weight: 600;
+  }
+  .phoneOnly {
+    display: none;
+  }
+
+  @media (max-width: 699px) {
+    .scores {
+      gap: 0;
+    }
+    .labels {
+      display: none;
+    }
+    .quarter {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 6px 12px;
+      padding: 14px 0;
+    }
+    .quarter + .quarter {
+      border-top: 1px solid var(--dash-hair);
+    }
+    .about {
+      display: flex;
+      grid-column: 1 / -1;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .team {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .team > span {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+    .score.score {
+      height: 58px;
+      font-size: 26px;
+    }
+    .winner {
+      grid-column: 1 / -1;
+      min-height: 22px;
+    }
+    .phoneOnly {
+      display: inline;
+      color: var(--studio-soft);
+      font-weight: 400;
+    }
+  }
+}
