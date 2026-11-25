@@ -1,45 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LayoutGrid, LogOut, Menu } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
-import { Logo } from '@/components/logo';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { IconButton } from '@/components/studio/dashboard/dash-button';
+import { dashTheme } from '@/components/studio/dashboard/dash-page';
 import { signOut } from '@/features/auth/auth-actions';
 import { cn } from '@/utils/cn';
+import * as Dialog from '@radix-ui/react-dialog';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 import { NavItems } from './nav-items';
 
+import css from './dashboard-shell.module.css';
+
 async function handleSignOut() {
   await signOut();
-}
-
-function LogoutButton({ onClick, className }: { onClick?: () => void; className?: string }) {
-  return (
-    <form action={handleSignOut}>
-      <button
-        type='submit'
-        onClick={onClick}
-        className={cn(
-          'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white',
-          className
-        )}
-      >
-        <LogOut className='h-5 w-5' />
-        Log out
-      </button>
-    </form>
-  );
 }
 
 interface DashboardShellProps {
@@ -51,112 +29,106 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: DashboardShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const logoutRef = useRef<HTMLFormElement>(null);
 
   return (
-    <div className='flex min-h-screen flex-col bg-zinc-900'>
-      <div className='flex flex-1'>
-        {/* Desktop Sidebar */}
-        <aside className='sticky top-0 hidden h-screen w-64 shrink-0 border-r border-zinc-800 bg-zinc-950 lg:block'>
-          <div className='flex h-full flex-col'>
-            {/* Logo */}
-            <div className='flex h-16 items-center border-b border-zinc-800 px-6'>
-              <Logo />
-            </div>
+    <div className={css.shell}>
+      <a className={cn(dashTheme, css.skip)} href='#main'>
+        Skip to content
+      </a>
 
-            {/* Navigation */}
-            <nav className='space-y-1 flex-1 px-3 py-4'>
-              <NavItems isAdmin={isAdmin} />
-            </nav>
-
-            {/* Sidebar Footer */}
-            <div className='border-t border-zinc-800 p-4'>
-              <LogoutButton />
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <div className='flex flex-1 flex-col overflow-y-auto'>
-          {/* Header */}
-          <header className='sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/95 px-4 backdrop-blur-sm supports-backdrop-filter:bg-zinc-900/60 lg:px-6'>
-            {/* Mobile Menu Button */}
-            <div className='flex items-center gap-4 lg:hidden'>
-              <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-                <SheetTrigger asChild>
-                  <button className='rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white'>
-                    <Menu className='h-6 w-6' />
-                    <span className='sr-only'>Open menu</span>
-                  </button>
-                </SheetTrigger>
-                <SheetContent side='left' className='w-72 border-zinc-800 bg-zinc-950 p-0'>
-                  <SheetHeader className='border-b border-zinc-800 px-6 py-4'>
-                    <SheetTitle>
-                      <Logo size='md' href={undefined} />
-                    </SheetTitle>
-                  </SheetHeader>
-                  <nav className='space-y-1 flex-1 px-3 py-4'>
-                    <NavItems isAdmin={isAdmin} onClick={() => setMobileNavOpen(false)} />
-                  </nav>
-                  <div className='border-t border-zinc-800 p-4'>
-                    <LogoutButton onClick={() => setMobileNavOpen(false)} />
-                  </div>
-                </SheetContent>
-              </Sheet>
-              <Logo href='/dashboard' size='sm' />
-            </div>
-
-            {/* Desktop: Empty space or breadcrumbs */}
-            <div className='hidden lg:block' />
-
-            {/* User Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className='flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800'>
-                  <div className='relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-orange-500/20 text-orange-500'>
-                    {avatarUrl ? (
-                      <Image src={avatarUrl} alt='Avatar' fill className='object-cover' />
-                    ) : (
-                      <span className='text-sm font-medium uppercase'>{userEmail.charAt(0)}</span>
-                    )}
-                  </div>
-                  <span className='hidden max-w-[150px] truncate md:inline'>{userEmail}</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-56 border-zinc-700 bg-zinc-800'>
-                <DropdownMenuLabel className='text-zinc-400'>
-                  <span className='block truncate text-sm font-normal'>{userEmail}</span>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className='bg-zinc-700' />
-                <DropdownMenuItem asChild className='cursor-pointer text-zinc-300 focus:bg-zinc-700 focus:text-white'>
-                  <Link href='/dashboard' className='flex items-center gap-2'>
-                    <LayoutGrid className='h-4 w-4' />
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className='cursor-pointer text-zinc-300 focus:bg-zinc-700 focus:text-white'>
-                  <Link href='/dashboard/account'>Account</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className='cursor-pointer text-zinc-300 focus:bg-zinc-700 focus:text-white'>
-                  <Link href='/dashboard/billing'>Billing</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className='bg-zinc-700' />
-                <DropdownMenuItem
-                  asChild
-                  className='cursor-pointer p-0 text-zinc-300 focus:bg-zinc-700 focus:text-white'
-                >
-                  <form action={handleSignOut} className='w-full'>
-                    <button type='submit' className='w-full px-2 py-1.5 text-left'>
-                      Log out
-                    </button>
-                  </form>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </header>
-
-          {/* Page Content */}
-          <main className='flex-1 p-4 lg:p-6'>{children}</main>
+      {/* Desktop Sidebar */}
+      <aside aria-label='Sidebar' className={cn(dashTheme, css.rail)}>
+        <div className={css.railInner}>
+          <Link href='/' className={css.name}>
+            Fundwell
+          </Link>
+          <nav aria-label='Main' className={css.nav}>
+            <NavItems isAdmin={isAdmin} className={css.item} />
+          </nav>
+          <form action={handleSignOut}>
+            <button type='submit' className={css.item}>
+              Log out
+            </button>
+          </form>
         </div>
+      </aside>
+
+      <div className={css.column}>
+        <header className={cn(dashTheme, css.bar)}>
+          {/* Mobile Menu */}
+          <div className={css.small}>
+            <Dialog.Root open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+              <Dialog.Trigger asChild>
+                <IconButton label='Open menu'>
+                  <Menu aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
+                </IconButton>
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className={css.shade} />
+                <Dialog.Content className={cn(dashTheme, css.drawer)} aria-describedby={undefined}>
+                  <Dialog.Title className={css.name}>Fundwell</Dialog.Title>
+                  <nav aria-label='Menu' className={css.nav}>
+                    <NavItems isAdmin={isAdmin} className={css.item} onClick={() => setMobileNavOpen(false)} />
+                  </nav>
+                  <button
+                    type='button'
+                    onClick={() => {
+                      logoutRef.current?.requestSubmit();
+                      setMobileNavOpen(false);
+                    }}
+                    className={css.item}
+                  >
+                    Log out
+                  </button>
+                  <Dialog.Close asChild>
+                    <IconButton label='Close' className={css.close}>
+                      <X aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
+                    </IconButton>
+                  </Dialog.Close>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
+            <Link href='/dashboard' className={css.name}>
+              Fundwell
+            </Link>
+          </div>
+
+          {/* User Menu */}
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger className={css.who} aria-label={`${userEmail}, account menu`}>
+              <span aria-hidden='true' className={css.avatar}>
+                {avatarUrl ? <Image src={avatarUrl} alt='' fill sizes='32px' /> : userEmail.charAt(0)}
+              </span>
+              <span aria-hidden='true' className={css.email}>
+                {userEmail}
+              </span>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content align='end' sideOffset={4} className={cn(dashTheme, css.menu)}>
+                <DropdownMenu.Label className={css.menuEmail}>{userEmail}</DropdownMenu.Label>
+                <DropdownMenu.Item asChild className={css.menuItem}>
+                  <Link href='/dashboard'>Dashboard</Link>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item asChild className={css.menuItem}>
+                  <Link href='/dashboard/account'>Account</Link>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item asChild className={css.menuItem}>
+                  <Link href='/dashboard/billing'>Billing</Link>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className={css.menuItem} onSelect={() => logoutRef.current?.requestSubmit()}>
+                  Log out
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+          {/* Outside the menu and the drawer, so closing one doesn't take the form away before it is sent */}
+          <form ref={logoutRef} action={handleSignOut} hidden />
+        </header>
+
+        <main id='main' tabIndex={-1} className={css.main}>
+          {children}
+        </main>
       </div>
     </div>
   );

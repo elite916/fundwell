@@ -1,28 +1,22 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
-import { Loader2, Settings, Trophy } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { DashButton, DashInput } from '@/components/studio/dashboard/dash-button';
+import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
+import { Note } from '@/components/studio/dashboard/dash-page';
+import { say, sayProblem } from '@/components/studio/dashboard/dash-toast';
 import { Database } from '@/libs/supabase/types';
+import { cn } from '@/utils/cn';
 
 import { saveScores } from '../actions/save-scores';
 import { FOOTBALL_QUARTER_LABELS } from '../constants';
 import { GridSquare } from '../queries/get-squares';
 import { ContestPrizeFields } from '../types';
 import { calculatePrizeAmount, countSoldSquares, formatPrizeAmount, getPrizeText } from '../utils';
+
+import css from './enter-scores-modal.module.css';
 
 type Score = Database['public']['Tables']['scores']['Row'];
 type GameQuarter = Database['public']['Enums']['game_quarter'];
@@ -59,6 +53,8 @@ interface EnterScoresModalProps {
   squares: GridSquare[];
   onSuccess?: () => void;
 }
+
+type TypedScores = Partial<Record<GameQuarter, { homeScore?: string; awayScore?: string }>>;
 
 interface ScoreEntry {
   quarter: GameQuarter;
@@ -140,7 +136,7 @@ function getWinnerDisplay(
   }
 
   return {
-    text: `Row ${winningSquare.row_index}, Col ${winningSquare.col_index}`,
+    text: `Row ${winningSquare.row_index + 1}, Col ${winningSquare.col_index + 1}`,
     isWinner: true,
   };
 }
@@ -153,35 +149,39 @@ export function EnterScoresModal({
   squares,
   onSuccess,
 }: EnterScoresModalProps) {
-  const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
-  const [scoreEntries, setScoreEntries] = useState<ScoreEntry[]>([]);
+  // What was typed since the scores were last loaded. Kept while the dialog is closed, so a stray tap loses nothing.
+  const [typed, setTyped] = useState<TypedScores>({});
+  const [loadedScores, setLoadedScores] = useState(existingScores);
+  const firstEmptyRef = useRef<HTMLInputElement>(null);
+
+  if (loadedScores !== existingScores) {
+    setLoadedScores(existingScores);
+    setTyped({});
+  }
 
   const quarterConfig = getQuarterConfig(contest.sport_type);
   const squaresSold = countSoldSquares(squares);
 
-  // Initialize score entries from existing scores
-  useEffect(() => {
-    const entries = quarterConfig.map(({ quarter, label, payoutKey }) => {
-      const existingScore = existingScores.find((s) => s.quarter === quarter);
-      return {
-        quarter,
-        label,
-        homeScore: existingScore?.home_score?.toString() ?? '',
-        awayScore: existingScore?.away_score?.toString() ?? '',
-        payoutPercent: contest[payoutKey] as number | null,
-      };
-    });
-    setScoreEntries(entries);
-  }, [existingScores, quarterConfig, contest]);
+  const scoreEntries = quarterConfig.map(({ quarter, label, payoutKey }): ScoreEntry => {
+    const existingScore = existingScores.find((s) => s.quarter === quarter);
+    return {
+      quarter,
+      label,
+      homeScore: typed[quarter]?.homeScore ?? existingScore?.home_score?.toString() ?? '',
+      awayScore: typed[quarter]?.awayScore ?? existingScore?.away_score?.toString() ?? '',
+      payoutPercent: contest[payoutKey] as number | null,
+    };
+  });
+  const firstEmpty = scoreEntries.find((entry) => entry.homeScore === '' || entry.awayScore === '');
 
-  const handleScoreChange = (index: number, field: 'homeScore' | 'awayScore', value: string) => {
+  const handleScoreChange = (quarter: GameQuarter, field: 'homeScore' | 'awayScore', value: string) => {
     // Only allow numbers
     if (value !== '' && !/^\d+$/.test(value)) {
       return;
     }
 
-    setScoreEntries((prev) => prev.map((entry, i) => (i === index ? { ...entry, [field]: value } : entry)));
+    setTyped((prev) => ({ ...prev, [quarter]: { ...prev[quarter], [field]: value } }));
   };
 
   const handleSave = () => {
@@ -195,11 +195,7 @@ export function EnterScoresModal({
       }));
 
     if (scoresToSave.length === 0) {
-      toast({
-        title: 'No scores to save',
-        description: 'Please enter at least one complete score.',
-        variant: 'destructive',
-      });
+      sayProblem('Please enter at least one complete score.');
       return;
     }
 
@@ -208,27 +204,16 @@ export function EnterScoresModal({
         const result = await saveScores(contest.id, scoresToSave);
 
         if (result?.error) {
-          toast({
-            title: 'Error saving scores',
-            description: result.error.message,
-            variant: 'destructive',
-          });
+          sayProblem(result.error.message);
           return;
         }
 
-        toast({
-          title: 'Scores saved!',
-          description: `${scoresToSave.length} score(s) updated successfully.`,
-        });
+        say(`${scoresToSave.length} score(s) updated successfully.`);
 
         onSuccess?.();
         onClose();
       } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'An unexpected error occurred. Please try again.',
-          variant: 'destructive',
-        });
+        sayProblem('An unexpected error occurred. Please try again.');
       }
     });
   };
@@ -236,137 +221,120 @@ export function EnterScoresModal({
   // Status check - show message if not in progress
   if (contest.status !== 'in_progress') {
     return (
-      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className='sm:max-w-md'>
-          <DialogHeader>
-            <DialogTitle>Enter Scores</DialogTitle>
-            <DialogDescription>Scores can only be entered during the game.</DialogDescription>
-          </DialogHeader>
-
-          <div className='space-y-3 rounded-lg border border-amber-500/50 bg-amber-500/10 p-4'>
-            <p className='text-sm text-amber-200'>
-              Change contest status to &ldquo;In Progress&rdquo; to enter scores.
-            </p>
-            <Link href={`/dashboard/${contest.id}/settings`}>
-              <Button variant='outline' size='sm' className='gap-2'>
-                <Settings className='h-4 w-4' />
-                Go to Settings
-              </Button>
-            </Link>
-          </div>
-
-          <DialogFooter>
-            <Button variant='outline' onClick={onClose}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DashDialog
+        open={isOpen}
+        onClose={onClose}
+        title='Enter Scores'
+        description='Scores can only be entered during the game.'
+      >
+        <Note>Change contest status to &ldquo;In Progress&rdquo; to enter scores.</Note>
+        <DashDialogFoot>
+          <DashButton asChild look='quiet'>
+            <Link href={`/dashboard/${contest.id}/settings`}>Go to Settings</Link>
+          </DashButton>
+          <DashButton look='quiet' onClick={onClose}>
+            Close
+          </DashButton>
+        </DashDialogFoot>
+      </DashDialog>
     );
   }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className='sm:max-w-2xl'>
-        <DialogHeader>
-          <DialogTitle>Enter Scores</DialogTitle>
-          <DialogDescription>
-            Enter the scores for each {contest.sport_type === 'football' ? 'quarter' : 'game'}. Winners are calculated
-            automatically.
-          </DialogDescription>
-        </DialogHeader>
+  const teams = [
+    { field: 'homeScore', label: `${contest.row_team_name} (Home)` },
+    { field: 'awayScore', label: `${contest.col_team_name} (Away)` },
+  ] as const;
 
+  return (
+    <DashDialog
+      open={isOpen}
+      onClose={onClose}
+      size='wide'
+      startRef={firstEmptyRef}
+      title='Enter Scores'
+      description={`Enter the scores for each ${
+        contest.sport_type === 'football' ? 'quarter' : 'game'
+      }. Winners are calculated automatically.`}
+    >
+      <div className={css.scores}>
         {/* Team Labels */}
-        <div className='grid grid-cols-[120px_1fr_1fr_1fr] items-center gap-2 px-1 text-sm font-medium text-zinc-400'>
-          <div></div>
-          <div className='text-center'>{contest.row_team_name} (Home)</div>
-          <div className='text-center'>{contest.col_team_name} (Away)</div>
-          <div className='text-center'>Winner</div>
+        <div aria-hidden='true' className={css.labels}>
+          <span />
+          {teams.map(({ field, label }) => (
+            <span key={field}>{label}</span>
+          ))}
+          <span>Winner</span>
         </div>
 
         {/* Score Entry Rows */}
-        <div className='space-y-3'>
-          {scoreEntries.map((entry, index) => {
-            const winner = getWinnerDisplay(
-              entry.homeScore,
-              entry.awayScore,
-              contest.row_numbers,
-              contest.col_numbers,
-              squares
-            );
+        {scoreEntries.map((entry) => {
+          const winner = getWinnerDisplay(
+            entry.homeScore,
+            entry.awayScore,
+            contest.row_numbers,
+            contest.col_numbers,
+            squares
+          );
 
-            const payoutAmount =
-              entry.payoutPercent != null
-                ? calculatePrizeAmount(squaresSold, contest.square_price, entry.payoutPercent)
-                : null;
-            const prizeText = getPrizeText(contest.prize_type, entry.quarter, contest);
+          const payoutAmount =
+            entry.payoutPercent != null
+              ? calculatePrizeAmount(squaresSold, contest.square_price, entry.payoutPercent)
+              : null;
+          const prizeText = getPrizeText(contest.prize_type, entry.quarter, contest);
 
-            return (
-              <div key={entry.quarter} className='grid grid-cols-[120px_1fr_1fr_1fr] items-center gap-2'>
-                {/* Quarter Label with Payout */}
-                <div className='space-y-0.5'>
-                  <Label className='font-medium text-zinc-200'>{entry.label}</Label>
-                  {contest.prize_type === 'custom' && prizeText ? (
-                    <p className='text-xs text-orange-400'>{prizeText}</p>
-                  ) : payoutAmount != null ? (
-                    <p className='text-xs text-orange-400'>{formatPrizeAmount(payoutAmount)} payout</p>
-                  ) : null}
-                </div>
-
-                {/* Home Score Input */}
-                <Input
-                  type='text'
-                  inputMode='numeric'
-                  pattern='[0-9]*'
-                  placeholder='0'
-                  value={entry.homeScore}
-                  onChange={(e) => handleScoreChange(index, 'homeScore', e.target.value)}
-                  className='text-center text-lg font-semibold'
-                />
-
-                {/* Away Score Input */}
-                <Input
-                  type='text'
-                  inputMode='numeric'
-                  pattern='[0-9]*'
-                  placeholder='0'
-                  value={entry.awayScore}
-                  onChange={(e) => handleScoreChange(index, 'awayScore', e.target.value)}
-                  className='text-center text-lg font-semibold'
-                />
-
-                {/* Winner Display */}
-                <div
-                  className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm ${
-                    winner.isWinner
-                      ? 'border border-green-500/30 bg-green-500/10 text-green-400'
-                      : 'bg-zinc-800 text-zinc-500'
-                  }`}
-                >
-                  {winner.isWinner && <Trophy className='h-3.5 w-3.5' />}
-                  <span className='truncate'>{winner.text}</span>
-                </div>
+          return (
+            <div key={entry.quarter} role='group' aria-labelledby={`score-${entry.quarter}`} className={css.quarter}>
+              {/* Quarter Label with Payout */}
+              <div className={css.about}>
+                <b id={`score-${entry.quarter}`}>{entry.label}</b>
+                {contest.prize_type === 'custom' && prizeText ? (
+                  <small>{prizeText}</small>
+                ) : payoutAmount != null ? (
+                  <small>{formatPrizeAmount(payoutAmount)} payout</small>
+                ) : null}
               </div>
-            );
-          })}
-        </div>
 
-        <DialogFooter className='gap-2 sm:gap-0'>
-          <Button variant='outline' onClick={onClose} disabled={isPending}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={isPending}>
-            {isPending ? (
-              <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Saving...
-              </>
-            ) : (
-              'Save Scores'
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              {/* Home and Away Score Inputs */}
+              {teams.map(({ field, label }) => (
+                <label key={field} className={css.team}>
+                  <span>{label}</span>
+                  <DashInput
+                    ref={
+                      entry === firstEmpty && (field === 'homeScore') === (entry.homeScore === '')
+                        ? firstEmptyRef
+                        : undefined
+                    }
+                    type='text'
+                    inputMode='numeric'
+                    pattern='[0-9]*'
+                    placeholder='0'
+                    autoComplete='off'
+                    aria-label={`${entry.label}, ${label}`}
+                    value={entry[field]}
+                    onChange={(e) => handleScoreChange(entry.quarter, field, e.target.value)}
+                    className={css.score}
+                  />
+                </label>
+              ))}
+
+              {/* Winner Display */}
+              <p aria-live='polite' className={cn(css.winner, winner.isWinner && css.won)}>
+                {winner.isWinner && <span className={css.phoneOnly}>Winner </span>}
+                {winner.text}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      <DashDialogFoot>
+        <DashButton look='quiet' onClick={onClose} disabled={isPending}>
+          Cancel
+        </DashButton>
+        <DashButton onClick={handleSave} disabled={isPending}>
+          {isPending ? 'Saving...' : 'Save Scores'}
+        </DashButton>
+      </DashDialogFoot>
+    </DashDialog>
   );
 }

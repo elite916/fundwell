@@ -11,7 +11,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
-import { FOOTBALL_QUARTER_LABELS, PRIZE_TEXT_MAX_LENGTH } from '@/features/contests/constants';
+import {
+  ContestErrors,
+  FOOTBALL_QUARTER_LABELS,
+  hasGameStarted,
+  PRIZE_TEXT_MAX_LENGTH,
+} from '@/features/contests/constants';
 import { Database } from '@/libs/supabase/types';
 import { cn } from '@/utils/cn';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -95,6 +100,7 @@ export function PricingPayoutsSection({ contest }: PricingPayoutsSectionProps) {
 function FootballPayoutsForm({ contest }: { contest: Contest }) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const locked = hasGameStarted(contest.status);
 
   const {
     register,
@@ -185,160 +191,166 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
         <CardDescription>Set square price and payout percentages for each quarter.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-          {/* Pricing */}
-          <div className='grid gap-4 sm:grid-cols-2'>
-            <div className='space-y-2'>
-              <Label htmlFor='square_price'>Square Price ($)</Label>
-              <Input
-                id='square_price'
-                type='number'
-                min='1'
-                {...register('square_price')}
-                className='border-zinc-700 bg-zinc-800'
-              />
-              {errors.square_price && <p className='text-sm text-red-500'>{errors.square_price.message}</p>}
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <fieldset disabled={locked} className='space-y-6 min-w-0'>
+            {locked && <p className='text-sm text-zinc-400'>{ContestErrors.RULES_LOCKED}.</p>}
 
-            <div className='space-y-2'>
-              <Label htmlFor='max_squares_per_person'>Max Squares Per Person</Label>
-              <Input
-                id='max_squares_per_person'
-                type='number'
-                min='1'
-                max='100'
-                placeholder='No limit'
-                {...register('max_squares_per_person')}
-                className='border-zinc-700 bg-zinc-800'
-              />
-              {errors.max_squares_per_person && (
-                <p className='text-sm text-red-500'>{errors.max_squares_per_person.message}</p>
-              )}
-            </div>
-          </div>
+            {/* Pricing */}
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='space-y-2'>
+                <Label htmlFor='square_price'>Square Price ($)</Label>
+                <Input
+                  id='square_price'
+                  type='number'
+                  min='1'
+                  {...register('square_price')}
+                  className='border-zinc-700 bg-zinc-800'
+                />
+                {errors.square_price && <p className='text-sm text-red-500'>{errors.square_price.message}</p>}
+              </div>
 
-          {/* Prize Type Selection */}
-          <div className='space-y-2'>
-            <Label className='text-base'>Prize Type</Label>
-            <div className='flex gap-2'>
-              <button
-                type='button'
-                onClick={() => setValue('prize_type', 'percentage', { shouldDirty: true })}
-                className={cn(
-                  'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
-                  prizeType === 'percentage'
-                    ? 'border-orange-500 bg-orange-500/10 text-orange-400'
-                    : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+              <div className='space-y-2'>
+                <Label htmlFor='max_squares_per_person'>Max Squares Per Person</Label>
+                <Input
+                  id='max_squares_per_person'
+                  type='number'
+                  min='1'
+                  max='100'
+                  placeholder='No limit'
+                  {...register('max_squares_per_person')}
+                  className='border-zinc-700 bg-zinc-800'
+                />
+                {errors.max_squares_per_person && (
+                  <p className='text-sm text-red-500'>{errors.max_squares_per_person.message}</p>
                 )}
-              >
-                Cash Payouts
-              </button>
-              <button
-                type='button'
-                onClick={() => setValue('prize_type', 'custom', { shouldDirty: true })}
-                className={cn(
-                  'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
-                  prizeType === 'custom'
-                    ? 'border-orange-500 bg-orange-500/10 text-orange-400'
-                    : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
-                )}
-              >
-                Custom Prizes
-              </button>
+              </div>
             </div>
-            <input type='hidden' {...register('prize_type')} />
-            {errors.prize_type && <p className='text-sm text-red-500'>{errors.prize_type.message}</p>}
-          </div>
 
-          {/* Payout Percentages - Show when prize_type is 'percentage' */}
-          {prizeType === 'percentage' && (
-            <>
+            {/* Prize Type Selection */}
+            <div className='space-y-2'>
+              <Label className='text-base'>Prize Type</Label>
+              <div className='flex gap-2'>
+                <button
+                  type='button'
+                  onClick={() => setValue('prize_type', 'percentage', { shouldDirty: true })}
+                  className={cn(
+                    'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+                    prizeType === 'percentage'
+                      ? 'border-orange-500 bg-orange-500/10 text-orange-400'
+                      : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+                  )}
+                >
+                  Cash Payouts
+                </button>
+                <button
+                  type='button'
+                  onClick={() => setValue('prize_type', 'custom', { shouldDirty: true })}
+                  className={cn(
+                    'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+                    prizeType === 'custom'
+                      ? 'border-orange-500 bg-orange-500/10 text-orange-400'
+                      : 'border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+                  )}
+                >
+                  Custom Prizes
+                </button>
+              </div>
+              <input type='hidden' {...register('prize_type')} />
+              {errors.prize_type && <p className='text-sm text-red-500'>{errors.prize_type.message}</p>}
+            </div>
+
+            {/* Payout Percentages - Show when prize_type is 'percentage' */}
+            {prizeType === 'percentage' && (
+              <>
+                <div className='space-y-4'>
+                  <Label className='text-base'>Payout Percentages</Label>
+                  <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                    {FOOTBALL_QUARTER_LABELS.map((quarter) => {
+                      const payoutField = quarter.dbField as keyof FootballFormData;
+                      return (
+                        <div key={quarter.key} className='space-y-2'>
+                          <Label htmlFor={payoutField} className='text-sm text-zinc-400'>
+                            {quarter.label} (%)
+                          </Label>
+                          <Input
+                            id={payoutField}
+                            type='number'
+                            min='0'
+                            max='100'
+                            {...register(payoutField)}
+                            className='border-zinc-700 bg-zinc-800'
+                          />
+                          {errors[payoutField] && (
+                            <p className='text-sm text-red-500'>{errors[payoutField]?.message}</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Calculated Totals */}
+                <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+                  <div className='grid gap-4 sm:grid-cols-3'>
+                    <div>
+                      <p className='text-sm text-zinc-400'>Total pot if all squares sell</p>
+                      <p className='text-xl font-bold text-white'>${totalPot.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className='text-sm text-zinc-400'>Total Payout ({totalPercent}%)</p>
+                      <p className='text-xl font-bold text-orange-400'>${totalPayout.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className='text-sm text-zinc-400'>Fundraiser Keeps</p>
+                      <p className='text-xl font-bold text-green-400'>${fundraiserKeeps.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Custom Prize Text Inputs - Show when prize_type is 'custom' */}
+            {prizeType === 'custom' && (
               <div className='space-y-4'>
-                <Label className='text-base'>Payout Percentages</Label>
-                <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                <div>
+                  <Label className='text-base'>Custom Prize Descriptions</Label>
+                  <p className='text-sm text-zinc-500'>
+                    Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).
+                  </p>
+                </div>
+
+                <div className='grid gap-4 sm:grid-cols-2'>
                   {FOOTBALL_QUARTER_LABELS.map((quarter) => {
-                    const payoutField = quarter.dbField as keyof FootballFormData;
+                    const prizeField = `prize_${quarter.key}_text` as keyof FootballFormData;
                     return (
                       <div key={quarter.key} className='space-y-2'>
-                        <Label htmlFor={payoutField} className='text-sm text-zinc-400'>
-                          {quarter.label} (%)
+                        <Label htmlFor={prizeField} className='text-sm text-zinc-400'>
+                          {quarter.label} Prize
                         </Label>
                         <Input
-                          id={payoutField}
-                          type='number'
-                          min='0'
-                          max='100'
-                          {...register(payoutField)}
+                          id={prizeField}
+                          type='text'
+                          maxLength={PRIZE_TEXT_MAX_LENGTH}
+                          placeholder='e.g., $100 Gift Card'
+                          {...register(prizeField)}
                           className='border-zinc-700 bg-zinc-800'
                         />
-                        {errors[payoutField] && <p className='text-sm text-red-500'>{errors[payoutField]?.message}</p>}
+                        {errors[prizeField] && <p className='text-sm text-red-500'>{errors[prizeField]?.message}</p>}
                       </div>
                     );
                   })}
                 </div>
               </div>
+            )}
 
-              {/* Calculated Totals */}
-              <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-                <div className='grid gap-4 sm:grid-cols-3'>
-                  <div>
-                    <p className='text-sm text-zinc-400'>Total pot if all squares sell</p>
-                    <p className='text-xl font-bold text-white'>${totalPot.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p className='text-sm text-zinc-400'>Total Payout ({totalPercent}%)</p>
-                    <p className='text-xl font-bold text-orange-400'>${totalPayout.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p className='text-sm text-zinc-400'>Fundraiser Keeps</p>
-                    <p className='text-xl font-bold text-green-400'>${fundraiserKeeps.toLocaleString()}</p>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Custom Prize Text Inputs - Show when prize_type is 'custom' */}
-          {prizeType === 'custom' && (
-            <div className='space-y-4'>
-              <div>
-                <Label className='text-base'>Custom Prize Descriptions</Label>
-                <p className='text-sm text-zinc-500'>
-                  Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).
-                </p>
-              </div>
-
-              <div className='grid gap-4 sm:grid-cols-2'>
-                {FOOTBALL_QUARTER_LABELS.map((quarter) => {
-                  const prizeField = `prize_${quarter.key}_text` as keyof FootballFormData;
-                  return (
-                    <div key={quarter.key} className='space-y-2'>
-                      <Label htmlFor={prizeField} className='text-sm text-zinc-400'>
-                        {quarter.label} Prize
-                      </Label>
-                      <Input
-                        id={prizeField}
-                        type='text'
-                        maxLength={PRIZE_TEXT_MAX_LENGTH}
-                        placeholder='e.g., $100 Gift Card'
-                        {...register(prizeField)}
-                        className='border-zinc-700 bg-zinc-800'
-                      />
-                      {errors[prizeField] && <p className='text-sm text-red-500'>{errors[prizeField]?.message}</p>}
-                    </div>
-                  );
-                })}
-              </div>
+            {/* Submit Button */}
+            <div className='flex justify-end pt-4'>
+              <Button type='submit' disabled={isPending || !isDirty}>
+                {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+                Save Changes
+              </Button>
             </div>
-          )}
-
-          {/* Submit Button */}
-          <div className='flex justify-end pt-4'>
-            <Button type='submit' disabled={isPending || !isDirty}>
-              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              Save Changes
-            </Button>
-          </div>
+          </fieldset>
         </form>
       </CardContent>
     </Card>
@@ -348,6 +360,7 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
 function BaseballPayoutsForm({ contest }: { contest: Contest }) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const locked = hasGameStarted(contest.status);
 
   const {
     register,
@@ -430,88 +443,92 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
         <CardDescription>Set square price and payout percentages for each game.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-          {/* Pricing */}
-          <div className='grid gap-4 sm:grid-cols-2'>
-            <div className='space-y-2'>
-              <Label htmlFor='square_price'>Square Price ($)</Label>
-              <Input
-                id='square_price'
-                type='number'
-                min='1'
-                {...register('square_price')}
-                className='border-zinc-700 bg-zinc-800'
-              />
-              {errors.square_price && <p className='text-sm text-red-500'>{errors.square_price.message}</p>}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <fieldset disabled={locked} className='space-y-6 min-w-0'>
+            {locked && <p className='text-sm text-zinc-400'>{ContestErrors.RULES_LOCKED}.</p>}
+
+            {/* Pricing */}
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='space-y-2'>
+                <Label htmlFor='square_price'>Square Price ($)</Label>
+                <Input
+                  id='square_price'
+                  type='number'
+                  min='1'
+                  {...register('square_price')}
+                  className='border-zinc-700 bg-zinc-800'
+                />
+                {errors.square_price && <p className='text-sm text-red-500'>{errors.square_price.message}</p>}
+              </div>
+
+              <div className='space-y-2'>
+                <Label htmlFor='max_squares_per_person'>Max Squares Per Person</Label>
+                <Input
+                  id='max_squares_per_person'
+                  type='number'
+                  min='1'
+                  max='100'
+                  placeholder='No limit'
+                  {...register('max_squares_per_person')}
+                  className='border-zinc-700 bg-zinc-800'
+                />
+                {errors.max_squares_per_person && (
+                  <p className='text-sm text-red-500'>{errors.max_squares_per_person.message}</p>
+                )}
+              </div>
             </div>
 
-            <div className='space-y-2'>
-              <Label htmlFor='max_squares_per_person'>Max Squares Per Person</Label>
-              <Input
-                id='max_squares_per_person'
-                type='number'
-                min='1'
-                max='100'
-                placeholder='No limit'
-                {...register('max_squares_per_person')}
-                className='border-zinc-700 bg-zinc-800'
-              />
-              {errors.max_squares_per_person && (
-                <p className='text-sm text-red-500'>{errors.max_squares_per_person.message}</p>
+            {/* Payouts */}
+            <div className='space-y-4'>
+              <Label className='text-base'>Payout Percentages</Label>
+              <div className='grid gap-4 sm:grid-cols-3 lg:grid-cols-4'>
+                {gameFields.map((field, index) => (
+                  <div key={field} className='space-y-2'>
+                    <Label htmlFor={field} className='text-sm text-zinc-400'>
+                      {gameLabels[index]} (%)
+                    </Label>
+                    <Input
+                      id={field}
+                      type='number'
+                      min='0'
+                      max='100'
+                      {...register(field)}
+                      className='border-zinc-700 bg-zinc-800'
+                    />
+                  </div>
+                ))}
+              </div>
+              {errors.payout_game7_percent && (
+                <p className='text-sm text-red-500'>{errors.payout_game7_percent.message}</p>
               )}
             </div>
-          </div>
 
-          {/* Payouts */}
-          <div className='space-y-4'>
-            <Label className='text-base'>Payout Percentages</Label>
-            <div className='grid gap-4 sm:grid-cols-3 lg:grid-cols-4'>
-              {gameFields.map((field, index) => (
-                <div key={field} className='space-y-2'>
-                  <Label htmlFor={field} className='text-sm text-zinc-400'>
-                    {gameLabels[index]} (%)
-                  </Label>
-                  <Input
-                    id={field}
-                    type='number'
-                    min='0'
-                    max='100'
-                    {...register(field)}
-                    className='border-zinc-700 bg-zinc-800'
-                  />
+            {/* Calculated Totals */}
+            <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+              <div className='grid gap-4 sm:grid-cols-3'>
+                <div>
+                  <p className='text-sm text-zinc-400'>Total pot if all squares sell</p>
+                  <p className='text-xl font-bold text-white'>${totalPot.toLocaleString()}</p>
                 </div>
-              ))}
-            </div>
-            {errors.payout_game7_percent && (
-              <p className='text-sm text-red-500'>{errors.payout_game7_percent.message}</p>
-            )}
-          </div>
-
-          {/* Calculated Totals */}
-          <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-            <div className='grid gap-4 sm:grid-cols-3'>
-              <div>
-                <p className='text-sm text-zinc-400'>Total pot if all squares sell</p>
-                <p className='text-xl font-bold text-white'>${totalPot.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className='text-sm text-zinc-400'>Total Payout ({totalPercent}%)</p>
-                <p className='text-xl font-bold text-orange-400'>${totalPayout.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className='text-sm text-zinc-400'>Fundraiser Keeps</p>
-                <p className='text-xl font-bold text-green-400'>${fundraiserKeeps.toLocaleString()}</p>
+                <div>
+                  <p className='text-sm text-zinc-400'>Total Payout ({totalPercent}%)</p>
+                  <p className='text-xl font-bold text-orange-400'>${totalPayout.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-zinc-400'>Fundraiser Keeps</p>
+                  <p className='text-xl font-bold text-green-400'>${fundraiserKeeps.toLocaleString()}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <div className='flex justify-end pt-4'>
-            <Button type='submit' disabled={isPending || !isDirty}>
-              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              Save Changes
-            </Button>
-          </div>
+            {/* Submit Button */}
+            <div className='flex justify-end pt-4'>
+              <Button type='submit' disabled={isPending || !isDirty}>
+                {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+                Save Changes
+              </Button>
+            </div>
+          </fieldset>
         </form>
       </CardContent>
     </Card>

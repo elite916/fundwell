@@ -91,6 +91,13 @@
   .pressable {
     cursor: pointer;
   }
+  .manageable {
+    cursor: pointer;
+  }
+  .manageable:hover:not(:focus-visible) {
+    outline: 2px solid var(--studio-ink);
+    outline-offset: -2px;
+  }
   @media (hover: hover) {
     .claimable:hover {
       z-index: 3;
@@ -126,6 +133,11 @@
   @media (min-width: 600px) and (max-width: 999px) {
     .tile {
       font-size: 15px;
+    }
+    .pending::after {
+      width: 6px;
+      height: 6px;
+      margin-left: -3px;
     }
   }
 

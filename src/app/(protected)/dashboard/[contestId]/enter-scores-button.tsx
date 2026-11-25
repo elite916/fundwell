@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Gamepad2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { EnterScoresModal } from '@/features/contests/components';
 import { GridSquare } from '@/features/contests/queries/get-squares';
 import { ContestPrizeFields } from '@/features/contests/types';
@@ -53,10 +52,13 @@ export function EnterScoresButton({ contest, scores, squares, className }: Enter
 
   return (
     <>
-      <Button variant='default' className={className} onClick={() => setIsModalOpen(true)}>
-        <Gamepad2 className='mr-2 h-4 w-4' />
+      <DashButton
+        look={contest.status === 'in_progress' ? 'main' : 'quiet'}
+        className={className}
+        onClick={() => setIsModalOpen(true)}
+      >
         Enter Scores
-      </Button>
+      </DashButton>
 
       <EnterScoresModal
         isOpen={isModalOpen}

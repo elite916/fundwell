@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { Database } from '@/libs/supabase/types';
+
+import css from './run.module.css';
 
 type ContestStatus = Database['public']['Enums']['contest_status'];
 
@@ -57,21 +57,17 @@ export function NextStepsCard({ contestId, status, hasPaymentOptions, hasNumbers
   if (!nextStep) return null;
 
   return (
-    <Card className='border-l-2 border-zinc-800 border-l-orange-400 bg-zinc-900'>
-      <CardHeader className='space-y-0 flex flex-row items-start justify-between'>
-        <div>
-          <CardTitle className='flex items-center gap-2'>
-            Next Step
-            <ArrowRight className='h-4 w-4 text-orange-400' />
-          </CardTitle>
-          <CardDescription>{nextStep.message}</CardDescription>
-        </div>
-        {nextStep.actionLink && (
-          <Button variant='outline' size='sm' asChild>
-            <Link href={nextStep.actionLink}>Go to Settings</Link>
-          </Button>
-        )}
-      </CardHeader>
-    </Card>
+    <div className={css.next}>
+      <i aria-hidden='true' />
+      <div>
+        <h2>Next Step</h2>
+        <p>{nextStep.message}</p>
+      </div>
+      {nextStep.actionLink && (
+        <DashButton asChild look='light'>
+          <Link href={nextStep.actionLink}>Go to Settings</Link>
+        </DashButton>
+      )}
+    </div>
   );
 }
