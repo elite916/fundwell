@@ -15,6 +15,8 @@ import { FOOTBALL_QUARTER_LABELS } from '../constants';
 import { GridSquare } from '../queries/get-squares';
 import { ContestPrizeFields } from '../types';
 import { calculatePrizeAmount, countSoldSquares, formatPrizeAmount, getPrizeText } from '../utils';
+import { changedScores } from '../utils/changed-scores';
+import { findWinningSquare } from '../utils/find-winning-square';
 
 import css from './enter-scores-modal.module.css';
 
@@ -81,28 +83,6 @@ function getQuarterConfig(sportType: SportType) {
   return sportType === 'football' ? FOOTBALL_QUARTERS : BASEBALL_GAMES;
 }
 
-function calculateWinningSquare(
-  homeScore: number,
-  awayScore: number,
-  rowNumbers: number[],
-  colNumbers: number[],
-  squares: GridSquare[]
-): GridSquare | null {
-  const homeLastDigit = homeScore % 10;
-  const awayLastDigit = awayScore % 10;
-
-  // Find the index in row_numbers where the value matches homeLastDigit
-  const winningRowIndex = rowNumbers.indexOf(homeLastDigit);
-  // Find the index in col_numbers where the value matches awayLastDigit
-  const winningColIndex = colNumbers.indexOf(awayLastDigit);
-
-  if (winningRowIndex === -1 || winningColIndex === -1) {
-    return null;
-  }
-
-  return squares.find((sq) => sq.row_index === winningRowIndex && sq.col_index === winningColIndex) || null;
-}
-
 function getWinnerDisplay(
   homeScore: string,
   awayScore: string,
@@ -121,7 +101,7 @@ function getWinnerDisplay(
     return { text: 'Numbers not assigned', isWinner: false };
   }
 
-  const winningSquare = calculateWinningSquare(home, away, rowNumbers, colNumbers, squares);
+  const winningSquare = findWinningSquare(squares, rowNumbers, colNumbers, home, away);
 
   if (!winningSquare) {
     return { text: 'No matching square', isWinner: false };
@@ -185,17 +165,14 @@ export function EnterScoresModal({
   };
 
   const handleSave = () => {
-    // Filter to only entries with both scores filled
-    const scoresToSave = scoreEntries
-      .filter((entry) => entry.homeScore !== '' && entry.awayScore !== '')
-      .map((entry) => ({
-        quarter: entry.quarter,
-        homeScore: parseInt(entry.homeScore, 10),
-        awayScore: parseInt(entry.awayScore, 10),
-      }));
+    const { changed: scoresToSave, hasIncomplete } = changedScores(scoreEntries, existingScores);
 
     if (scoresToSave.length === 0) {
-      sayProblem('Please enter at least one complete score.');
+      if (hasIncomplete) {
+        sayProblem('Please enter at least one complete score.');
+      } else {
+        onClose();
+      }
       return;
     }
 
