@@ -17,11 +17,13 @@ export function PricingCard({
   price,
   createCheckoutAction,
   isLoggedIn = false,
+  hasPro = false,
 }: {
   product: ProductWithPrices;
   price?: Price;
   createCheckoutAction?: ({ priceId }: { priceId: string }) => void;
   isLoggedIn?: boolean;
+  hasPro?: boolean;
 }) {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>(
     price ? (price.interval as BillingInterval) : 'month'
@@ -116,9 +118,9 @@ export function PricingCard({
         </div>
 
         {/* CTA Button */}
-        {createCheckoutAction && (
+        {createCheckoutAction && (isPro || !hasPro) && (
           <div className='py-4'>
-            {currentPrice && currentPrice.unit_amount !== 0 ? (
+            {currentPrice && currentPrice.unit_amount !== 0 && !hasPro ? (
               <Button
                 variant={buttonVariantMap[metadata.priceCardVariant]}
                 className='w-full text-base font-semibold'
