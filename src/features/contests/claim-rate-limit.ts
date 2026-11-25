@@ -9,10 +9,11 @@ import { getClientIp, hitRateLimit, type RateLimit, undoRateLimitHit } from '@/u
 
 // Claims per email address.
 const EMAIL_LIMIT = { max: 10, windowSeconds: 60 };
-// Claims per contest from one IP: a watch party of 40 on shared Wi-Fi, two
-// squares each. Below CONTEST_LIMIT with the same window, so one visitor can't
-// use up the whole contest's allowance.
-const IP_LIMIT = { max: 80, windowSeconds: 60 * 60 };
+// Claims per contest from one IP (Brent, 2026-11-24: 50): a watch party of 40
+// on shared Wi-Fi, one square each, with some room for retries. Below
+// CONTEST_LIMIT with the same window, so one visitor can't use up the whole
+// contest's allowance.
+const IP_LIMIT = { max: 50, windowSeconds: 60 * 60 };
 // Successful claims per contest: a full board of 100, plus squares the owner
 // releases and people claim again.
 const CONTEST_LIMIT = { max: 150, windowSeconds: 60 * 60 };
