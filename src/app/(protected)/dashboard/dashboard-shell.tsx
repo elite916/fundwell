@@ -56,7 +56,7 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
     <div className='flex min-h-screen flex-col bg-zinc-900'>
       <div className='flex flex-1'>
         {/* Desktop Sidebar */}
-        <aside className='sticky top-0 hidden h-screen w-64 flex-shrink-0 border-r border-zinc-800 bg-zinc-950 lg:block'>
+        <aside className='sticky top-0 hidden h-screen w-64 shrink-0 border-r border-zinc-800 bg-zinc-950 lg:block'>
           <div className='flex h-full flex-col'>
             {/* Logo */}
             <div className='flex h-16 items-center border-b border-zinc-800 px-6'>
@@ -78,7 +78,7 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
         {/* Main Content */}
         <div className='flex flex-1 flex-col overflow-y-auto'>
           {/* Header */}
-          <header className='sticky top-0 z-40 flex h-16 flex-shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/60 lg:px-6'>
+          <header className='sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900/95 px-4 backdrop-blur-sm supports-backdrop-filter:bg-zinc-900/60 lg:px-6'>
             {/* Mobile Menu Button */}
             <div className='flex items-center gap-4 lg:hidden'>
               <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>

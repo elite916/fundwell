@@ -129,7 +129,7 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
       </Link>
 
       {/* Two-column layout */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr,300px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
         {/* Main Content (Left Column) */}
         <div className="space-y-6">
           {/* Header */}

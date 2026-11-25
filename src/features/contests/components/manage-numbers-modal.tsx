@@ -337,7 +337,7 @@ export function ManageNumbersModal({
           <>
             {/* Locked state - read only */}
             <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4 flex items-start gap-3">
-              <Lock className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <Lock className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-sm text-amber-200">
                 Numbers cannot be changed after the game has started.
               </p>
@@ -365,7 +365,7 @@ export function ManageNumbersModal({
             {/* Warning if numbers exist */}
             {hasExistingNumbers && (
               <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
                 <p className="text-sm text-amber-200">
                   This will replace the current numbers.
                 </p>

@@ -30,7 +30,7 @@ export function UpgradeBanner({ activeContestCount }: UpgradeBannerProps) {
   if (!isVisible) return null;
 
   return (
-    <div className="relative mb-6 rounded-lg border border-orange-500/50 bg-gradient-to-r from-orange-500/10 to-amber-500/10 p-4">
+    <div className="relative mb-6 rounded-lg border border-orange-500/50 bg-linear-to-r/srgb from-orange-500/10 to-amber-500/10 p-4">
       <button
         onClick={handleDismiss}
         className="absolute right-2 top-2 rounded p-1 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
@@ -40,7 +40,7 @@ export function UpgradeBanner({ activeContestCount }: UpgradeBannerProps) {
 
       <div className="flex flex-col items-start gap-4 pr-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-600">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br/srgb from-orange-500 to-amber-600">
             <Crown className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1">

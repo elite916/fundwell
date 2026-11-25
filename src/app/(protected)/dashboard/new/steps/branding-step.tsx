@@ -133,7 +133,7 @@ export function BrandingStep() {
           }}
         >
           <div className="flex h-full items-center justify-center">
-            <span className="rounded-lg bg-black/30 px-4 py-2 text-lg font-semibold text-white backdrop-blur-sm">
+            <span className="rounded-lg bg-black/30 px-4 py-2 text-lg font-semibold text-white backdrop-blur-xs">
               Preview
             </span>
           </div>
@@ -143,7 +143,7 @@ export function BrandingStep() {
       {/* Contest Images Notice */}
       <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-500/20">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20">
             <span className="text-lg">🖼️</span>
           </div>
           <div>
@@ -159,7 +159,7 @@ export function BrandingStep() {
       {/* Info Note */}
       <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-500/20">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20">
             <span className="text-lg">💡</span>
           </div>
           <div>

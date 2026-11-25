@@ -88,7 +88,7 @@ function ContactSection() {
   return (
     <section className="py-20 lg:py-28">
       <Container>
-        <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 bg-fundwell-surface/50 p-8 text-center">
+        <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 p-8 text-center">
           <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Still need help?</h2>
           <p className="mb-6 text-zinc-400">
             Send us a message and we&apos;ll get back to you as soon as possible.

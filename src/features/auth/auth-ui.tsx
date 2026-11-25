@@ -89,11 +89,11 @@ export function AuthUI({
   }
 
   return (
-    <section className='relative mt-16 flex w-full flex-col gap-12 overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-fundwell-surface/80 to-fundwell-background p-8 text-center md:p-12'>
+    <section className='relative mt-16 flex w-full flex-col gap-12 overflow-hidden rounded-2xl border border-zinc-800 p-8 text-center md:p-12'>
       {/* Background decorative elements */}
       <div className='absolute inset-0 -z-10'>
-        <div className='absolute right-0 top-0 h-[300px] w-[300px] rounded-full bg-fundwell-primary/10 blur-3xl' />
-        <div className='absolute bottom-0 left-0 h-[250px] w-[250px] rounded-full bg-fundwell-accent/10 blur-3xl' />
+        <div className='absolute right-0 top-0 h-[300px] w-[300px] rounded-full blur-3xl' />
+        <div className='absolute bottom-0 left-0 h-[250px] w-[250px] rounded-full blur-3xl' />
       </div>
 
       <div className='flex flex-col gap-4'>
