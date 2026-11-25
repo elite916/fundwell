@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/studio/button';
 import { toast } from '@/components/ui/use-toast';
 import { resendMagicLink } from '@/features/auth/auth-actions';
+import { useTurnstile } from '@/features/auth/turnstile';
 
 import css from '@/features/auth/auth.module.css';
 
@@ -17,6 +18,7 @@ export default function ConfirmEmailPage() {
   const [canResend, setCanResend] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [isPending, startTransition] = useTransition();
+  const captcha = useTurnstile();
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -35,7 +37,8 @@ export default function ConfirmEmailPage() {
     if (!email) return;
 
     startTransition(async () => {
-      const response = await resendMagicLink(email, redirectTo);
+      const response = await resendMagicLink(email, redirectTo, captcha.token);
+      captcha.reset();
 
       if (response?.error) {
         toast({
@@ -67,7 +70,8 @@ export default function ConfirmEmailPage() {
         </ul>
 
         <div className={css.stack}>
-          <Button onClick={handleResend} disabled={!canResend || isPending || !email}>
+          {captcha.widget}
+          <Button onClick={handleResend} disabled={!canResend || isPending || !email || captcha.waiting}>
             {canResend ? 'Resend email' : `Resend email in ${countdown}s`}
           </Button>
         </div>

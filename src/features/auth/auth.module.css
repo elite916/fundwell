@@ -60,6 +60,19 @@
       padding: 18px 12px;
     }
   }
+  /* Holds Turnstile's space before it loads */
+  .captcha {
+    min-height: 65px;
+    line-height: 0;
+  }
+  .form .captcha {
+    margin-bottom: 18px;
+  }
+  @media (max-width: 359px) {
+    .captcha {
+      min-height: 140px;
+    }
+  }
   .formButtons {
     display: flex;
     flex-wrap: wrap;

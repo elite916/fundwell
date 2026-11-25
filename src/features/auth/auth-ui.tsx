@@ -13,6 +13,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ActionResponse } from '@/types/action-response';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useTurnstile } from './turnstile';
+
 import css from './auth.module.css';
 
 const titleMap = {
@@ -34,13 +36,18 @@ export function AuthUI({
 }: {
   mode: 'login' | 'signup';
   signInWithOAuth: (provider: 'google', redirectUrl?: string | null) => Promise<ActionResponse>;
-  signInWithEmail: (email: string, redirectTo?: string | null) => Promise<ActionResponse<{ email: string }>>;
+  signInWithEmail: (
+    email: string,
+    redirectTo?: string | null,
+    captchaToken?: string
+  ) => Promise<ActionResponse<{ email: string }>>;
   redirectUrl?: string | null;
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [emailFormOpen, setEmailFormOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const captcha = useTurnstile();
 
   const {
     register,
@@ -56,17 +63,19 @@ export function AuthUI({
 
   function handleEmailFormOpenChange(open: boolean) {
     setEmailFormOpen(open);
+    captcha.reset();
   }
 
   async function onSubmit(data: EmailFormData) {
     setError(null);
     setPending(true);
 
-    const response = await signInWithEmail(data.email, redirectUrl);
+    const response = await signInWithEmail(data.email, redirectUrl, captcha.token);
 
     if (response?.error) {
       setError(response.error.message);
       reset();
+      captcha.reset();
       setPending(false);
     } else {
       // Include redirect in confirm-email URL so resend can use it
@@ -117,12 +126,12 @@ export function AuthUI({
                 error={errors.email?.message}
                 {...register('email')}
               />
-              {/* A captcha goes here: 300px wide fits from 360px screens up */}
+              {captcha.widget}
               <div className={css.formButtons}>
                 <Button look='link' onClick={() => handleEmailFormOpenChange(false)} disabled={pending}>
                   Cancel
                 </Button>
-                <Button type='submit' disabled={pending}>
+                <Button type='submit' disabled={pending || captcha.waiting}>
                   Submit
                 </Button>
               </div>
