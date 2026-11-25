@@ -63,7 +63,7 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
     <SetupSection id='danger-zone' title='Danger Zone' description='Irreversible and destructive actions.'>
       <h3>Delete Contest</h3>
       <p className={`${css.soft} ${css.gapBottom}`}>
-        Deleting a contest is permanent and cannot be undone. All squares and participant data will be removed.
+        Deleting a contest cannot be undone. Its squares and participant information will be deleted.
       </p>
       <DashButton className={css.outline} onClick={handleOpenDialog}>
         Delete Contest
@@ -74,7 +74,7 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
         open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         title='Delete Contest'
-        description='This action cannot be undone. All contest data, squares, and participant information will be deleted.'
+        description='Deleting a contest cannot be undone. Its squares and participant information will be deleted.'
       >
         <div className={css.scale}>
           <p className={css.confirm}>

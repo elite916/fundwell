@@ -19,10 +19,21 @@ interface DashDialogProps {
   size?: 'small' | 'mid' | 'wide';
   /** Where focus starts. Without it, on the title. */
   startRef?: RefObject<HTMLElement | null>;
+  /** Where focus goes when it closes, if what opened it is about to go away. Nothing: back where it came from. */
+  endFocus?: () => HTMLElement | null | undefined;
 }
 
 /** A dialog over the dashboard: centered, and a sheet from the bottom on phones. Focus goes back where it came from. */
-export function DashDialog({ open, onClose, title, description, children, size = 'small', startRef }: DashDialogProps) {
+export function DashDialog({
+  open,
+  onClose,
+  title,
+  description,
+  children,
+  size = 'small',
+  startRef,
+  endFocus,
+}: DashDialogProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const openerRef = useRef<Element | null>(null);
 
@@ -42,7 +53,8 @@ export function DashDialog({ open, onClose, title, description, children, size =
           onCloseAutoFocus={(event) => {
             // Radix only goes back to its own trigger, and these dialogs are opened from state.
             event.preventDefault();
-            if (openerRef.current instanceof HTMLElement) openerRef.current.focus();
+            const end = endFocus?.() ?? openerRef.current;
+            if (end instanceof HTMLElement) end.focus();
           }}
           {...(!description && { 'aria-describedby': undefined })}
         >

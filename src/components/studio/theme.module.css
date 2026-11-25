@@ -82,6 +82,8 @@
     font-size: var(--studio-body);
     font-weight: 400;
     font-feature-settings: normal;
+    /* Host Grotesk turns an X between digits into a times sign: wrong in a PIN, a link or a handle */
+    font-variant-ligatures: no-contextual;
     line-height: 1.45;
     -webkit-text-size-adjust: 100%;
   }
@@ -197,8 +199,10 @@ body:has(.studio) .toast {
   border-radius: 26px;
   background: #000;
   color: #fff;
-  font-family: var(--font-studio), Arial, sans-serif;
+  font-family: var(--font-studio-ext), var(--font-studio), Arial, sans-serif;
   font-size: 15px;
+  font-feature-settings: normal;
+  font-variant-ligatures: no-contextual;
   line-height: 1.45;
   box-shadow: 0 14px 34px rgb(44 43 42 / 0.3);
 }

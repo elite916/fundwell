@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 
 import { Button } from '@/components/studio/button';
 import { srOnly } from '@/components/studio/theme';
 import type { PaymentOption, PaymentOptionType } from '@/features/contests/types';
-import { logger } from '@/utils/logger';
+import { copyText, selectText } from '@/utils/copy-text';
 import { generatePaymentUrl } from '@/utils/payment-url-generator';
 
 import css from './squares.module.css';
@@ -21,16 +21,17 @@ const NAMES: Record<PaymentOptionType, string> = {
 /** One way to pay: a link to the app, the handle to copy, and whatever else the organizer added. */
 export function PaymentOptionItem({ option }: { option: PaymentOption }) {
   const [isCopied, setIsCopied] = useState(false);
+  const handleRef = useRef<HTMLSpanElement>(null);
   const name = NAMES[option.type];
   const paymentUrl = generatePaymentUrl(option.type, option.handle_or_link);
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(option.handle_or_link);
+    if (await copyText(option.handle_or_link)) {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-    } catch (error) {
-      logger.error('payment-option-item', error);
+    } else {
+      // Ready to copy by hand
+      selectText(handleRef.current);
     }
   };
 
@@ -47,7 +48,9 @@ export function PaymentOptionItem({ option }: { option: PaymentOption }) {
           ) : (
             <span className={css.paymentName}>{name}</span>
           )}
-          <span className={css.handle}>{option.handle_or_link}</span>
+          <span ref={handleRef} className={css.handle}>
+            {option.handle_or_link}
+          </span>
           <Button look='link' onClick={handleCopy} aria-label={isCopied ? undefined : `Copy ${name} handle`}>
             {isCopied ? 'Copied!' : 'Copy'}
           </Button>

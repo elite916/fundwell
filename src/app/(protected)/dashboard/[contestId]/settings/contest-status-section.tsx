@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
@@ -97,6 +97,7 @@ interface ContestStatusSectionProps {
 export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
   const [isPending, startTransition] = useTransition();
   const [confirmDialog, setConfirmDialog] = useState<StatusTransition | null>(null);
+  const isDoneRef = useRef(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -105,6 +106,7 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
   const availableTransitions = STATUS_TRANSITIONS[currentStatus];
 
   const handleTransition = (transition: StatusTransition) => {
+    isDoneRef.current = false;
     setConfirmDialog(transition);
   };
 
@@ -129,6 +131,7 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
         description: `Contest is now ${STATUS_CONFIG[confirmDialog.targetStatus].label.toLowerCase()}.`,
       });
 
+      isDoneRef.current = true;
       setConfirmDialog(null);
       router.refresh();
     });
@@ -169,6 +172,8 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
         onClose={() => setConfirmDialog(null)}
         title='Confirm Status Change'
         description={confirmDialog?.description}
+        // The new status has other buttons
+        endFocus={() => (isDoneRef.current ? document.getElementById('contest-status-title') : null)}
       >
         <DashDialogFoot>
           <DashButton look='quiet' onClick={() => setConfirmDialog(null)} disabled={isPending}>

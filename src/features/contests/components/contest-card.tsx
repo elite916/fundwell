@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Tag } from '@/components/studio/dashboard/dash-page';
 import type { Database } from '@/libs/supabase/types';
 
+import { formatPrizeAmount } from '../utils';
+
 import css from './contest-card.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'] & {
@@ -52,13 +54,6 @@ export function ContestCard({ contest, claimedCount = 0 }: ContestCardProps) {
     year: 'numeric',
   }).format(new Date(contest.created_at));
 
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(contest.square_price);
-
   return (
     <Link href={`/dashboard/${contest.id}`} className={css.card}>
       <MiniBoard claimedCount={claimedCount} />
@@ -71,7 +66,7 @@ export function ContestCard({ contest, claimedCount = 0 }: ContestCardProps) {
           {contest.row_team_name} <span className={css.soft}>vs</span> {contest.col_team_name}
         </span>
         <span>
-          <b>{formattedPrice}</b> <span className={css.soft}>/sq</span>
+          <b>{formatPrizeAmount(Number(contest.square_price))}</b> <span className={css.soft}>/sq</span>
         </span>
         <span className={css.date}>{formattedDate}</span>
         <span>

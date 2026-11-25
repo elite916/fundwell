@@ -13,7 +13,6 @@ import { DangerZoneSection } from './danger-zone-section';
 import { PaymentOptionsSection } from './payment-options-section';
 import { PlayerTrackingSection } from './player-tracking-section';
 import { PricingPayoutsSection } from './pricing-payouts-section';
-import { SuperBowlSection } from './super-bowl-section';
 
 import css from '@/components/studio/setup/setup.module.css';
 
@@ -56,14 +55,13 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   // Access PIN (owner-only table)
   const accessPin = await getContestPinForOwner(contestId);
 
-  // The sections below, in order. SuperBowlSection only shows for football.
+  // The sections below, in order.
   const sections = [
     ['basic-information', 'Basic Information'],
     ['contest-status', 'Contest Status'],
     ['pricing-payouts', 'Pricing & Payouts'],
     ['payment-options', 'Payment Options'],
     ['player-tracking', 'Player Tracking'],
-    ...(contest.sport_type === 'football' ? [['super-bowl-automation', 'Super Bowl Automation']] : []),
     ['access-control', 'Access Control'],
     ['branding', 'Branding'],
     ['danger-zone', 'Danger Zone'],
@@ -90,7 +88,6 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
           <PricingPayoutsSection contest={contest} />
           <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />
           <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
-          <SuperBowlSection contest={contest} />
           <AccessControlSection contest={contest} accessPin={accessPin} />
           <BrandingSection contest={contest} />
           <DangerZoneSection contest={contest} />

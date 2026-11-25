@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
@@ -59,6 +59,7 @@ interface ContestStatusButtonProps {
 export function ContestStatusButton({ contestId, currentStatus, className }: ContestStatusButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
+  const isDoneRef = useRef(false);
   const router = useRouter();
 
   const config = getButtonConfig(currentStatus);
@@ -75,7 +76,8 @@ export function ContestStatusButton({ contestId, currentStatus, className }: Con
       if (!result || result.error) {
         sayProblem(result?.error?.message ?? 'Failed to update contest status');
       } else {
-        say(`Contest status changed to ${config.nextStatus}.`);
+        say(`Contest is now ${config.nextStatus.replace('_', ' ')}.`);
+        isDoneRef.current = config.nextStatus === 'completed';
         router.refresh();
       }
     } catch (error) {
@@ -102,6 +104,8 @@ export function ContestStatusButton({ contestId, currentStatus, className }: Con
         onClose={() => setIsConfirming(false)}
         title='Confirm Status Change'
         description={config.description}
+        // A completed contest has no button to go back to
+        endFocus={() => (isDoneRef.current ? document.getElementById('quick-actions') : null)}
       >
         <DashDialogFoot>
           <DashButton look='quiet' onClick={() => setIsConfirming(false)} disabled={isLoading}>

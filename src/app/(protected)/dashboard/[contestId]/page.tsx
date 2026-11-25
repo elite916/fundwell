@@ -156,7 +156,9 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
         <div className={css.side}>
           {/* Quick Actions */}
           <section aria-labelledby='quick-actions' className={cn(css.card, css.quick)}>
-            <h2 id='quick-actions'>Quick Actions</h2>
+            <h2 id='quick-actions' tabIndex={-1}>
+              Quick Actions
+            </h2>
             <p>Manage your contest</p>
             <div className={css.acts}>
               <ContestStatusButton contestId={contestId} currentStatus={contest.status} className={css.go} />

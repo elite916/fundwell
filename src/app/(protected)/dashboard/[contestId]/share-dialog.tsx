@@ -5,7 +5,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 
 import { DashButton, DashInput } from '@/components/studio/dashboard/dash-button';
 import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
-import { logger } from '@/utils/logger';
+import { copyText } from '@/utils/copy-text';
 
 import css from './share-dialog.module.css';
 
@@ -20,14 +20,15 @@ interface ShareDialogProps {
 export function ShareDialog({ isOpen, onClose, contestUrl, contestCode, contestName }: ShareDialogProps) {
   const [copied, setCopied] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
+  const linkRef = useRef<HTMLInputElement>(null);
 
   const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(contestUrl);
+    if (await copyText(contestUrl)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      logger.error('share-qr-modal', error);
+    } else {
+      // Ready to copy by hand
+      linkRef.current?.select();
     }
   };
 
@@ -61,7 +62,7 @@ export function ShareDialog({ isOpen, onClose, contestUrl, contestCode, contestN
         )}
       </div>
 
-      <DashInput aria-label='Contest link' readOnly value={contestUrl} />
+      <DashInput ref={linkRef} aria-label='Contest link' readOnly value={contestUrl} />
 
       <DashDialogFoot>
         <DashButton look='quiet' onClick={handleCopyLink}>
