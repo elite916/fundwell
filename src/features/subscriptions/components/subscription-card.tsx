@@ -48,51 +48,38 @@ export function SubscriptionCard({ subscription, products }: SubscriptionCardPro
     return `$${amount.toFixed(2)}/${interval}`;
   };
 
-  const nextBillingDate = subscription?.current_period_end
-    ? formatDate(subscription.current_period_end)
-    : null;
+  const nextBillingDate = subscription?.current_period_end ? formatDate(subscription.current_period_end) : null;
 
   return (
-    <Card className="border-zinc-800 bg-zinc-800/50">
+    <Card className='border-zinc-800 bg-zinc-800/50'>
       <CardHeader>
-        <div className="flex items-start justify-between">
+        <div className='flex items-start justify-between'>
           <div>
-            <CardTitle className="text-white">{planName}</CardTitle>
-            {price && (
-              <CardDescription className="mt-1 text-base text-zinc-300">
-                {formatPrice()}
-              </CardDescription>
-            )}
+            <CardTitle className='text-white'>{planName}</CardTitle>
+            {price && <CardDescription className='mt-1 text-base text-zinc-300'>{formatPrice()}</CardDescription>}
           </div>
-          {status && (
-            <Badge variant={STATUS_VARIANTS[status] ?? 'default'}>
-              {STATUS_LABELS[status] ?? status}
-            </Badge>
-          )}
+          {status && <Badge variant={STATUS_VARIANTS[status] ?? 'default'}>{STATUS_LABELS[status] ?? status}</Badge>}
         </div>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className='space-y-2'>
         {nextBillingDate && (
-          <div className="text-sm text-zinc-400">
-            <span className="text-zinc-500">Next billing:</span> {nextBillingDate}
+          <div className='text-sm text-zinc-400'>
+            <span className='text-zinc-500'>Next billing:</span> {nextBillingDate}
           </div>
         )}
-        {!subscription && (
-          <p className="text-sm text-zinc-400">Upgrade to unlock unlimited contests</p>
-        )}
+        {!subscription && <p className='text-sm text-zinc-400'>Upgrade to unlock unlimited contests</p>}
       </CardContent>
       <CardFooter>
         {subscription ? (
-          <Button variant="secondary" size="sm" asChild>
-            <Link href="/manage-subscription">Manage Subscription</Link>
+          <Button variant='secondary' size='sm' asChild>
+            <Link href='/manage-subscription'>Manage Subscription</Link>
           </Button>
         ) : (
-          <Button variant="secondary" size="sm" asChild>
-            <Link href="/pricing">Upgrade</Link>
+          <Button variant='secondary' size='sm' asChild>
+            <Link href='/pricing'>Upgrade</Link>
           </Button>
         )}
       </CardFooter>
     </Card>
   );
 }
-

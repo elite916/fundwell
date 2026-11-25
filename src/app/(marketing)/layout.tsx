@@ -7,10 +7,10 @@ import { Navigation } from '../navigation';
 
 export default function MarketingLayout({ children }: PropsWithChildren) {
   return (
-    <div className="m-auto flex h-full max-w-[1440px] flex-col px-4">
+    <div className='m-auto flex h-full max-w-[1440px] flex-col px-4'>
       <AppBar />
-      <main className="relative flex-1">
-        <div className="relative h-full">{children}</div>
+      <main className='relative flex-1'>
+        <div className='relative h-full'>{children}</div>
       </main>
       <MarketingFooter />
     </div>
@@ -19,10 +19,9 @@ export default function MarketingLayout({ children }: PropsWithChildren) {
 
 async function AppBar() {
   return (
-    <header className="flex items-center justify-between py-8">
+    <header className='flex items-center justify-between py-8'>
       <Logo />
       <Navigation />
     </header>
   );
 }
-

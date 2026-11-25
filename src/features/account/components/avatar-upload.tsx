@@ -111,96 +111,72 @@ export function AvatarUpload({ currentAvatarUrl, userEmail }: AvatarUploadProps)
   const showFallback = !displayUrl;
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {/* Avatar Display */}
-      <div className="flex items-center gap-4">
+      <div className='flex items-center gap-4'>
         <button
-          type="button"
+          type='button'
           onClick={() => fileInputRef.current?.click()}
           disabled={isPending}
-          className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-orange-500/20 transition-opacity hover:opacity-80 disabled:opacity-50"
+          className='relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-orange-500/20 transition-opacity hover:opacity-80 disabled:opacity-50'
         >
           {showFallback ? (
-            <span className="text-xl font-medium uppercase text-orange-500">
-              {userEmail.charAt(0)}
-            </span>
+            <span className='text-xl font-medium text-orange-500 uppercase'>{userEmail.charAt(0)}</span>
           ) : (
-            <Image
-              src={displayUrl}
-              alt="Avatar"
-              fill
-              className="object-cover"
-              sizes="64px"
-            />
+            <Image src={displayUrl} alt='Avatar' fill className='object-cover' sizes='64px' />
           )}
         </button>
 
-        <div className="flex-1">
-          <p className="text-sm font-medium text-zinc-200">Profile Picture</p>
-          <p className="text-xs text-zinc-500">JPEG, PNG, or WebP. Max 2MB.</p>
+        <div className='flex-1'>
+          <p className='text-sm font-medium text-zinc-200'>Profile Picture</p>
+          <p className='text-xs text-zinc-500'>JPEG, PNG, or WebP. Max 2MB.</p>
         </div>
       </div>
 
       {/* Hidden File Input */}
       <input
         ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
+        type='file'
+        accept='image/jpeg,image/png,image/webp'
         onChange={handleInputChange}
-        className="hidden"
+        className='hidden'
         disabled={isPending}
       />
 
       {/* Preview and Actions */}
       {selectedFile && (
-        <div className="space-y-3 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-          <div className="flex items-center gap-3">
-            <div className="relative h-12 w-12 overflow-hidden rounded-full">
-              {previewUrl && (
-                <Image
-                  src={previewUrl}
-                  alt="Preview"
-                  fill
-                  className="object-cover"
-                  sizes="48px"
-                />
-              )}
+        <div className='space-y-3 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+          <div className='flex items-center gap-3'>
+            <div className='relative h-12 w-12 overflow-hidden rounded-full'>
+              {previewUrl && <Image src={previewUrl} alt='Preview' fill className='object-cover' sizes='48px' />}
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-zinc-200">{selectedFile.name}</p>
-              <p className="text-xs text-zinc-500">
-                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-              </p>
+            <div className='flex-1'>
+              <p className='text-sm font-medium text-zinc-200'>{selectedFile.name}</p>
+              <p className='text-xs text-zinc-500'>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
           </div>
 
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="orange"
-              onClick={handleUpload}
-              disabled={isPending}
-              size="sm"
-            >
+          <div className='flex gap-2'>
+            <Button type='button' variant='orange' onClick={handleUpload} disabled={isPending} size='sm'>
               {isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   Uploading...
                 </>
               ) : (
                 <>
-                  <Upload className="mr-2 h-4 w-4" />
+                  <Upload className='mr-2 h-4 w-4' />
                   Upload
                 </>
               )}
             </Button>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               onClick={handleCancel}
               disabled={isPending}
-              size="sm"
-              className="border-zinc-700"
+              size='sm'
+              className='border-zinc-700'
             >
               Cancel
             </Button>
@@ -210,4 +186,3 @@ export function AvatarUpload({ currentAvatarUrl, userEmail }: AvatarUploadProps)
     </div>
   );
 }
-

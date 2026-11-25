@@ -9,11 +9,7 @@ type Score = Database['public']['Tables']['scores']['Row'];
 export async function getScoresForContest(contestId: string): Promise<Score[]> {
   const supabase = await createSupabaseServerClient();
 
-  const { data, error } = await supabase
-    .from('scores')
-    .select('*')
-    .eq('contest_id', contestId)
-    .order('quarter');
+  const { data, error } = await supabase.from('scores').select('*').eq('contest_id', contestId).order('quarter');
 
   if (error) {
     throw new Error(`Failed to fetch scores: ${error.message}`);
@@ -21,4 +17,3 @@ export async function getScoresForContest(contestId: string): Promise<Score[]> {
 
   return data ?? [];
 }
-

@@ -56,7 +56,7 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
   const displayRowNumbers = rowNumbers ?? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const displayColNumbers = colNumbers ?? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const hasAssignedNumbers = rowNumbers !== null && rowNumbers !== undefined;
-  
+
   // Create 10x10 grid from squares array
   const grid: (T | null)[][] = Array.from({ length: 10 }, () => Array(10).fill(null));
   squares.forEach((square) => {
@@ -75,21 +75,21 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
     : 'grid-cols-[repeat(10,40px)] sm:grid-cols-[repeat(10,44px)] md:grid-cols-[repeat(10,48px)] lg:grid-cols-[repeat(10,56px)]';
 
   return (
-    <div className="relative">
+    <div className='relative'>
       {/* Scroll shadow indicators - hint that content is scrollable (mobile only) */}
-      <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-6 bg-linear-to-r/srgb from-zinc-800 to-transparent opacity-50 lg:hidden" />
-      <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-6 bg-linear-to-l/srgb from-zinc-800 to-transparent opacity-50 lg:hidden" />
-      
+      <div className='pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-6 bg-linear-to-r/srgb from-zinc-800 to-transparent opacity-50 lg:hidden' />
+      <div className='pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-6 bg-linear-to-l/srgb from-zinc-800 to-transparent opacity-50 lg:hidden' />
+
       {/* Scrollable container on mobile, centered on desktop */}
-      <div className="overflow-x-auto lg:overflow-visible lg:flex lg:justify-center">
+      <div className='overflow-x-auto lg:flex lg:justify-center lg:overflow-visible'>
         {/* Fixed minimum width container - prevents grid collapse on mobile, centers on desktop */}
-        <div className="min-w-[480px] w-max p-3 sm:p-4 lg:min-w-0">
+        <div className='w-max min-w-[480px] p-3 sm:p-4 lg:min-w-0'>
           {/* Main layout: Row team label + Grid */}
-          <div className="flex gap-1 lg:gap-2">
+          <div className='flex gap-1 lg:gap-2'>
             {/* Row team label - vertical, outside the grid */}
-            <div className="flex w-5 shrink-0 items-center justify-center sm:w-6 lg:w-8">
+            <div className='flex w-5 shrink-0 items-center justify-center sm:w-6 lg:w-8'>
               <span
-                className="whitespace-nowrap text-[10px] font-medium text-zinc-400 sm:text-xs lg:text-sm"
+                className='text-[10px] font-medium whitespace-nowrap text-zinc-400 sm:text-xs lg:text-sm'
                 style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
               >
                 {rowTeamName}
@@ -99,10 +99,12 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
             {/* Grid container */}
             <div>
               {/* Column team header */}
-              <div className={cn(
-                'mb-1.5 text-center text-[10px] font-medium text-zinc-400 sm:mb-2 sm:text-xs lg:text-sm lg:mb-3',
-                showNumbers && 'pl-6 sm:pl-7 md:pl-8 lg:pl-9'
-              )}>
+              <div
+                className={cn(
+                  'mb-1.5 text-center text-[10px] font-medium text-zinc-400 sm:mb-2 sm:text-xs lg:mb-3 lg:text-sm',
+                  showNumbers && 'pl-6 sm:pl-7 md:pl-8 lg:pl-9'
+                )}
+              >
                 {colTeamName}
               </div>
 
@@ -112,8 +114,8 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
                 {showNumbers && (
                   <>
                     {/* Empty top-left corner */}
-                    <div className="h-6 sm:h-7 md:h-8 lg:h-9" />
-                    
+                    <div className='h-6 sm:h-7 md:h-8 lg:h-9' />
+
                     {/* Column numbers */}
                     {displayColNumbers.map((num, i) => (
                       <div
@@ -153,7 +155,7 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
                       return (
                         <button
                           key={`${rowIndex}-${colIndex}`}
-                          type="button"
+                          type='button'
                           disabled={!isClickable || !square}
                           onClick={() => {
                             if (isClickable && square) {
@@ -162,7 +164,7 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
                           }}
                           className={cn(
                             // Base styles - fixed height to match grid columns
-                            'h-10 rounded-sm font-medium transition-all flex items-center justify-center relative select-none',
+                            'relative flex h-10 items-center justify-center rounded-sm font-medium transition-all select-none',
                             'text-xs sm:h-11 sm:text-sm md:h-12 lg:h-14 lg:rounded',
                             // Touch feedback
                             isClickable && 'active:scale-95 active:opacity-80',
@@ -171,27 +173,27 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
                             // Available
                             square?.payment_status === 'available' && [
                               'bg-zinc-700',
-                              isClickable && 'hover:bg-zinc-600 cursor-pointer',
+                              isClickable && 'cursor-pointer hover:bg-zinc-600',
                             ],
                             // Pending
                             square?.payment_status === 'pending' && [
                               'bg-yellow-500/30 text-yellow-200',
-                              isClickable && 'hover:bg-yellow-500/40 cursor-pointer',
+                              isClickable && 'cursor-pointer hover:bg-yellow-500/40',
                             ],
                             // Paid
                             square?.payment_status === 'paid' && [
                               'bg-green-500/30 text-green-200',
-                              isClickable && 'hover:bg-green-500/40 cursor-pointer',
+                              isClickable && 'cursor-pointer hover:bg-green-500/40',
                             ],
                             // Loading/null state
                             !square && 'bg-zinc-800',
                             // Disabled state
-                            disabled && 'opacity-50 cursor-not-allowed'
+                            disabled && 'cursor-not-allowed opacity-50'
                           )}
                           title={isWinner ? `🏆 WINNER! ${tooltip}` : tooltip}
                         >
                           {isWinner ? (
-                            <Trophy className="h-4 w-4 text-amber-400 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
+                            <Trophy className='h-4 w-4 text-amber-400 sm:h-5 sm:w-5 lg:h-6 lg:w-6' />
                           ) : (
                             square?.payment_status !== 'available' && initials
                           )}
@@ -205,23 +207,23 @@ export function SquaresGrid<T extends GridSquare = GridSquare>({
           </div>
 
           {/* Legend */}
-          <div className="mt-4 flex flex-wrap justify-center gap-4 text-xs text-zinc-400">
-            <div className="flex items-center gap-2">
-              <div className="h-3 w-3 rounded-sm bg-zinc-700" />
+          <div className='mt-4 flex flex-wrap justify-center gap-4 text-xs text-zinc-400'>
+            <div className='flex items-center gap-2'>
+              <div className='h-3 w-3 rounded-sm bg-zinc-700' />
               <span>Available</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="h-3 w-3 rounded-sm bg-yellow-500/30" />
+            <div className='flex items-center gap-2'>
+              <div className='h-3 w-3 rounded-sm bg-yellow-500/30' />
               <span>Pending</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="h-3 w-3 rounded-sm bg-green-500/30" />
+            <div className='flex items-center gap-2'>
+              <div className='h-3 w-3 rounded-sm bg-green-500/30' />
               <span>Paid</span>
             </div>
             {winningSquareIds.length > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-sm bg-zinc-700 ring-2 ring-amber-400 ring-offset-1 ring-offset-zinc-900 flex items-center justify-center">
-                  <Trophy className="h-2 w-2 text-amber-400" />
+              <div className='flex items-center gap-2'>
+                <div className='flex h-3 w-3 items-center justify-center rounded-sm bg-zinc-700 ring-2 ring-amber-400 ring-offset-1 ring-offset-zinc-900'>
+                  <Trophy className='h-2 w-2 text-amber-400' />
                 </div>
                 <span>Winner</span>
               </div>

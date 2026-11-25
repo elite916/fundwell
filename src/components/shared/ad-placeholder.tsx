@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from '@/utils/cn';
 
 // Size configurations for different ad formats
 const AD_SIZES = {
@@ -20,10 +20,10 @@ export function AdPlaceholder({ size, className }: AdPlaceholderProps) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center",
-        "border-2 border-dashed border-zinc-700",
-        "bg-zinc-900/50", // Background: #18181B (zinc-900)
-        "rounded-lg",
+        'flex items-center justify-center',
+        'border-2 border-dashed border-zinc-700',
+        'bg-zinc-900/50', // Background: #18181B (zinc-900)
+        'rounded-lg',
         className
       )}
       style={{ width, height }}
@@ -37,8 +37,7 @@ export function AdPlaceholder({ size, className }: AdPlaceholderProps) {
                data-ad-format="auto"
                data-full-width-responsive="true" />
       */}
-      <span className="text-zinc-500 text-sm font-medium">Ad</span>
+      <span className='text-sm font-medium text-zinc-500'>Ad</span>
     </div>
   );
 }
-

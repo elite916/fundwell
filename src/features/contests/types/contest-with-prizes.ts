@@ -11,4 +11,3 @@ export interface ContestPrizeFields {
   prize_q3_text?: string | null;
   prize_final_text?: string | null;
 }
-

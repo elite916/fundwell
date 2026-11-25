@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, LucideIcon,Play, PlayCircle } from 'lucide-react';
+import { Lock, LucideIcon, Play, PlayCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -58,7 +58,7 @@ export function ContestStatusButton({
 
   async function handleStatusChange() {
     if (!config) return;
-    
+
     setIsLoading(true);
     try {
       const result = await updateContestStatus(contestId, config.nextStatus);
@@ -88,8 +88,8 @@ export function ContestStatusButton({
   }
 
   return (
-    <Button variant="orange" onClick={handleStatusChange} disabled={isLoading} className={className}>
-      <Icon className="mr-2 h-4 w-4" />
+    <Button variant='orange' onClick={handleStatusChange} disabled={isLoading} className={className}>
+      <Icon className='mr-2 h-4 w-4' />
       {isLoading ? 'Updating...' : config.label}
     </Button>
   );

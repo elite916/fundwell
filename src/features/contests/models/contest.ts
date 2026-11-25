@@ -59,7 +59,17 @@ export const settingsSchema = settingsBaseSchema;
 export const brandingSchema = z.object({
   heroImageUrl: z.string().url('Must be a valid URL').optional().nullable().or(z.literal('')),
   heroImagePosition: z
-    .enum(['top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'])
+    .enum([
+      'top-left',
+      'top-center',
+      'top-right',
+      'center-left',
+      'center',
+      'center-right',
+      'bottom-left',
+      'bottom-center',
+      'bottom-right',
+    ])
     .default('center'),
   orgImageUrl: z.string().url('Must be a valid URL').optional().nullable().or(z.literal('')),
   primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Must be a valid hex color'),

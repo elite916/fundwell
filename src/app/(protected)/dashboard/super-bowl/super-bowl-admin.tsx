@@ -1,17 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import {
-  Activity,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  Mail,
-  Play,
-  RefreshCw,
-  Trophy,
-  Zap,
-} from 'lucide-react';
+import { Activity, AlertCircle, CheckCircle2, Clock, Mail, Play, RefreshCw, Trophy, Zap } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,11 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  resendQuarterEmails,
-  toggleScoreChecking,
-  triggerScoreCheck,
-} from '@/features/super-bowl/actions';
+import { resendQuarterEmails, toggleScoreChecking, triggerScoreCheck } from '@/features/super-bowl/actions';
 
 // =============================================================================
 // Types
@@ -180,14 +166,8 @@ export function SuperBowlAdmin({ initialConfig, initialLogs, initialResults, ini
             </CardHeader>
             <CardContent>
               <div className='flex items-center justify-between'>
-                <span className='text-sm text-zinc-400'>
-                  {config?.enabled ? 'Active' : 'Disabled'}
-                </span>
-                <Switch
-                  checked={config?.enabled || false}
-                  onCheckedChange={handleToggle}
-                  disabled={isPending}
-                />
+                <span className='text-sm text-zinc-400'>{config?.enabled ? 'Active' : 'Disabled'}</span>
+                <Switch checked={config?.enabled || false} onCheckedChange={handleToggle} disabled={isPending} />
               </div>
             </CardContent>
           </Card>
@@ -238,16 +218,10 @@ export function SuperBowlAdmin({ initialConfig, initialLogs, initialResults, ini
               <Play className='h-4 w-4 text-orange-500' />
               Manual Trigger
             </CardTitle>
-            <CardDescription>
-              Manually trigger score checking or process a specific quarter
-            </CardDescription>
+            <CardDescription>Manually trigger score checking or process a specific quarter</CardDescription>
           </CardHeader>
           <CardContent className='flex flex-wrap gap-3'>
-            <Button
-              onClick={() => handleTrigger()}
-              disabled={isPending}
-              className='bg-orange-600 hover:bg-orange-700'
-            >
+            <Button onClick={() => handleTrigger()} disabled={isPending} className='bg-orange-600 hover:bg-orange-700'>
               <RefreshCw className={`mr-2 h-4 w-4 ${isPending ? 'animate-spin' : ''}`} />
               Check Scores Now
             </Button>
@@ -314,9 +288,7 @@ export function SuperBowlAdmin({ initialConfig, initialLogs, initialResults, ini
                           {r.home_last_digit} / {r.away_last_digit}
                         </TableCell>
                         <TableCell className='text-sm text-zinc-300'>
-                          {r.winner_first_name
-                            ? `${r.winner_first_name} ${r.winner_last_name || ''}`
-                            : 'Unclaimed'}
+                          {r.winner_first_name ? `${r.winner_first_name} ${r.winner_last_name || ''}` : 'Unclaimed'}
                         </TableCell>
                         <TableCell className='text-sm font-medium text-green-400'>
                           {r.prize_amount ? `$${r.prize_amount}` : '-'}
@@ -386,7 +358,7 @@ export function SuperBowlAdmin({ initialConfig, initialLogs, initialResults, ini
                   <TableBody>
                     {initialLogs.map((log) => (
                       <TableRow key={log.id} className='border-zinc-800'>
-                        <TableCell className='whitespace-nowrap text-xs text-zinc-500'>
+                        <TableCell className='text-xs whitespace-nowrap text-zinc-500'>
                           {formatDate(log.created_at)}
                         </TableCell>
                         <TableCell className='text-sm text-zinc-300'>{log.action}</TableCell>

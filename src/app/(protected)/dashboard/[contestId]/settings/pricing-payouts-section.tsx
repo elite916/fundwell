@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
-import { type Resolver,useForm } from 'react-hook-form';
+import { type Resolver, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -25,44 +25,55 @@ const baseSchema = z.object({
 });
 
 // Football payout schema
-const footballPayoutSchema = baseSchema.extend({
-  prize_type: z.enum(['percentage', 'custom']).default('percentage'),
-  payout_q1_percent: z.coerce.number().min(0).max(100),
-  payout_q2_percent: z.coerce.number().min(0).max(100),
-  payout_q3_percent: z.coerce.number().min(0).max(100),
-  payout_final_percent: z.coerce.number().min(0).max(100),
-  prize_q1_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
-  prize_q2_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
-  prize_q3_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
-  prize_final_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
-}).refine(
-  (data) => {
-    if (data.prize_type === 'percentage') {
-      const total = data.payout_q1_percent + data.payout_q2_percent + data.payout_q3_percent + data.payout_final_percent;
-      return total <= 100;
-    }
-    return true;
-  },
-  { message: 'Total payouts cannot exceed 100%', path: ['payout_final_percent'] }
-);
+const footballPayoutSchema = baseSchema
+  .extend({
+    prize_type: z.enum(['percentage', 'custom']).default('percentage'),
+    payout_q1_percent: z.coerce.number().min(0).max(100),
+    payout_q2_percent: z.coerce.number().min(0).max(100),
+    payout_q3_percent: z.coerce.number().min(0).max(100),
+    payout_final_percent: z.coerce.number().min(0).max(100),
+    prize_q1_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+    prize_q2_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+    prize_q3_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+    prize_final_text: z.string().max(25, 'Prize text must be 25 characters or less').optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.prize_type === 'percentage') {
+        const total =
+          data.payout_q1_percent + data.payout_q2_percent + data.payout_q3_percent + data.payout_final_percent;
+        return total <= 100;
+      }
+      return true;
+    },
+    { message: 'Total payouts cannot exceed 100%', path: ['payout_final_percent'] }
+  );
 
 // Baseball payout schema
-const baseballPayoutSchema = baseSchema.extend({
-  payout_game1_percent: z.coerce.number().min(0).max(100),
-  payout_game2_percent: z.coerce.number().min(0).max(100),
-  payout_game3_percent: z.coerce.number().min(0).max(100),
-  payout_game4_percent: z.coerce.number().min(0).max(100),
-  payout_game5_percent: z.coerce.number().min(0).max(100),
-  payout_game6_percent: z.coerce.number().min(0).max(100),
-  payout_game7_percent: z.coerce.number().min(0).max(100),
-}).refine(
-  (data) => {
-    const total = data.payout_game1_percent + data.payout_game2_percent + data.payout_game3_percent +
-      data.payout_game4_percent + data.payout_game5_percent + data.payout_game6_percent + data.payout_game7_percent;
-    return total <= 100;
-  },
-  { message: 'Total payouts cannot exceed 100%', path: ['payout_game7_percent'] }
-);
+const baseballPayoutSchema = baseSchema
+  .extend({
+    payout_game1_percent: z.coerce.number().min(0).max(100),
+    payout_game2_percent: z.coerce.number().min(0).max(100),
+    payout_game3_percent: z.coerce.number().min(0).max(100),
+    payout_game4_percent: z.coerce.number().min(0).max(100),
+    payout_game5_percent: z.coerce.number().min(0).max(100),
+    payout_game6_percent: z.coerce.number().min(0).max(100),
+    payout_game7_percent: z.coerce.number().min(0).max(100),
+  })
+  .refine(
+    (data) => {
+      const total =
+        data.payout_game1_percent +
+        data.payout_game2_percent +
+        data.payout_game3_percent +
+        data.payout_game4_percent +
+        data.payout_game5_percent +
+        data.payout_game6_percent +
+        data.payout_game7_percent;
+      return total <= 100;
+    },
+    { message: 'Total payouts cannot exceed 100%', path: ['payout_game7_percent'] }
+  );
 
 type FootballFormData = z.infer<typeof footballPayoutSchema>;
 type BaseballFormData = z.infer<typeof baseballPayoutSchema>;
@@ -110,8 +121,11 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
 
   const watchedValues = watch();
   const prizeType = watchedValues.prize_type ?? 'percentage';
-  const totalPercent = Number(watchedValues.payout_q1_percent || 0) + Number(watchedValues.payout_q2_percent || 0) +
-    Number(watchedValues.payout_q3_percent || 0) + Number(watchedValues.payout_final_percent || 0);
+  const totalPercent =
+    Number(watchedValues.payout_q1_percent || 0) +
+    Number(watchedValues.payout_q2_percent || 0) +
+    Number(watchedValues.payout_q3_percent || 0) +
+    Number(watchedValues.payout_final_percent || 0);
   const totalPot = (watchedValues.square_price || 0) * 100;
   const totalPayout = (totalPot * totalPercent) / 100;
   const fundraiserKeeps = totalPot - totalPayout;
@@ -165,50 +179,50 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
   };
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900">
+    <Card className='border-zinc-800 bg-zinc-900'>
       <CardHeader>
-        <CardTitle className="text-white">Pricing & Payouts</CardTitle>
+        <CardTitle className='text-white'>Pricing & Payouts</CardTitle>
         <CardDescription>Set square price and payout percentages for each quarter.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           {/* Pricing */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="square_price">Square Price ($)</Label>
+          <div className='grid gap-4 sm:grid-cols-2'>
+            <div className='space-y-2'>
+              <Label htmlFor='square_price'>Square Price ($)</Label>
               <Input
-                id="square_price"
-                type="number"
-                min="1"
+                id='square_price'
+                type='number'
+                min='1'
                 {...register('square_price')}
-                className="border-zinc-700 bg-zinc-800"
+                className='border-zinc-700 bg-zinc-800'
               />
-              {errors.square_price && <p className="text-sm text-red-500">{errors.square_price.message}</p>}
+              {errors.square_price && <p className='text-sm text-red-500'>{errors.square_price.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="max_squares_per_person">Max Squares Per Person</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='max_squares_per_person'>Max Squares Per Person</Label>
               <Input
-                id="max_squares_per_person"
-                type="number"
-                min="1"
-                max="100"
-                placeholder="No limit"
+                id='max_squares_per_person'
+                type='number'
+                min='1'
+                max='100'
+                placeholder='No limit'
                 {...register('max_squares_per_person')}
-                className="border-zinc-700 bg-zinc-800"
+                className='border-zinc-700 bg-zinc-800'
               />
               {errors.max_squares_per_person && (
-                <p className="text-sm text-red-500">{errors.max_squares_per_person.message}</p>
+                <p className='text-sm text-red-500'>{errors.max_squares_per_person.message}</p>
               )}
             </div>
           </div>
 
           {/* Prize Type Selection */}
-          <div className="space-y-2">
-            <Label className="text-base">Prize Type</Label>
-            <div className="flex gap-2">
+          <div className='space-y-2'>
+            <Label className='text-base'>Prize Type</Label>
+            <div className='flex gap-2'>
               <button
-                type="button"
+                type='button'
                 onClick={() => setValue('prize_type', 'percentage', { shouldDirty: true })}
                 className={cn(
                   'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
@@ -220,7 +234,7 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
                 Cash Payouts
               </button>
               <button
-                type="button"
+                type='button'
                 onClick={() => setValue('prize_type', 'custom', { shouldDirty: true })}
                 className={cn(
                   'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
@@ -232,32 +246,32 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
                 Custom Prizes
               </button>
             </div>
-            <input type="hidden" {...register('prize_type')} />
-            {errors.prize_type && <p className="text-sm text-red-500">{errors.prize_type.message}</p>}
+            <input type='hidden' {...register('prize_type')} />
+            {errors.prize_type && <p className='text-sm text-red-500'>{errors.prize_type.message}</p>}
           </div>
 
           {/* Payout Percentages - Show when prize_type is 'percentage' */}
           {prizeType === 'percentage' && (
             <>
-              <div className="space-y-4">
-                <Label className="text-base">Payout Percentages</Label>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className='space-y-4'>
+                <Label className='text-base'>Payout Percentages</Label>
+                <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
                   {FOOTBALL_QUARTER_LABELS.map((quarter) => {
                     const payoutField = quarter.dbField as keyof FootballFormData;
                     return (
-                      <div key={quarter.key} className="space-y-2">
-                        <Label htmlFor={payoutField} className="text-sm text-zinc-400">{quarter.label} (%)</Label>
+                      <div key={quarter.key} className='space-y-2'>
+                        <Label htmlFor={payoutField} className='text-sm text-zinc-400'>
+                          {quarter.label} (%)
+                        </Label>
                         <Input
                           id={payoutField}
-                          type="number"
-                          min="0"
-                          max="100"
+                          type='number'
+                          min='0'
+                          max='100'
                           {...register(payoutField)}
-                          className="border-zinc-700 bg-zinc-800"
+                          className='border-zinc-700 bg-zinc-800'
                         />
-                        {errors[payoutField] && (
-                          <p className="text-sm text-red-500">{errors[payoutField]?.message}</p>
-                        )}
+                        {errors[payoutField] && <p className='text-sm text-red-500'>{errors[payoutField]?.message}</p>}
                       </div>
                     );
                   })}
@@ -265,19 +279,19 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
               </div>
 
               {/* Calculated Totals */}
-              <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-                <div className="grid gap-4 sm:grid-cols-3">
+              <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+                <div className='grid gap-4 sm:grid-cols-3'>
                   <div>
-                    <p className="text-sm text-zinc-400">Total pot if all squares sell</p>
-                    <p className="text-xl font-bold text-white">${totalPot.toLocaleString()}</p>
+                    <p className='text-sm text-zinc-400'>Total pot if all squares sell</p>
+                    <p className='text-xl font-bold text-white'>${totalPot.toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-400">Total Payout ({totalPercent}%)</p>
-                    <p className="text-xl font-bold text-orange-400">${totalPayout.toLocaleString()}</p>
+                    <p className='text-sm text-zinc-400'>Total Payout ({totalPercent}%)</p>
+                    <p className='text-xl font-bold text-orange-400'>${totalPayout.toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-400">Fundraiser Keeps</p>
-                    <p className="text-xl font-bold text-green-400">${fundraiserKeeps.toLocaleString()}</p>
+                    <p className='text-sm text-zinc-400'>Fundraiser Keeps</p>
+                    <p className='text-xl font-bold text-green-400'>${fundraiserKeeps.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -286,29 +300,31 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
 
           {/* Custom Prize Text Inputs - Show when prize_type is 'custom' */}
           {prizeType === 'custom' && (
-            <div className="space-y-4">
+            <div className='space-y-4'>
               <div>
-                <Label className="text-base">Custom Prize Descriptions</Label>
-                <p className="text-sm text-zinc-500">Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).</p>
+                <Label className='text-base'>Custom Prize Descriptions</Label>
+                <p className='text-sm text-zinc-500'>
+                  Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).
+                </p>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className='grid gap-4 sm:grid-cols-2'>
                 {FOOTBALL_QUARTER_LABELS.map((quarter) => {
                   const prizeField = `prize_${quarter.key}_text` as keyof FootballFormData;
                   return (
-                    <div key={quarter.key} className="space-y-2">
-                      <Label htmlFor={prizeField} className="text-sm text-zinc-400">
+                    <div key={quarter.key} className='space-y-2'>
+                      <Label htmlFor={prizeField} className='text-sm text-zinc-400'>
                         {quarter.label} Prize
                       </Label>
                       <Input
                         id={prizeField}
-                        type="text"
+                        type='text'
                         maxLength={PRIZE_TEXT_MAX_LENGTH}
-                        placeholder="e.g., $100 Gift Card"
+                        placeholder='e.g., $100 Gift Card'
                         {...register(prizeField)}
-                        className="border-zinc-700 bg-zinc-800"
+                        className='border-zinc-700 bg-zinc-800'
                       />
-                      {errors[prizeField] && <p className="text-sm text-red-500">{errors[prizeField]?.message}</p>}
+                      {errors[prizeField] && <p className='text-sm text-red-500'>{errors[prizeField]?.message}</p>}
                     </div>
                   );
                 })}
@@ -317,9 +333,9 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
           )}
 
           {/* Submit Button */}
-          <div className="flex justify-end pt-4">
-            <Button type="submit" disabled={isPending || !isDirty}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <div className='flex justify-end pt-4'>
+            <Button type='submit' disabled={isPending || !isDirty}>
+              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Save Changes
             </Button>
           </div>
@@ -354,9 +370,13 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
   });
 
   const watchedValues = watch();
-  const totalPercent = Number(watchedValues.payout_game1_percent || 0) + Number(watchedValues.payout_game2_percent || 0) +
-    Number(watchedValues.payout_game3_percent || 0) + Number(watchedValues.payout_game4_percent || 0) +
-    Number(watchedValues.payout_game5_percent || 0) + Number(watchedValues.payout_game6_percent || 0) +
+  const totalPercent =
+    Number(watchedValues.payout_game1_percent || 0) +
+    Number(watchedValues.payout_game2_percent || 0) +
+    Number(watchedValues.payout_game3_percent || 0) +
+    Number(watchedValues.payout_game4_percent || 0) +
+    Number(watchedValues.payout_game5_percent || 0) +
+    Number(watchedValues.payout_game6_percent || 0) +
     Number(watchedValues.payout_game7_percent || 0);
   const totalPot = (watchedValues.square_price || 0) * 100;
   const totalPayout = (totalPot * totalPercent) / 100;
@@ -404,89 +424,91 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
   ] as const;
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900">
+    <Card className='border-zinc-800 bg-zinc-900'>
       <CardHeader>
-        <CardTitle className="text-white">Pricing & Payouts</CardTitle>
+        <CardTitle className='text-white'>Pricing & Payouts</CardTitle>
         <CardDescription>Set square price and payout percentages for each game.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           {/* Pricing */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="square_price">Square Price ($)</Label>
+          <div className='grid gap-4 sm:grid-cols-2'>
+            <div className='space-y-2'>
+              <Label htmlFor='square_price'>Square Price ($)</Label>
               <Input
-                id="square_price"
-                type="number"
-                min="1"
+                id='square_price'
+                type='number'
+                min='1'
                 {...register('square_price')}
-                className="border-zinc-700 bg-zinc-800"
+                className='border-zinc-700 bg-zinc-800'
               />
-              {errors.square_price && <p className="text-sm text-red-500">{errors.square_price.message}</p>}
+              {errors.square_price && <p className='text-sm text-red-500'>{errors.square_price.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="max_squares_per_person">Max Squares Per Person</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='max_squares_per_person'>Max Squares Per Person</Label>
               <Input
-                id="max_squares_per_person"
-                type="number"
-                min="1"
-                max="100"
-                placeholder="No limit"
+                id='max_squares_per_person'
+                type='number'
+                min='1'
+                max='100'
+                placeholder='No limit'
                 {...register('max_squares_per_person')}
-                className="border-zinc-700 bg-zinc-800"
+                className='border-zinc-700 bg-zinc-800'
               />
               {errors.max_squares_per_person && (
-                <p className="text-sm text-red-500">{errors.max_squares_per_person.message}</p>
+                <p className='text-sm text-red-500'>{errors.max_squares_per_person.message}</p>
               )}
             </div>
           </div>
 
           {/* Payouts */}
-          <div className="space-y-4">
-            <Label className="text-base">Payout Percentages</Label>
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className='space-y-4'>
+            <Label className='text-base'>Payout Percentages</Label>
+            <div className='grid gap-4 sm:grid-cols-3 lg:grid-cols-4'>
               {gameFields.map((field, index) => (
-                <div key={field} className="space-y-2">
-                  <Label htmlFor={field} className="text-sm text-zinc-400">{gameLabels[index]} (%)</Label>
+                <div key={field} className='space-y-2'>
+                  <Label htmlFor={field} className='text-sm text-zinc-400'>
+                    {gameLabels[index]} (%)
+                  </Label>
                   <Input
                     id={field}
-                    type="number"
-                    min="0"
-                    max="100"
+                    type='number'
+                    min='0'
+                    max='100'
                     {...register(field)}
-                    className="border-zinc-700 bg-zinc-800"
+                    className='border-zinc-700 bg-zinc-800'
                   />
                 </div>
               ))}
             </div>
             {errors.payout_game7_percent && (
-              <p className="text-sm text-red-500">{errors.payout_game7_percent.message}</p>
+              <p className='text-sm text-red-500'>{errors.payout_game7_percent.message}</p>
             )}
           </div>
 
           {/* Calculated Totals */}
-          <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-            <div className="grid gap-4 sm:grid-cols-3">
+          <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+            <div className='grid gap-4 sm:grid-cols-3'>
               <div>
-                <p className="text-sm text-zinc-400">Total pot if all squares sell</p>
-                <p className="text-xl font-bold text-white">${totalPot.toLocaleString()}</p>
+                <p className='text-sm text-zinc-400'>Total pot if all squares sell</p>
+                <p className='text-xl font-bold text-white'>${totalPot.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-zinc-400">Total Payout ({totalPercent}%)</p>
-                <p className="text-xl font-bold text-orange-400">${totalPayout.toLocaleString()}</p>
+                <p className='text-sm text-zinc-400'>Total Payout ({totalPercent}%)</p>
+                <p className='text-xl font-bold text-orange-400'>${totalPayout.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-zinc-400">Fundraiser Keeps</p>
-                <p className="text-xl font-bold text-green-400">${fundraiserKeeps.toLocaleString()}</p>
+                <p className='text-sm text-zinc-400'>Fundraiser Keeps</p>
+                <p className='text-xl font-bold text-green-400'>${fundraiserKeeps.toLocaleString()}</p>
               </div>
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end pt-4">
-            <Button type="submit" disabled={isPending || !isDirty}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <div className='flex justify-end pt-4'>
+            <Button type='submit' disabled={isPending || !isDirty}>
+              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Save Changes
             </Button>
           </div>
@@ -495,4 +517,3 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
     </Card>
   );
 }
-

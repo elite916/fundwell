@@ -96,4 +96,3 @@ export function squareClaimedEmail({
 
   return { subject, html };
 }
-

@@ -26,7 +26,10 @@ export async function updateContestPin(contestId: string, pin: string | null): P
 
     const { error } = await supabase
       .from('contest_pins')
-      .upsert({ contest_id: contestId, pin: trimmed, updated_at: new Date().toISOString() }, { onConflict: 'contest_id' });
+      .upsert(
+        { contest_id: contestId, pin: trimmed, updated_at: new Date().toISOString() },
+        { onConflict: 'contest_id' }
+      );
 
     if (error) throw new Error('Failed to update PIN');
 

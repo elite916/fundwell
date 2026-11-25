@@ -16,30 +16,27 @@ export async function Navigation() {
         <AccountMenu />
       ) : (
         <>
-          <nav className="hidden items-center gap-6 lg:flex">
-            <Link href="/pricing" className="text-zinc-400 transition-colors hover:text-fundwell-text">
+          <nav className='hidden items-center gap-6 lg:flex'>
+            <Link href='/pricing' className='text-zinc-400 transition-colors hover:text-fundwell-text'>
               Pricing
             </Link>
           </nav>
-          <Button variant="orange" className="hidden shrink-0 lg:flex" asChild>
-            <Link href="/signup">Get started for free</Link>
+          <Button variant='orange' className='hidden shrink-0 lg:flex' asChild>
+            <Link href='/signup'>Get started for free</Link>
           </Button>
           <Sheet>
-            <SheetTrigger className="block lg:hidden">
-              <Menu className="h-7 w-7" />
+            <SheetTrigger className='block lg:hidden'>
+              <Menu className='h-7 w-7' />
             </SheetTrigger>
-            <SheetContent className="w-full bg-black">
+            <SheetContent className='w-full bg-black'>
               <SheetHeader>
                 <Logo />
-                <SheetDescription className="py-8">
-                  <Link
-                    href="/pricing"
-                    className="mb-4 block text-zinc-400 transition-colors hover:text-fundwell-text"
-                  >
+                <SheetDescription className='py-8'>
+                  <Link href='/pricing' className='mb-4 block text-zinc-400 transition-colors hover:text-fundwell-text'>
                     Pricing
                   </Link>
-                  <Button variant="orange" className="shrink-0" asChild>
-                    <Link href="/signup">Get started for free</Link>
+                  <Button variant='orange' className='shrink-0' asChild>
+                    <Link href='/signup'>Get started for free</Link>
                   </Button>
                 </SheetDescription>
               </SheetHeader>

@@ -47,4 +47,3 @@ export function ctaButton(text: string, url: string): string {
       </tr>
     </table>`;
 }
-

@@ -13,10 +13,7 @@ export async function toggleScoreChecking(enabled: boolean): Promise<ActionRespo
   try {
     await requireAdmin();
 
-    const { error } = await supabaseAdminClient
-      .from('super_bowl_config')
-      .update({ enabled })
-      .not('id', 'is', null); // Update all rows (there's only one)
+    const { error } = await supabaseAdminClient.from('super_bowl_config').update({ enabled }).not('id', 'is', null); // Update all rows (there's only one)
 
     if (error) throw error;
 
@@ -35,11 +32,7 @@ export async function getSuperBowlConfig() {
   try {
     await requireAdmin();
 
-    const { data, error } = await supabaseAdminClient
-      .from('super_bowl_config')
-      .select('*')
-      .limit(1)
-      .single();
+    const { data, error } = await supabaseAdminClient.from('super_bowl_config').select('*').limit(1).single();
 
     if (error) throw error;
     return data;
@@ -96,10 +89,7 @@ export async function getQuarterResults() {
 // Manually trigger score check
 // =============================================================================
 
-export async function triggerScoreCheck(
-  quarter?: string,
-  force = false
-): Promise<ActionResponse<{ status: string }>> {
+export async function triggerScoreCheck(quarter?: string, force = false): Promise<ActionResponse<{ status: string }>> {
   try {
     await requireAdmin();
 
@@ -137,9 +127,7 @@ export async function triggerScoreCheck(
 // Resend emails for a quarter result
 // =============================================================================
 
-export async function resendQuarterEmails(
-  resultId: string
-): Promise<ActionResponse<{ status: string }>> {
+export async function resendQuarterEmails(resultId: string): Promise<ActionResponse<{ status: string }>> {
   try {
     await requireAdmin();
 

@@ -103,60 +103,62 @@ export function SettingsStep() {
   const payoutFields = isFootball ? FOOTBALL_PAYOUT_FIELDS : BASEBALL_PAYOUT_FIELDS;
   const payoutValues = isFootball ? footballPayouts : baseballPayouts;
 
-  const totalPayout = (payoutValues as (number | undefined)[]).reduce((sum, val) => (sum ?? 0) + (Number(val) || 0), 0) ?? 0;
+  const totalPayout =
+    (payoutValues as (number | undefined)[]).reduce((sum, val) => (sum ?? 0) + (Number(val) || 0), 0) ?? 0;
   const totalPot = (Number(squarePrice) || 0) * 100;
 
   return (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Square Price */}
-      <div className="space-y-2">
-        <Label htmlFor="squarePrice" className="text-zinc-200">
-          Price Per Square <span className="text-orange-500">*</span>
+      <div className='space-y-2'>
+        <Label htmlFor='squarePrice' className='text-zinc-200'>
+          Price Per Square <span className='text-orange-500'>*</span>
         </Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">$</span>
+        <div className='relative'>
+          <span className='absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400'>$</span>
           <Input
-            id="squarePrice"
-            type="number"
-            min="1"
-            step="1"
-            placeholder="10"
+            id='squarePrice'
+            type='number'
+            min='1'
+            step='1'
+            placeholder='10'
             {...register('squarePrice')}
             className={cn('pl-7', errors.squarePrice && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
           />
         </div>
-        {errors.squarePrice && <p className="text-sm text-red-500">{errors.squarePrice.message}</p>}
+        {errors.squarePrice && <p className='text-sm text-red-500'>{errors.squarePrice.message}</p>}
         {totalPot > 0 && (
-          <p className="text-xs text-zinc-500">
-            Total pot if all squares sell: <span className="font-medium text-orange-400">${totalPot.toLocaleString()}</span>
+          <p className='text-xs text-zinc-500'>
+            Total pot if all squares sell:{' '}
+            <span className='font-medium text-orange-400'>${totalPot.toLocaleString()}</span>
           </p>
         )}
       </div>
 
       {/* Max Squares Per Person */}
-      <div className="space-y-2">
-        <Label htmlFor="maxSquaresPerPerson" className="text-zinc-200">
+      <div className='space-y-2'>
+        <Label htmlFor='maxSquaresPerPerson' className='text-zinc-200'>
           Max Squares Per Person
         </Label>
         <Input
-          id="maxSquaresPerPerson"
-          type="number"
-          min="1"
-          max="100"
-          placeholder="No limit"
+          id='maxSquaresPerPerson'
+          type='number'
+          min='1'
+          max='100'
+          placeholder='No limit'
           {...register('maxSquaresPerPerson')}
           className={cn(errors.maxSquaresPerPerson && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
         />
-        {errors.maxSquaresPerPerson && <p className="text-sm text-red-500">{errors.maxSquaresPerPerson.message}</p>}
-        <p className="text-xs text-zinc-500">Leave blank to allow unlimited squares per participant.</p>
+        {errors.maxSquaresPerPerson && <p className='text-sm text-red-500'>{errors.maxSquaresPerPerson.message}</p>}
+        <p className='text-xs text-zinc-500'>Leave blank to allow unlimited squares per participant.</p>
       </div>
 
       {/* Prize Type Selection */}
-      <div className="space-y-2">
-        <Label className="text-zinc-200">Prize Type</Label>
-        <div className="flex gap-2">
+      <div className='space-y-2'>
+        <Label className='text-zinc-200'>Prize Type</Label>
+        <div className='flex gap-2'>
           <button
-            type="button"
+            type='button'
             onClick={() => setValue('prizeType', 'percentage')}
             className={cn(
               'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
@@ -168,7 +170,7 @@ export function SettingsStep() {
             Cash Payouts
           </button>
           <button
-            type="button"
+            type='button'
             onClick={() => setValue('prizeType', 'custom')}
             className={cn(
               'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
@@ -180,233 +182,247 @@ export function SettingsStep() {
             Custom Prizes
           </button>
         </div>
-        <input type="hidden" {...register('prizeType')} />
-        {errors.prizeType && <p className="text-sm text-red-500">{errors.prizeType.message}</p>}
+        <input type='hidden' {...register('prizeType')} />
+        {errors.prizeType && <p className='text-sm text-red-500'>{errors.prizeType.message}</p>}
       </div>
 
       {/* Payout Distribution - Show when prizeType is 'percentage' */}
       {prizeType === 'percentage' && (
-      <div className="space-y-4">
-        <div>
-          <Label className="text-zinc-200">Payout Distribution</Label>
-          <p className="text-xs text-zinc-500">
-            {isFootball
-              ? 'How winnings are split between quarters. The rest goes to your fundraiser.'
-              : 'How winnings are split between games. The rest goes to your fundraiser.'}
-          </p>
-          {!isFootball && (
-            <p className="mt-1 text-xs text-amber-400">
-              💡 If the series ends early, remaining game payouts go to the fundraiser.
+        <div className='space-y-4'>
+          <div>
+            <Label className='text-zinc-200'>Payout Distribution</Label>
+            <p className='text-xs text-zinc-500'>
+              {isFootball
+                ? 'How winnings are split between quarters. The rest goes to your fundraiser.'
+                : 'How winnings are split between games. The rest goes to your fundraiser.'}
             </p>
-          )}
-        </div>
-
-        {/* Visual Progress Bar */}
-        <div className="h-4 overflow-hidden rounded-full bg-zinc-800">
-          <div className="flex h-full">
-            {payoutFields.map((field, index) => {
-              const value = Number(payoutValues[index]) || 0;
-              return (
-                <div
-                  key={field.name}
-                  className={cn('h-full transition-all duration-300', field.color)}
-                  style={{ width: `${value}%` }}
-                />
-              );
-            })}
+            {!isFootball && (
+              <p className='mt-1 text-xs text-amber-400'>
+                💡 If the series ends early, remaining game payouts go to the fundraiser.
+              </p>
+            )}
           </div>
-        </div>
 
-        {/* Payout Inputs */}
-        <div className={cn('grid gap-4', isFootball ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-7')}>
-          {payoutFields.map((field) => (
-            <div key={field.name} className="space-y-2">
-              <Label htmlFor={field.name} className="text-zinc-200 text-xs">
-                {field.label}
-              </Label>
-              <div className="relative">
-                <Input
-                  id={field.name}
-                  type="number"
-                  min="0"
-                  max="100"
-                  {...register(field.name)}
-                  className={cn('pr-7', errors[field.name] && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400">%</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Total Indicator */}
-        <div
-          className={cn(
-            'flex items-center justify-between rounded-lg border p-3',
-            totalPayout <= 100 ? 'border-green-500/50 bg-green-500/10' : 'border-red-500/50 bg-red-500/10'
-          )}
-        >
-          <span className={cn('text-sm', totalPayout <= 100 ? 'text-green-400' : 'text-red-400')}>
-            Total Payouts: {totalPayout}%
-          </span>
-          {totalPayout <= 100 ? (
-            <span className="text-xs text-green-400">✓ Valid ({100 - totalPayout}% to fundraiser)</span>
-          ) : (
-            <span className="text-xs text-red-400">{totalPayout - 100}% over limit</span>
-          )}
-        </div>
-
-        {errors.payoutFinalPercent && <p className="text-sm text-red-500">{errors.payoutFinalPercent.message}</p>}
-        {errors.payoutGame7Percent && <p className="text-sm text-red-500">{errors.payoutGame7Percent.message}</p>}
-
-        {/* Payout Breakdown */}
-        {totalPot > 0 && totalPayout <= 100 && (
-          <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-            <p className="mb-4 text-sm font-medium text-zinc-200">Payout Breakdown</p>
-
-            {/* Total Pot */}
-            <div className="mb-4 flex items-center justify-between border-b border-zinc-700 pb-3">
-              <span className="text-sm text-zinc-400">Total Pot (100 squares × ${Number(squarePrice).toLocaleString()})</span>
-              <span className="text-lg font-semibold text-white">${totalPot.toLocaleString()}</span>
-            </div>
-
-            {/* Payouts by quarter/game */}
-            <div className="space-y-2">
+          {/* Visual Progress Bar */}
+          <div className='h-4 overflow-hidden rounded-full bg-zinc-800'>
+            <div className='flex h-full'>
               {payoutFields.map((field, index) => {
-                const percent = Number(payoutValues[index]) || 0;
-                const amount = (totalPot * percent) / 100;
+                const value = Number(payoutValues[index]) || 0;
                 return (
-                  <div key={field.name} className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-400">
-                      {field.label}: {percent}%
-                    </span>
-                    <span className="font-medium text-orange-400">${amount.toLocaleString()}</span>
-                  </div>
+                  <div
+                    key={field.name}
+                    className={cn('h-full transition-all duration-300', field.color)}
+                    style={{ width: `${value}%` }}
+                  />
                 );
               })}
             </div>
-
-            {/* Total Payouts */}
-            <div className="mt-3 flex items-center justify-between border-t border-zinc-700 pt-3">
-              <span className="text-sm text-zinc-400">Total Payouts ({totalPayout}%)</span>
-              <span className="font-medium text-orange-400">${((totalPot * totalPayout) / 100).toLocaleString()}</span>
-            </div>
-
-            {/* Fundraiser Keeps */}
-            <div className="mt-2 flex items-center justify-between rounded-lg bg-green-500/10 p-3">
-              <span className="text-sm font-medium text-green-400">🎉 Fundraiser Keeps ({100 - totalPayout}%)</span>
-              <span className="text-lg font-bold text-green-400">
-                ${((totalPot * (100 - totalPayout)) / 100).toLocaleString()}
-              </span>
-            </div>
           </div>
-        )}
-      </div>
+
+          {/* Payout Inputs */}
+          <div
+            className={cn(
+              'grid gap-4',
+              isFootball ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-7'
+            )}
+          >
+            {payoutFields.map((field) => (
+              <div key={field.name} className='space-y-2'>
+                <Label htmlFor={field.name} className='text-xs text-zinc-200'>
+                  {field.label}
+                </Label>
+                <div className='relative'>
+                  <Input
+                    id={field.name}
+                    type='number'
+                    min='0'
+                    max='100'
+                    {...register(field.name)}
+                    className={cn(
+                      'pr-7',
+                      errors[field.name] && 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    )}
+                  />
+                  <span className='absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400'>%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Total Indicator */}
+          <div
+            className={cn(
+              'flex items-center justify-between rounded-lg border p-3',
+              totalPayout <= 100 ? 'border-green-500/50 bg-green-500/10' : 'border-red-500/50 bg-red-500/10'
+            )}
+          >
+            <span className={cn('text-sm', totalPayout <= 100 ? 'text-green-400' : 'text-red-400')}>
+              Total Payouts: {totalPayout}%
+            </span>
+            {totalPayout <= 100 ? (
+              <span className='text-xs text-green-400'>✓ Valid ({100 - totalPayout}% to fundraiser)</span>
+            ) : (
+              <span className='text-xs text-red-400'>{totalPayout - 100}% over limit</span>
+            )}
+          </div>
+
+          {errors.payoutFinalPercent && <p className='text-sm text-red-500'>{errors.payoutFinalPercent.message}</p>}
+          {errors.payoutGame7Percent && <p className='text-sm text-red-500'>{errors.payoutGame7Percent.message}</p>}
+
+          {/* Payout Breakdown */}
+          {totalPot > 0 && totalPayout <= 100 && (
+            <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+              <p className='mb-4 text-sm font-medium text-zinc-200'>Payout Breakdown</p>
+
+              {/* Total Pot */}
+              <div className='mb-4 flex items-center justify-between border-b border-zinc-700 pb-3'>
+                <span className='text-sm text-zinc-400'>
+                  Total Pot (100 squares × ${Number(squarePrice).toLocaleString()})
+                </span>
+                <span className='text-lg font-semibold text-white'>${totalPot.toLocaleString()}</span>
+              </div>
+
+              {/* Payouts by quarter/game */}
+              <div className='space-y-2'>
+                {payoutFields.map((field, index) => {
+                  const percent = Number(payoutValues[index]) || 0;
+                  const amount = (totalPot * percent) / 100;
+                  return (
+                    <div key={field.name} className='flex items-center justify-between'>
+                      <span className='text-sm text-zinc-400'>
+                        {field.label}: {percent}%
+                      </span>
+                      <span className='font-medium text-orange-400'>${amount.toLocaleString()}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Total Payouts */}
+              <div className='mt-3 flex items-center justify-between border-t border-zinc-700 pt-3'>
+                <span className='text-sm text-zinc-400'>Total Payouts ({totalPayout}%)</span>
+                <span className='font-medium text-orange-400'>
+                  ${((totalPot * totalPayout) / 100).toLocaleString()}
+                </span>
+              </div>
+
+              {/* Fundraiser Keeps */}
+              <div className='mt-2 flex items-center justify-between rounded-lg bg-green-500/10 p-3'>
+                <span className='text-sm font-medium text-green-400'>🎉 Fundraiser Keeps ({100 - totalPayout}%)</span>
+                <span className='text-lg font-bold text-green-400'>
+                  ${((totalPot * (100 - totalPayout)) / 100).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Custom Prize Text Inputs - Show when prizeType is 'custom' */}
       {prizeType === 'custom' && (
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <div>
-            <Label className="text-zinc-200">Custom Prize Descriptions</Label>
-            <p className="text-xs text-zinc-500">Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).</p>
+            <Label className='text-zinc-200'>Custom Prize Descriptions</Label>
+            <p className='text-xs text-zinc-500'>
+              Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).
+            </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="prizeQ1Text" className="text-zinc-200 text-xs">
+          <div className='grid gap-4 sm:grid-cols-2'>
+            <div className='space-y-2'>
+              <Label htmlFor='prizeQ1Text' className='text-xs text-zinc-200'>
                 Q1 Prize
               </Label>
               <Input
-                id="prizeQ1Text"
-                type="text"
+                id='prizeQ1Text'
+                type='text'
                 maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder="e.g., $100 Gift Card"
+                placeholder='e.g., $100 Gift Card'
                 {...register('prizeQ1Text')}
                 className={cn(errors.prizeQ1Text && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
               />
-              {errors.prizeQ1Text && <p className="text-sm text-red-500">{errors.prizeQ1Text.message}</p>}
+              {errors.prizeQ1Text && <p className='text-sm text-red-500'>{errors.prizeQ1Text.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="prizeQ2Text" className="text-zinc-200 text-xs">
+            <div className='space-y-2'>
+              <Label htmlFor='prizeQ2Text' className='text-xs text-zinc-200'>
                 Halftime Prize
               </Label>
               <Input
-                id="prizeQ2Text"
-                type="text"
+                id='prizeQ2Text'
+                type='text'
                 maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder="e.g., $200 Gift Card"
+                placeholder='e.g., $200 Gift Card'
                 {...register('prizeQ2Text')}
                 className={cn(errors.prizeQ2Text && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
               />
-              {errors.prizeQ2Text && <p className="text-sm text-red-500">{errors.prizeQ2Text.message}</p>}
+              {errors.prizeQ2Text && <p className='text-sm text-red-500'>{errors.prizeQ2Text.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="prizeQ3Text" className="text-zinc-200 text-xs">
+            <div className='space-y-2'>
+              <Label htmlFor='prizeQ3Text' className='text-xs text-zinc-200'>
                 Q3 Prize
               </Label>
               <Input
-                id="prizeQ3Text"
-                type="text"
+                id='prizeQ3Text'
+                type='text'
                 maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder="e.g., $300 Gift Card"
+                placeholder='e.g., $300 Gift Card'
                 {...register('prizeQ3Text')}
                 className={cn(errors.prizeQ3Text && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
               />
-              {errors.prizeQ3Text && <p className="text-sm text-red-500">{errors.prizeQ3Text.message}</p>}
+              {errors.prizeQ3Text && <p className='text-sm text-red-500'>{errors.prizeQ3Text.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="prizeFinalText" className="text-zinc-200 text-xs">
+            <div className='space-y-2'>
+              <Label htmlFor='prizeFinalText' className='text-xs text-zinc-200'>
                 Final Prize
               </Label>
               <Input
-                id="prizeFinalText"
-                type="text"
+                id='prizeFinalText'
+                type='text'
                 maxLength={PRIZE_TEXT_MAX_LENGTH}
-                placeholder="e.g., $500 Gift Card"
+                placeholder='e.g., $500 Gift Card'
                 {...register('prizeFinalText')}
                 className={cn(errors.prizeFinalText && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
               />
-              {errors.prizeFinalText && <p className="text-sm text-red-500">{errors.prizeFinalText.message}</p>}
+              {errors.prizeFinalText && <p className='text-sm text-red-500'>{errors.prizeFinalText.message}</p>}
             </div>
           </div>
         </div>
       )}
 
       {/* Access Control */}
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <div>
-          <Label className="text-zinc-200">Access Control</Label>
-          <p className="text-xs text-zinc-500">Restrict who can view your contest.</p>
+          <Label className='text-zinc-200'>Access Control</Label>
+          <p className='text-xs text-zinc-500'>Restrict who can view your contest.</p>
         </div>
 
         {/* Require PIN Toggle */}
-        <div className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-          <div className="space-y-1">
-            <Label htmlFor="requirePin" className="text-zinc-200 cursor-pointer">
+        <div className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+          <div className='space-y-1'>
+            <Label htmlFor='requirePin' className='cursor-pointer text-zinc-200'>
               Require PIN to access
             </Label>
-            <p className="text-xs text-zinc-500">When enabled, participants must enter a PIN to view your contest</p>
+            <p className='text-xs text-zinc-500'>When enabled, participants must enter a PIN to view your contest</p>
           </div>
-          <Switch id="requirePin" checked={requirePin ?? false} onCheckedChange={handleRequirePinChange} />
+          <Switch id='requirePin' checked={requirePin ?? false} onCheckedChange={handleRequirePinChange} />
         </div>
 
         {/* PIN Input (shown when toggle is ON) */}
         {requirePin && (
-          <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
-            <Label htmlFor="accessPin" className="text-zinc-200">
+          <div className='space-y-2 animate-in duration-200 fade-in slide-in-from-top-2'>
+            <Label htmlFor='accessPin' className='text-zinc-200'>
               Access PIN
             </Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
+            <div className='flex gap-2'>
+              <div className='relative flex-1'>
                 <Input
-                  id="accessPin"
+                  id='accessPin'
                   type={showPin ? 'text' : 'password'}
                   maxLength={6}
-                  placeholder="XXXXXX"
+                  placeholder='XXXXXX'
                   {...register('accessPin')}
                   className={cn(
                     'pr-10 font-mono tracking-widest uppercase',
@@ -414,26 +430,26 @@ export function SettingsStep() {
                   )}
                 />
                 <button
-                  type="button"
+                  type='button'
                   onClick={() => setShowPin(!showPin)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className='absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-200'
                 >
-                  {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPin ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
                 </button>
               </div>
               <Button
-                type="button"
-                variant="outline"
-                size="icon"
+                type='button'
+                variant='outline'
+                size='icon'
                 onClick={handleGeneratePin}
-                title="Generate new PIN"
-                className="shrink-0"
+                title='Generate new PIN'
+                className='shrink-0'
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className='h-4 w-4' />
               </Button>
             </div>
-            {errors.accessPin && <p className="text-sm text-red-500">{errors.accessPin.message}</p>}
-            <p className="text-xs text-zinc-500">6 characters max, letters and numbers only.</p>
+            {errors.accessPin && <p className='text-sm text-red-500'>{errors.accessPin.message}</p>}
+            <p className='text-xs text-zinc-500'>6 characters max, letters and numbers only.</p>
           </div>
         )}
       </div>

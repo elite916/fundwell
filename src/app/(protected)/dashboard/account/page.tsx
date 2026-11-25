@@ -23,19 +23,19 @@ export default async function AccountPage() {
   const signInMethod = authProvider === 'google' ? 'Google' : 'Email (Magic Link)';
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Page Title */}
       <div>
-        <h1 className="text-2xl font-bold text-white lg:text-3xl">Account Settings</h1>
-        <p className="mt-1 text-sm text-zinc-400">Manage your account information and preferences.</p>
+        <h1 className='text-2xl font-bold text-white lg:text-3xl'>Account Settings</h1>
+        <p className='mt-1 text-sm text-zinc-400'>Manage your account information and preferences.</p>
       </div>
 
       {/* Settings Sections */}
-      <div className="space-y-6">
+      <div className='space-y-6'>
         {/* Avatar Section */}
-        <Card className="border-zinc-800 bg-zinc-900">
+        <Card className='border-zinc-800 bg-zinc-900'>
           <CardHeader>
-            <CardTitle className="text-white">Avatar</CardTitle>
+            <CardTitle className='text-white'>Avatar</CardTitle>
             <CardDescription>Update your profile picture.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -44,9 +44,9 @@ export default async function AccountPage() {
         </Card>
 
         {/* Profile Section */}
-        <Card className="border-zinc-800 bg-zinc-900">
+        <Card className='border-zinc-800 bg-zinc-900'>
           <CardHeader>
-            <CardTitle className="text-white">Profile</CardTitle>
+            <CardTitle className='text-white'>Profile</CardTitle>
             <CardDescription>Update your full name.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -55,43 +55,43 @@ export default async function AccountPage() {
         </Card>
 
         {/* Email Section */}
-        <Card className="border-zinc-800 bg-zinc-900">
+        <Card className='border-zinc-800 bg-zinc-900'>
           <CardHeader>
-            <CardTitle className="text-white">Email</CardTitle>
+            <CardTitle className='text-white'>Email</CardTitle>
             <CardDescription>Your email address cannot be changed.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-zinc-200">
+            <div className='space-y-2'>
+              <Label htmlFor='email' className='text-zinc-200'>
                 Email Address
               </Label>
               <Input
-                id="email"
-                type="email"
+                id='email'
+                type='email'
                 value={userEmail}
                 readOnly
-                className="border-zinc-700 bg-zinc-800 text-zinc-400"
+                className='border-zinc-700 bg-zinc-800 text-zinc-400'
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Sign-in Method Section */}
-        <Card className="border-zinc-800 bg-zinc-900">
+        <Card className='border-zinc-800 bg-zinc-900'>
           <CardHeader>
-            <CardTitle className="text-white">Sign-in Method</CardTitle>
+            <CardTitle className='text-white'>Sign-in Method</CardTitle>
             <CardDescription>Your current authentication method.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="signInMethod" className="text-zinc-200">
+            <div className='space-y-2'>
+              <Label htmlFor='signInMethod' className='text-zinc-200'>
                 Authentication Provider
               </Label>
               <Input
-                id="signInMethod"
+                id='signInMethod'
                 value={signInMethod}
                 readOnly
-                className="border-zinc-700 bg-zinc-800 text-zinc-400"
+                className='border-zinc-700 bg-zinc-800 text-zinc-400'
               />
             </div>
           </CardContent>
@@ -100,4 +100,3 @@ export default async function AccountPage() {
     </div>
   );
 }
-

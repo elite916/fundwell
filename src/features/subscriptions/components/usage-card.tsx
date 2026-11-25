@@ -22,34 +22,24 @@ export function UsageCard({ activeContests, limit }: UsageCardProps) {
         isNearLimit && !isAtLimit && 'border-orange-500/30'
       )}
     >
-      <CardHeader className="pb-2">
-        <CardDescription className="text-zinc-500">Active Contests</CardDescription>
+      <CardHeader className='pb-2'>
+        <CardDescription className='text-zinc-500'>Active Contests</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <p className={cn('text-3xl font-bold', isAtLimit ? 'text-amber-400' : 'text-white')}>
-          {displayCount}
-        </p>
+      <CardContent className='space-y-3'>
+        <p className={cn('text-3xl font-bold', isAtLimit ? 'text-amber-400' : 'text-white')}>{displayCount}</p>
         {!isUnlimited && (
-          <div className="space-y-1">
-            <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
+          <div className='space-y-1'>
+            <div className='h-2 overflow-hidden rounded-full bg-zinc-800'>
               <div
-                className={cn(
-                  'h-full transition-all duration-300',
-                  isAtLimit ? 'bg-amber-500' : 'bg-orange-500'
-                )}
+                className={cn('h-full transition-all duration-300', isAtLimit ? 'bg-amber-500' : 'bg-orange-500')}
                 style={{ width: `${percentage}%` }}
               />
             </div>
-            {isAtLimit && (
-              <p className="text-xs text-amber-400">Limit reached</p>
-            )}
-            {isNearLimit && !isAtLimit && (
-              <p className="text-xs text-orange-400">Approaching limit</p>
-            )}
+            {isAtLimit && <p className='text-xs text-amber-400'>Limit reached</p>}
+            {isNearLimit && !isAtLimit && <p className='text-xs text-orange-400'>Approaching limit</p>}
           </div>
         )}
       </CardContent>
     </Card>
   );
 }
-

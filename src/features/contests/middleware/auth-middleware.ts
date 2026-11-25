@@ -51,11 +51,7 @@ export async function requireContestOwnership(
   userId: string,
   contestId: string
 ): Promise<Contest> {
-  const { data: contest, error } = await supabase
-    .from('contests')
-    .select('*')
-    .eq('id', contestId)
-    .single();
+  const { data: contest, error } = await supabase.from('contests').select('*').eq('id', contestId).single();
 
   if (error || !contest) {
     throw new NotFoundError('Contest not found');
@@ -70,11 +66,7 @@ export async function requireContestOwnership(
 
 export function withContestOwnership<T>(
   contestId: string,
-  action: (
-    user: User,
-    supabase: SupabaseClient<Database>,
-    contest: Contest
-  ) => Promise<T>
+  action: (user: User, supabase: SupabaseClient<Database>, contest: Contest) => Promise<T>
 ): () => Promise<ActionResponse<T>> {
   return async () => {
     try {

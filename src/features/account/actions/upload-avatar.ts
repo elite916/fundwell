@@ -68,10 +68,7 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResponse<{
   const publicUrl = urlData.publicUrl;
 
   // Update users table with new avatar URL
-  const { error: updateError } = await supabase
-    .from('users')
-    .update({ avatar_url: publicUrl })
-    .eq('id', user.id);
+  const { error: updateError } = await supabase.from('users').update({ avatar_url: publicUrl }).eq('id', user.id);
 
   if (updateError) {
     logger.error('uploadAvatar', updateError, {
@@ -83,4 +80,3 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResponse<{
 
   return { data: { url: publicUrl }, error: null };
 }
-

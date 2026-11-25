@@ -61,4 +61,3 @@ export const QuarterDisplayNames: Record<GameQuarterType, string> = {
   game6: 'Game 6',
   game7: 'Game 7',
 };
-

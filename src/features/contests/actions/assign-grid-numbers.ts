@@ -1,4 +1,4 @@
-'use server'
+'use server';
 
 import { after } from 'next/server';
 
@@ -95,15 +95,16 @@ export async function assignGridNumbers({
       const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
       if (supabaseUrl && serviceRoleKey) {
-        after(() =>
-          fetch(`${supabaseUrl}/functions/v1/send-numbers-revealed-emails`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${serviceRoleKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ contestId, sendAgain: emailPlayers }),
-          }).catch(() => {}) // Silently fail
+        after(
+          () =>
+            fetch(`${supabaseUrl}/functions/v1/send-numbers-revealed-emails`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${serviceRoleKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ contestId, sendAgain: emailPlayers }),
+            }).catch(() => {}) // Silently fail
         );
       }
     } catch {
