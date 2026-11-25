@@ -2,30 +2,27 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CreditCard, LayoutGrid, LucideIcon, Trophy, User } from 'lucide-react';
-
-import { cn } from '@/utils/cn';
 
 export interface NavItem {
   href: string;
   label: string;
-  icon: LucideIcon;
   adminOnly?: boolean;
 }
 
 export const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'My Contests', icon: LayoutGrid },
-  { href: '/dashboard/super-bowl', label: 'Super Bowl', icon: Trophy, adminOnly: true },
-  { href: '/dashboard/account', label: 'Account', icon: User },
-  { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
+  { href: '/dashboard', label: 'My Contests' },
+  { href: '/dashboard/super-bowl', label: 'Super Bowl', adminOnly: true },
+  { href: '/dashboard/account', label: 'Account' },
+  { href: '/dashboard/billing', label: 'Billing' },
 ];
 
 interface NavItemsProps {
   onClick?: () => void;
   isAdmin: boolean;
+  className?: string;
 }
 
-export function NavItems({ onClick, isAdmin }: NavItemsProps) {
+export function NavItems({ onClick, isAdmin, className }: NavItemsProps) {
   const pathname = usePathname();
 
   return (
@@ -39,12 +36,9 @@ export function NavItems({ onClick, isAdmin }: NavItemsProps) {
               key={item.href}
               href={item.href}
               onClick={onClick}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                isActive ? 'bg-orange-500/10 text-orange-500' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
-              )}
+              aria-current={isActive ? 'page' : undefined}
+              className={className}
             >
-              <item.icon className='h-5 w-5' />
               {item.label}
             </Link>
           );
