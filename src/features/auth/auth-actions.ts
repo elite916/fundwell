@@ -34,7 +34,8 @@ export async function signInWithOAuth(provider: 'google', redirectTo?: string | 
 
 export async function signInWithEmail(
   email: string,
-  redirectTo?: string | null
+  redirectTo?: string | null,
+  captchaToken?: string
 ): Promise<ActionResponse<{ email: string }>> {
   const supabase = await createSupabaseServerClient();
 
@@ -46,6 +47,7 @@ export async function signInWithEmail(
     email,
     options: {
       emailRedirectTo: callbackUrl,
+      captchaToken,
     },
   });
 
@@ -71,7 +73,11 @@ export async function signOut(): Promise<ActionResponse> {
   redirect('/');
 }
 
-export async function resendMagicLink(email: string, redirectTo?: string | null): Promise<ActionResponse> {
+export async function resendMagicLink(
+  email: string,
+  redirectTo?: string | null,
+  captchaToken?: string
+): Promise<ActionResponse> {
   const supabase = await createSupabaseServerClient();
 
   const callbackUrl = redirectTo
@@ -82,6 +88,7 @@ export async function resendMagicLink(email: string, redirectTo?: string | null)
     email,
     options: {
       emailRedirectTo: callbackUrl,
+      captchaToken,
     },
   });
 
