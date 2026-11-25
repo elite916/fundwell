@@ -64,7 +64,6 @@ export type Database = {
           hero_image_url: string | null;
           id: string;
           is_public: boolean;
-          is_super_bowl: boolean;
           max_squares_per_person: number | null;
           name: string;
           numbers_auto_generated: boolean | null;
@@ -112,7 +111,6 @@ export type Database = {
           hero_image_url?: string | null;
           id?: string;
           is_public?: boolean;
-          is_super_bowl?: boolean;
           max_squares_per_person?: number | null;
           name: string;
           numbers_auto_generated?: boolean | null;
@@ -159,7 +157,6 @@ export type Database = {
           hero_image_url?: string | null;
           id?: string;
           is_public?: boolean;
-          is_super_bowl?: boolean;
           max_squares_per_person?: number | null;
           name?: string;
           numbers_auto_generated?: boolean | null;
@@ -637,46 +634,6 @@ export type Database = {
           },
         ];
       };
-      super_bowl_config: {
-        Row: {
-          check_start_hour: number;
-          created_at: string;
-          enabled: boolean;
-          game_date: string;
-          game_finished: boolean;
-          id: string;
-          last_checked_at: string | null;
-          last_period: number | null;
-          last_status: string | null;
-          updated_at: string;
-        };
-        ComputedFields: never;
-        Insert: {
-          check_start_hour?: number;
-          created_at?: string;
-          enabled?: boolean;
-          game_date?: string;
-          game_finished?: boolean;
-          id?: string;
-          last_checked_at?: string | null;
-          last_period?: number | null;
-          last_status?: string | null;
-          updated_at?: string;
-        };
-        Update: {
-          check_start_hour?: number;
-          created_at?: string;
-          enabled?: boolean;
-          game_date?: string;
-          game_finished?: boolean;
-          id?: string;
-          last_checked_at?: string | null;
-          last_period?: number | null;
-          last_status?: string | null;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
       super_bowl_games: {
         Row: {
           afc_team: string;
@@ -725,116 +682,6 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [];
-      };
-      super_bowl_processing_log: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: Json | null;
-          error_message: string | null;
-          id: string;
-          status: string;
-        };
-        ComputedFields: never;
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: Json | null;
-          error_message?: string | null;
-          id?: string;
-          status?: string;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: Json | null;
-          error_message?: string | null;
-          id?: string;
-          status?: string;
-        };
-        Relationships: [];
-      };
-      super_bowl_quarter_results: {
-        Row: {
-          away_last_digit: number;
-          away_score: number;
-          contest_id: string;
-          home_last_digit: number;
-          home_score: number;
-          id: string;
-          owner_email_sent: boolean;
-          owner_email_sent_at: string | null;
-          payout_percent: number | null;
-          prize_amount: number | null;
-          processed_at: string;
-          quarter: string;
-          winner_email: string | null;
-          winner_email_sent: boolean;
-          winner_email_sent_at: string | null;
-          winner_first_name: string | null;
-          winner_last_name: string | null;
-          winner_venmo: string | null;
-          winning_square_id: string | null;
-        };
-        ComputedFields: never;
-        Insert: {
-          away_last_digit: number;
-          away_score: number;
-          contest_id: string;
-          home_last_digit: number;
-          home_score: number;
-          id?: string;
-          owner_email_sent?: boolean;
-          owner_email_sent_at?: string | null;
-          payout_percent?: number | null;
-          prize_amount?: number | null;
-          processed_at?: string;
-          quarter: string;
-          winner_email?: string | null;
-          winner_email_sent?: boolean;
-          winner_email_sent_at?: string | null;
-          winner_first_name?: string | null;
-          winner_last_name?: string | null;
-          winner_venmo?: string | null;
-          winning_square_id?: string | null;
-        };
-        Update: {
-          away_last_digit?: number;
-          away_score?: number;
-          contest_id?: string;
-          home_last_digit?: number;
-          home_score?: number;
-          id?: string;
-          owner_email_sent?: boolean;
-          owner_email_sent_at?: string | null;
-          payout_percent?: number | null;
-          prize_amount?: number | null;
-          processed_at?: string;
-          quarter?: string;
-          winner_email?: string | null;
-          winner_email_sent?: boolean;
-          winner_email_sent_at?: string | null;
-          winner_first_name?: string | null;
-          winner_last_name?: string | null;
-          winner_venmo?: string | null;
-          winning_square_id?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'super_bowl_quarter_results_contest_id_fkey';
-            columns: ['contest_id'];
-            isOneToOne: false;
-            referencedRelation: 'contests';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'super_bowl_quarter_results_winning_square_id_fkey';
-            columns: ['winning_square_id'];
-            isOneToOne: false;
-            referencedRelation: 'squares';
-            referencedColumns: ['id'];
-          },
-        ];
       };
       users: {
         Row: {
