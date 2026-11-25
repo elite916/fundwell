@@ -168,7 +168,7 @@ export function EnterScoresModal({
     const { changed: scoresToSave, hasIncomplete } = changedScores(scoreEntries, existingScores);
 
     if (scoresToSave.length === 0) {
-      if (hasIncomplete) {
+      if (hasIncomplete || existingScores.length === 0) {
         sayProblem('Please enter at least one complete score.');
       } else {
         onClose();
