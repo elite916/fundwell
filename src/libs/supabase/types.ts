@@ -681,6 +681,7 @@ export type Database = {
         Row: {
           afc_team: string;
           final_afc: number | null;
+          final_at: string | null;
           final_nfc: number | null;
           nfc_team: string;
           q1_afc: number | null;
@@ -696,6 +697,7 @@ export type Database = {
         Insert: {
           afc_team: string;
           final_afc?: number | null;
+          final_at?: string | null;
           final_nfc?: number | null;
           nfc_team: string;
           q1_afc?: number | null;
@@ -710,6 +712,7 @@ export type Database = {
         Update: {
           afc_team?: string;
           final_afc?: number | null;
+          final_at?: string | null;
           final_nfc?: number | null;
           nfc_team?: string;
           q1_afc?: number | null;
@@ -879,6 +882,7 @@ export type Database = {
           row_index: number;
         }[];
       };
+      close_super_bowl_contests: { Args: Record<PropertyKey, never>; Returns: undefined };
       owner_has_pro: { Args: { uid: string }; Returns: boolean };
       rate_limit_hit: { Args: { p_key: string; p_max: number; p_window_seconds: number }; Returns: boolean };
       rate_limit_undo_hit: { Args: { p_key: string; p_window_seconds: number }; Returns: undefined };
