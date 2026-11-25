@@ -6,6 +6,7 @@ import { Display, Soft } from '@/components/studio/type';
 import css from './contest.module.css';
 
 interface ContestMessageProps {
+  header?: ReactNode;
   title: string;
   children: ReactNode;
   action: ReactNode;
@@ -14,9 +15,9 @@ interface ContestMessageProps {
 }
 
 /** A contest page that has no contest to show. */
-export function ContestMessage({ title, children, action, note }: ContestMessageProps) {
+export function ContestMessage({ header, title, children, action, note }: ContestMessageProps) {
   return (
-    <StudioPage>
+    <StudioPage header={header}>
       <div className={css.message}>
         <Display as='h1' className={css.messageTitle}>
           {title}
