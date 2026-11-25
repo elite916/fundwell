@@ -1,13 +1,11 @@
 'use client';
 
-import { HelpCircle } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { HeroPositionPicker } from '@/features/contests/components';
+import { ColorField } from '@/components/studio/setup/fields';
 import { CreateContestInput } from '@/features/contests/models/contest';
-import { cn } from '@/utils/cn';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 const PRESET_COLORS = [
   { name: 'Orange', primary: '#F97316', secondary: '#D97706' },
@@ -26,10 +24,7 @@ export function BrandingStep() {
     setValue,
   } = useFormContext<CreateContestInput>();
 
-  const [primaryColor, secondaryColor, heroImageUrl, heroImagePosition] = useWatch({
-    control,
-    name: ['primaryColor', 'secondaryColor', 'heroImageUrl', 'heroImagePosition'],
-  });
+  const [primaryColor, secondaryColor] = useWatch({ control, name: ['primaryColor', 'secondaryColor'] });
 
   function selectPreset(primary: string, secondary: string) {
     setValue('primaryColor', primary, { shouldValidate: true });
@@ -37,134 +32,79 @@ export function BrandingStep() {
   }
 
   return (
-    <div className='space-y-8'>
+    <>
       {/* Color Theme */}
-      <div className='space-y-4'>
-        <div>
-          <Label className='text-zinc-200'>Color Theme</Label>
-          <p className='text-xs text-zinc-500'>Choose colors that match your organization or event.</p>
-        </div>
+      <fieldset className={css.plain}>
+        <legend className={css.label}>Color Theme</legend>
+        <p className={css.hintUp}>Choose colors that match your organization or event.</p>
 
         {/* Preset Colors */}
-        <div className='flex flex-wrap gap-2'>
+        <div className={css.themes}>
           {PRESET_COLORS.map((preset) => (
-            <button
-              key={preset.name}
-              type='button'
-              onClick={() => selectPreset(preset.primary, preset.secondary)}
-              className={cn(
-                'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all',
-                primaryColor === preset.primary
-                  ? 'border-orange-500 bg-zinc-800'
-                  : 'border-zinc-700 bg-zinc-900 hover:border-zinc-600'
-              )}
-            >
-              <div
-                className='h-4 w-4 rounded-full'
-                style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.secondary})` }}
+            <label key={preset.name}>
+              <input
+                type='radio'
+                name='color-theme'
+                className={css.over}
+                checked={primaryColor === preset.primary}
+                onChange={() => selectPreset(preset.primary, preset.secondary)}
+                // Picking the marked theme again puts its second color back
+                onClick={() => selectPreset(preset.primary, preset.secondary)}
               />
-              <span className='text-zinc-300'>{preset.name}</span>
-            </button>
+              <span>
+                <i style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.secondary})` }} />
+                {preset.name}
+              </span>
+            </label>
           ))}
         </div>
+      </fieldset>
 
-        {/* Custom Color Pickers */}
-        <div className='grid gap-4 sm:grid-cols-2'>
-          <div className='space-y-2'>
-            <Label htmlFor='primaryColor' className='text-zinc-200'>
-              Primary Color
-            </Label>
-            <div className='flex gap-2'>
-              <input
-                type='color'
-                value={primaryColor || '#F97316'}
-                onChange={(e) => setValue('primaryColor', e.target.value, { shouldValidate: true })}
-                className='h-10 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900 p-1'
-              />
-              <Input
-                id='primaryColor'
-                placeholder='#F97316'
-                {...register('primaryColor')}
-                className={cn(
-                  'flex-1 font-mono uppercase',
-                  errors.primaryColor && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                )}
-              />
-            </div>
-            {errors.primaryColor && <p className='text-sm text-red-500'>{errors.primaryColor.message}</p>}
-          </div>
+      {/* Custom Color Pickers */}
+      <div className={css.two}>
+        <ColorField
+          id='primaryColor'
+          label='Primary Color'
+          color={primaryColor || '#F97316'}
+          onPick={(color) => setValue('primaryColor', color, { shouldValidate: true })}
+          placeholder='#F97316'
+          error={errors.primaryColor?.message}
+          {...register('primaryColor')}
+        />
+        <ColorField
+          id='secondaryColor'
+          label='Secondary Color'
+          color={secondaryColor || '#D97706'}
+          onPick={(color) => setValue('secondaryColor', color, { shouldValidate: true })}
+          placeholder='#D97706'
+          error={errors.secondaryColor?.message}
+          {...register('secondaryColor')}
+        />
+      </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='secondaryColor' className='text-zinc-200'>
-              Secondary Color
-            </Label>
-            <div className='flex gap-2'>
-              <input
-                type='color'
-                value={secondaryColor || '#D97706'}
-                onChange={(e) => setValue('secondaryColor', e.target.value, { shouldValidate: true })}
-                className='h-10 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900 p-1'
-              />
-              <Input
-                id='secondaryColor'
-                placeholder='#D97706'
-                {...register('secondaryColor')}
-                className={cn(
-                  'flex-1 font-mono uppercase',
-                  errors.secondaryColor && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                )}
-              />
-            </div>
-            {errors.secondaryColor && <p className='text-sm text-red-500'>{errors.secondaryColor.message}</p>}
-          </div>
-        </div>
-
-        {/* Color Preview */}
-        <div
-          className='h-24 rounded-lg'
-          style={{
-            background: `linear-gradient(135deg, ${primaryColor || '#F97316'}, ${secondaryColor || '#D97706'})`,
-          }}
-        >
-          <div className='flex h-full items-center justify-center'>
-            <span className='rounded-lg bg-black/30 px-4 py-2 text-lg font-semibold text-white backdrop-blur-xs'>
-              Preview
-            </span>
-          </div>
-        </div>
+      {/* Color Preview */}
+      <div
+        className={css.swatch}
+        style={{
+          background: `linear-gradient(135deg, ${primaryColor || '#F97316'}, ${secondaryColor || '#D97706'})`,
+        }}
+      >
+        <span>Preview</span>
       </div>
 
       {/* Contest Images Notice */}
-      <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-        <div className='flex items-start gap-3'>
-          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20'>
-            <span className='text-lg'>🖼️</span>
-          </div>
-          <div>
-            <p className='text-sm font-medium text-zinc-200'>Contest Images</p>
-            <p className='mt-1 text-xs text-zinc-400'>
-              You can upload a hero banner image and organization logo after creating your contest. Simply go to your
-              contest settings and use the image upload feature in the branding section.
-            </p>
-          </div>
-        </div>
-      </div>
+      <p className={css.say}>
+        <b>Contest Images</b>
+        You can upload a hero banner image and organization logo after creating your contest. Simply go to your contest
+        settings and use the image upload feature in the branding section.
+      </p>
 
       {/* Info Note */}
-      <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-        <div className='flex items-start gap-3'>
-          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20'>
-            <span className='text-lg'>💡</span>
-          </div>
-          <div>
-            <p className='text-sm font-medium text-zinc-200'>Don&apos;t worry!</p>
-            <p className='mt-1 text-xs text-zinc-400'>
-              You can always update your contest branding later from the contest settings page. Your contest will be
-              created as a draft, so you can finalize everything before going live.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+      <p className={css.say}>
+        <b>Don&apos;t worry!</b>
+        You can always update your contest branding later from the contest settings page. Your contest will be created
+        as a draft, so you can finalize everything before going live.
+      </p>
+    </>
   );
 }

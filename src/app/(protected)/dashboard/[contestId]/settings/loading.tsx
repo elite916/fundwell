@@ -1,9 +1,5 @@
-import { LoadingSpinner } from '@/components/shared';
+import { DashWait } from '@/components/studio/dashboard/dash-page';
 
 export default function SettingsLoading() {
-  return (
-    <div className='flex min-h-[50vh] items-center justify-center'>
-      <LoadingSpinner size='lg' text='Loading settings...' />
-    </div>
-  );
+  return <DashWait text='Loading settings...' />;
 }

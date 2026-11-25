@@ -2,17 +2,20 @@
 
 import { useRef, useState, useTransition } from 'react';
 import Image from 'next/image';
-import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { DashButton, IconButton } from '@/components/studio/dashboard/dash-button';
+import { Select } from '@/components/studio/select';
+import { SetupSection } from '@/components/studio/setup/section';
+import { TextField } from '@/components/studio/text-field';
+import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
 import { updatePaymentOptions } from '@/features/contests/actions/update-payment-options';
 import { deletePaymentQr, uploadPaymentQr } from '@/features/contests/actions/upload-payment-qr';
 import { Database } from '@/libs/supabase/types';
 import { logger } from '@/utils/logger';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 type PaymentOption = Database['public']['Tables']['payment_options']['Row'];
 type PaymentOptionType = Database['public']['Enums']['payment_option_type'];
@@ -362,212 +365,163 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
   const getFieldConfig = (type: PaymentOptionType) => PAYMENT_FIELD_CONFIG[type];
 
   return (
-    <Card className='border-zinc-800 bg-zinc-900'>
-      <CardHeader>
-        <CardTitle className='text-white'>Payment Options</CardTitle>
-        <CardDescription>Add payment methods for participants to pay for their squares.</CardDescription>
-      </CardHeader>
-      <CardContent className='space-y-4'>
-        {options.length === 0 && <p className='text-sm text-zinc-500'>No payment options added yet. Add one below.</p>}
+    <SetupSection
+      id='payment-options'
+      title='Payment Options'
+      description='Add payment methods for participants to pay for their squares.'
+    >
+      {options.length === 0 && (
+        <p className={`${css.soft} ${css.gapBottom}`}>No payment options added yet. Add one below.</p>
+      )}
 
-        {options.map((option, index) => (
-          <div key={option.id} className='space-y-4 rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-            <div className='flex items-center justify-between'>
-              <Label className='text-base'>Payment Option {index + 1}</Label>
-              <div className='flex gap-1'>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => handleMoveUp(index)}
-                  disabled={index === 0}
-                  className='h-8 w-8 p-0 text-zinc-400 hover:text-white'
-                >
-                  <ArrowUp className='h-4 w-4' />
-                </Button>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => handleMoveDown(index)}
-                  disabled={index === options.length - 1}
-                  className='h-8 w-8 p-0 text-zinc-400 hover:text-white'
-                >
-                  <ArrowDown className='h-4 w-4' />
-                </Button>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => handleRemove(option.id)}
-                  className='h-8 w-8 p-0 text-red-400 hover:bg-red-950 hover:text-red-300'
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </div>
+      {options.map((option, index) => (
+        <div key={option.id} className={css.option}>
+          <header>
+            <h3>Payment Option {index + 1}</h3>
+            <div className={css.icons}>
+              <IconButton
+                label={`Move Payment Option ${index + 1} up`}
+                onClick={() => handleMoveUp(index)}
+                disabled={index === 0}
+              >
+                <ArrowUp aria-hidden='true' />
+              </IconButton>
+              <IconButton
+                label={`Move Payment Option ${index + 1} down`}
+                onClick={() => handleMoveDown(index)}
+                disabled={index === options.length - 1}
+              >
+                <ArrowDown aria-hidden='true' />
+              </IconButton>
+              <IconButton label={`Delete Payment Option ${index + 1}`} onClick={() => handleRemove(option.id)}>
+                <Trash2 aria-hidden='true' />
+              </IconButton>
             </div>
+          </header>
 
-            <div className='grid gap-4 sm:grid-cols-2'>
-              {/* Type */}
-              <div className='space-y-2'>
-                <Label htmlFor={`type-${option.id}`}>Type</Label>
-                <select
-                  id={`type-${option.id}`}
-                  value={option.type}
-                  onChange={(e) => handleTypeChange(option.id, e.target.value as PaymentOptionType)}
-                  className='flex h-10 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-hidden'
+          <div className={css.two}>
+            <Select
+              look='form'
+              id={`type-${option.id}`}
+              label='Type'
+              value={option.type}
+              onChange={(e) => handleTypeChange(option.id, e.target.value as PaymentOptionType)}
+            >
+              {PAYMENT_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </Select>
+
+            {/* Dynamic Handle Field */}
+            <TextField
+              id={`handle-${option.id}`}
+              label={`${getFieldConfig(option.type).label} *`}
+              value={option.handle_or_link}
+              onChange={(e) => handleChange(option.id, 'handle_or_link', e.target.value)}
+              placeholder={getFieldConfig(option.type).placeholder}
+              hint={getFieldConfig(option.type).helpText}
+              autoComplete='off'
+            />
+
+            {/* Last 4 Digits (Venmo only) */}
+            {getFieldConfig(option.type).hasLast4 && (
+              <TextField
+                id={`last4-${option.id}`}
+                label='Last 4 Digits of Phone'
+                value={option.account_last_4_digits}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                  handleChange(option.id, 'account_last_4_digits', val);
+                }}
+                placeholder='1234'
+                maxLength={4}
+                inputMode='numeric'
+                autoComplete='off'
+              />
+            )}
+
+            <TextField
+              id={`display-${option.id}`}
+              label='Display Name'
+              value={option.display_name}
+              onChange={(e) => handleChange(option.id, 'display_name', e.target.value)}
+              placeholder='Optional label shown to participants'
+              autoComplete='off'
+            />
+
+            <TextField
+              id={`instructions-${option.id}`}
+              label='Instructions'
+              value={option.instructions}
+              onChange={(e) => handleChange(option.id, 'instructions', e.target.value)}
+              placeholder='Include your name in the note'
+              autoComplete='off'
+            />
+          </div>
+
+          {/* QR Code Upload */}
+          <p className={css.label}>QR Code (Optional)</p>
+          <div className={css.qr}>
+            {option.qr_code_url ? (
+              <Image src={option.qr_code_url} alt='Payment QR Code' width={80} height={80} />
+            ) : (
+              <span aria-hidden='true' className={css.qrEmpty} />
+            )}
+            <div>
+              <input
+                ref={(el) => {
+                  fileInputRefs.current[option.id] = el;
+                }}
+                type='file'
+                accept='image/png,image/jpeg,image/webp'
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleQrUpload(option.id, file);
+                  e.target.value = '';
+                }}
+                hidden
+                disabled={option.id.startsWith('new-')}
+              />
+              <div className={css.row}>
+                <DashButton
+                  look='quiet'
+                  onClick={() => fileInputRefs.current[option.id]?.click()}
+                  disabled={uploadingQrId === option.id || option.id.startsWith('new-')}
+                  aria-busy={uploadingQrId === option.id}
                 >
-                  {PAYMENT_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Dynamic Handle Field */}
-              <div className='space-y-2'>
-                <Label htmlFor={`handle-${option.id}`}>{getFieldConfig(option.type).label} *</Label>
-                <Input
-                  id={`handle-${option.id}`}
-                  value={option.handle_or_link}
-                  onChange={(e) => handleChange(option.id, 'handle_or_link', e.target.value)}
-                  className='border-zinc-700 bg-zinc-800'
-                  placeholder={getFieldConfig(option.type).placeholder}
-                />
-                <p className='text-xs text-zinc-500'>{getFieldConfig(option.type).helpText}</p>
-              </div>
-
-              {/* Last 4 Digits (Venmo only) */}
-              {getFieldConfig(option.type).hasLast4 && (
-                <div className='space-y-2'>
-                  <Label htmlFor={`last4-${option.id}`}>Last 4 Digits of Phone</Label>
-                  <Input
-                    id={`last4-${option.id}`}
-                    value={option.account_last_4_digits}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '').slice(0, 4);
-                      handleChange(option.id, 'account_last_4_digits', val);
-                    }}
-                    className='border-zinc-700 bg-zinc-800'
-                    placeholder='1234'
-                    maxLength={4}
-                  />
-                </div>
-              )}
-
-              {/* Display Name */}
-              <div className='space-y-2'>
-                <Label htmlFor={`display-${option.id}`}>Display Name</Label>
-                <Input
-                  id={`display-${option.id}`}
-                  value={option.display_name}
-                  onChange={(e) => handleChange(option.id, 'display_name', e.target.value)}
-                  className='border-zinc-700 bg-zinc-800'
-                  placeholder='Optional label shown to participants'
-                />
-              </div>
-
-              {/* Instructions */}
-              <div className='space-y-2'>
-                <Label htmlFor={`instructions-${option.id}`}>Instructions</Label>
-                <Input
-                  id={`instructions-${option.id}`}
-                  value={option.instructions}
-                  onChange={(e) => handleChange(option.id, 'instructions', e.target.value)}
-                  className='border-zinc-700 bg-zinc-800'
-                  placeholder='Include your name in the note'
-                />
-              </div>
-            </div>
-
-            {/* QR Code Upload */}
-            <div className='space-y-2'>
-              <Label>QR Code (Optional)</Label>
-              <div className='flex items-center gap-4'>
-                {option.qr_code_url ? (
-                  <div className='relative'>
-                    <Image
-                      src={option.qr_code_url}
-                      alt='Payment QR Code'
-                      width={80}
-                      height={80}
-                      className='rounded-md border border-zinc-700'
-                    />
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='sm'
-                      onClick={() => handleQrDelete(option.id, option.qr_code_url)}
-                      className='absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-600 p-0 text-white hover:bg-red-700'
-                    >
-                      <X className='h-3 w-3' />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className='flex h-20 w-20 items-center justify-center rounded-md border border-dashed border-zinc-700 bg-zinc-800/50'>
-                    <ImagePlus className='h-6 w-6 text-zinc-500' />
-                  </div>
+                  {uploadingQrId === option.id ? 'Uploading...' : option.qr_code_url ? 'Replace' : 'Upload QR Code'}
+                  <span className={srOnly}> for Payment Option {index + 1}</span>
+                </DashButton>
+                {option.qr_code_url && (
+                  <DashButton look='quiet' onClick={() => handleQrDelete(option.id, option.qr_code_url)}>
+                    Remove
+                    <span className={srOnly}> the QR code for Payment Option {index + 1}</span>
+                  </DashButton>
                 )}
-                <div className='flex flex-col gap-2'>
-                  <input
-                    ref={(el) => {
-                      fileInputRefs.current[option.id] = el;
-                    }}
-                    type='file'
-                    accept='image/png,image/jpeg,image/webp'
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleQrUpload(option.id, file);
-                      e.target.value = '';
-                    }}
-                    className='hidden'
-                    disabled={option.id.startsWith('new-')}
-                  />
-                  <Button
-                    type='button'
-                    variant='outline'
-                    size='sm'
-                    onClick={() => fileInputRefs.current[option.id]?.click()}
-                    disabled={uploadingQrId === option.id || option.id.startsWith('new-')}
-                    className='border-zinc-700'
-                  >
-                    {uploadingQrId === option.id ? (
-                      <>
-                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                        Uploading...
-                      </>
-                    ) : option.qr_code_url ? (
-                      'Replace'
-                    ) : (
-                      'Upload QR Code'
-                    )}
-                  </Button>
-                  {option.id.startsWith('new-') ? (
-                    <p className='text-xs text-amber-500'>Save the payment option first</p>
-                  ) : (
-                    <p className='text-xs text-zinc-500'>PNG, JPG, or WebP. Max 2MB.</p>
-                  )}
-                </div>
               </div>
+              {option.id.startsWith('new-') ? (
+                <p className={css.hintDown}>Save the payment option first</p>
+              ) : (
+                <p className={css.hintDown}>PNG, JPG, or WebP. Max 2MB.</p>
+              )}
             </div>
           </div>
-        ))}
-
-        {/* Add Button */}
-        <Button type='button' variant='outline' onClick={handleAdd} className='w-full border-dashed border-zinc-700'>
-          <Plus className='mr-2 h-4 w-4' />
-          Add Payment Option
-        </Button>
-
-        {/* Save Button */}
-        <div className='flex justify-end pt-4'>
-          <Button onClick={handleSave} disabled={isPending || !hasChanges}>
-            {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            Save Changes
-          </Button>
         </div>
-      </CardContent>
-    </Card>
+      ))}
+
+      {/* Add Button */}
+      <DashButton look='quiet' onClick={handleAdd}>
+        Add Payment Option
+      </DashButton>
+
+      {/* Save Button */}
+      <div className={css.save}>
+        <DashButton onClick={handleSave} disabled={isPending || !hasChanges} aria-busy={isPending}>
+          Save Changes
+        </DashButton>
+      </div>
+    </SetupSection>
   );
 }

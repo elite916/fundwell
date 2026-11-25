@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 
+import { BackLink, DashPage, PageHead } from '@/components/studio/dashboard/dash-page';
 import { getContestById, getContestPinForOwner, getPaymentOptionsForContest } from '@/features/contests/queries';
 import { getPlayerSalesCounts } from '@/features/contests/queries/get-player-sales-counts';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
@@ -15,6 +14,8 @@ import { PaymentOptionsSection } from './payment-options-section';
 import { PlayerTrackingSection } from './player-tracking-section';
 import { PricingPayoutsSection } from './pricing-payouts-section';
 import { SuperBowlSection } from './super-bowl-section';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 interface SettingsPageProps {
   params: Promise<{ contestId: string }>;
@@ -55,35 +56,46 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   // Access PIN (owner-only table)
   const accessPin = await getContestPinForOwner(contestId);
 
+  // The sections below, in order. SuperBowlSection only shows for football.
+  const sections = [
+    ['basic-information', 'Basic Information'],
+    ['contest-status', 'Contest Status'],
+    ['pricing-payouts', 'Pricing & Payouts'],
+    ['payment-options', 'Payment Options'],
+    ['player-tracking', 'Player Tracking'],
+    ...(contest.sport_type === 'football' ? [['super-bowl-automation', 'Super Bowl Automation']] : []),
+    ['access-control', 'Access Control'],
+    ['branding', 'Branding'],
+    ['danger-zone', 'Danger Zone'],
+  ];
+
   return (
-    <div className='space-y-6'>
-      {/* Back link */}
-      <Link
-        href={`/dashboard/${contestId}`}
-        className='inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white'
-      >
-        <ArrowLeft className='h-4 w-4' />
-        Back to Contest
-      </Link>
+    <DashPage className={css.scale}>
+      <BackLink href={`/dashboard/${contestId}`}>Back to Contest</BackLink>
+      <PageHead title='Contest Settings' sub={[contest.name]} />
 
-      {/* Page Title */}
-      <div>
-        <h1 className='text-2xl font-bold text-white lg:text-3xl'>Contest Settings</h1>
-        <p className='mt-1 text-sm text-zinc-400'>{contest.name}</p>
-      </div>
+      <div className={css.settings}>
+        <nav aria-label='Contest Settings sections' className={css.jump}>
+          {sections.map(([id, label]) => (
+            <a key={id} href={`#${id}`}>
+              {label}
+            </a>
+          ))}
+        </nav>
 
-      {/* Settings Sections */}
-      <div className='space-y-6'>
-        <BasicInfoSection contest={contest} />
-        <ContestStatusSection contest={contest} />
-        <PricingPayoutsSection contest={contest} />
-        <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />
-        <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
-        <SuperBowlSection contest={contest} />
-        <AccessControlSection contest={contest} accessPin={accessPin} />
-        <BrandingSection contest={contest} />
-        <DangerZoneSection contest={contest} />
+        {/* Settings Sections */}
+        <div>
+          <BasicInfoSection contest={contest} />
+          <ContestStatusSection contest={contest} />
+          <PricingPayoutsSection contest={contest} />
+          <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />
+          <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
+          <SuperBowlSection contest={contest} />
+          <AccessControlSection contest={contest} accessPin={accessPin} />
+          <BrandingSection contest={contest} />
+          <DangerZoneSection contest={contest} />
+        </div>
       </div>
-    </div>
+    </DashPage>
   );
 }

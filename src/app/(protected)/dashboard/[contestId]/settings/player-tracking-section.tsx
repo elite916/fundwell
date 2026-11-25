@@ -1,20 +1,21 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Copy, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { DashButton, DashInput, IconButton } from '@/components/studio/dashboard/dash-button';
+import { SwitchRow } from '@/components/studio/setup/fields';
+import { SetupSection } from '@/components/studio/setup/section';
+import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
 import { Player } from '@/features/contests/types/player';
 import { generatePlayerSlug } from '@/features/contests/utils/player-slug';
 import { Database } from '@/libs/supabase/types';
 import { getURL } from '@/utils/get-url';
+
+import css from '@/components/studio/setup/setup.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
 
@@ -146,101 +147,82 @@ export function PlayerTrackingSection({ contest, squaresPerPlayer = {} }: Player
   };
 
   return (
-    <Card className='border-zinc-800 bg-zinc-900'>
-      <CardHeader>
-        <CardTitle className='text-white'>Player Tracking</CardTitle>
-        <CardDescription>Track which team members sell squares</CardDescription>
-      </CardHeader>
-      <CardContent className='space-y-6'>
-        {/* Enable Toggle */}
-        <div className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
-          <div className='space-y-0.5'>
-            <Label htmlFor='enable_tracking' className='text-base'>
-              Enable player tracking
-            </Label>
-            <p className='text-sm text-zinc-400'>Give each team member a unique link to track their sales</p>
-          </div>
-          <Switch id='enable_tracking' checked={isEnabled} onCheckedChange={handleToggle} disabled={isPending} />
-        </div>
+    <SetupSection id='player-tracking' title='Player Tracking' description='Track which team members sell squares'>
+      {/* Enable Toggle */}
+      <SwitchRow
+        id='enable_tracking'
+        label='Enable player tracking'
+        hint='Give each team member a unique link to track their sales'
+        checked={isEnabled}
+        onCheckedChange={handleToggle}
+        disabled={isPending}
+      />
 
-        {/* Player Management */}
-        {isEnabled && (
-          <>
-            {/* Add Player Form */}
-            <form onSubmit={handleSubmit(handleAddPlayer)} className='space-y-3'>
-              <Label>Add Team Member</Label>
-              <div className='flex gap-2'>
-                <Input
-                  placeholder='Name'
-                  {...register('name', { required: true })}
-                  className='flex-1 border-zinc-700 bg-zinc-800'
-                />
-                <Input
-                  placeholder='# (optional)'
-                  type='number'
-                  {...register('number')}
-                  className='w-24 border-zinc-700 bg-zinc-800'
-                />
-                <Button type='submit' disabled={isPending}>
-                  {isPending ? <Loader2 className='h-4 w-4 animate-spin' /> : <Plus className='h-4 w-4' />}
-                  <span className='ml-1'>Add</span>
-                </Button>
-              </div>
-            </form>
+      {/* Player Management */}
+      {isEnabled && (
+        <>
+          {/* Add Player Form */}
+          <form onSubmit={handleSubmit(handleAddPlayer)} aria-labelledby='add-team-member' className={css.gapTopSmall}>
+            <p id='add-team-member' className={css.label}>
+              Add Team Member
+            </p>
+            <div className={css.addMember}>
+              <DashInput
+                aria-label='Name'
+                placeholder='Name'
+                autoComplete='off'
+                aria-invalid={errors.name ? true : undefined}
+                {...register('name', { required: true })}
+              />
+              <DashInput
+                aria-label='Number, optional'
+                placeholder='# (optional)'
+                type='number'
+                {...register('number')}
+              />
+              <DashButton type='submit' look='quiet' disabled={isPending} aria-busy={isPending}>
+                Add
+              </DashButton>
+            </div>
+          </form>
 
-            {/* Player List */}
-            {localPlayers.length > 0 && (
-              <div className='space-y-2'>
-                <Label>Team Members</Label>
-                <div className='space-y-2'>
-                  {localPlayers.map((player) => (
-                    <div
-                      key={player.slug}
-                      className='flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-800/50 p-3'
-                    >
-                      <div className='flex-1'>
-                        <p className='font-medium text-white'>
-                          {player.name}
-                          {player.number !== undefined && <span className='ml-2 text-zinc-400'>#{player.number}</span>}
-                        </p>
-                        <p className='text-xs text-zinc-500'>{squaresPerPlayer[player.name] || 0} squares sold</p>
-                      </div>
-                      <div className='flex items-center gap-2'>
-                        <Button
-                          type='button'
-                          variant='outline'
-                          size='sm'
-                          onClick={() => copyLink(player)}
-                          className='border-zinc-700'
-                        >
-                          <Copy className='mr-1 h-3 w-3' />
-                          Copy Link
-                        </Button>
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='sm'
-                          onClick={() => handleRemovePlayer(player.slug)}
-                          disabled={isPending}
-                          className='text-red-400 hover:bg-red-900/20 hover:text-red-300'
-                        >
-                          <Trash2 className='h-4 w-4' />
-                        </Button>
-                      </div>
+          {/* Player List */}
+          {localPlayers.length > 0 && (
+            <>
+              <p className={`${css.label} ${css.gapTop}`}>Team Members</p>
+              <ul className={css.members}>
+                {localPlayers.map((player) => (
+                  <li key={player.slug}>
+                    <div className={css.grow}>
+                      <p>
+                        <span className={css.strong}>{player.name}</span>
+                        {player.number !== undefined && <span className={css.soft}> #{player.number}</span>}
+                      </p>
+                      <p className={css.small}>{squaresPerPlayer[player.name] || 0} squares sold</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    <DashButton look='quiet' onClick={() => copyLink(player)}>
+                      Copy Link<span className={srOnly}> for {player.name}</span>
+                    </DashButton>
+                    <IconButton
+                      label={`Remove ${player.name}`}
+                      onClick={() => handleRemovePlayer(player.slug)}
+                      disabled={isPending}
+                    >
+                      <Trash2 aria-hidden='true' />
+                    </IconButton>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
 
-            {localPlayers.length === 0 && (
-              <p className='py-4 text-center text-sm text-zinc-500'>
-                No team members added yet. Add players above to generate referral links.
-              </p>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+          {localPlayers.length === 0 && (
+            <p className={`${css.soft} ${css.gapTopSmall}`}>
+              No team members added yet. Add players above to generate referral links.
+            </p>
+          )}
+        </>
+      )}
+    </SetupSection>
   );
 }
