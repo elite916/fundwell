@@ -165,7 +165,7 @@ export function ParticipantsTableClient({
   };
 
   const handleExportCSV = () => {
-    const headers = ['Square Position', 'Name', 'Email', 'Phone', 'Status', 'Claimed Date', 'Paid Date'];
+    const headers = ['Square Position', 'Name', 'Email', 'Venmo', 'Status', 'Claimed Date', 'Paid Date'];
     const rows = filteredParticipants.map((p) => [
       `Row ${p.row_index} Col ${p.col_index}`,
       formatName(p.claimant_first_name, p.claimant_last_name),
@@ -176,7 +176,9 @@ export function ParticipantsTableClient({
       formatDateISO(p.paid_at),
     ]);
 
-    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
+    // Claimants type these values: a leading ' stops spreadsheets running them as formulas
+    const escapeCell = (cell: string) => `"${cell.replace(/^[=+\-@\t\r]/, "'$&").replace(/"/g, '""')}"`;
+    const csvContent = [headers, ...rows].map((row) => row.map(escapeCell).join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -276,7 +278,7 @@ export function ParticipantsTableClient({
               <TableHead>Square</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead className='hidden md:table-cell'>Phone</TableHead>
+              <TableHead className='hidden md:table-cell'>Venmo</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className='hidden sm:table-cell'>Claimed</TableHead>
               <TableHead className='w-[70px]'>Actions</TableHead>
