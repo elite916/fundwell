@@ -9,10 +9,7 @@ import { logger } from '@/utils/logger';
 
 import { getUserFriendlyErrorMessage } from './auth-error-types';
 
-export async function signInWithOAuth(
-  provider: 'google',
-  redirectTo?: string | null
-): Promise<ActionResponse> {
+export async function signInWithOAuth(provider: 'google', redirectTo?: string | null): Promise<ActionResponse> {
   const supabase = await createSupabaseServerClient();
 
   const callbackUrl = redirectTo
@@ -74,10 +71,7 @@ export async function signOut(): Promise<ActionResponse> {
   redirect('/');
 }
 
-export async function resendMagicLink(
-  email: string,
-  redirectTo?: string | null
-): Promise<ActionResponse> {
+export async function resendMagicLink(email: string, redirectTo?: string | null): Promise<ActionResponse> {
   const supabase = await createSupabaseServerClient();
 
   const callbackUrl = redirectTo

@@ -23,7 +23,7 @@ function HeroSection() {
       {/* Background gradient */}
       <div className='absolute inset-0 -z-10'>
         <div className='absolute inset-0 bg-linear-to-br/srgb from-fundwell-background via-fundwell-surface to-fundwell-background' />
-        <div className='absolute right-0 top-0 h-[500px] w-[500px] rounded-full blur-3xl' />
+        <div className='absolute top-0 right-0 h-[500px] w-[500px] rounded-full blur-3xl' />
         <div className='absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-3xl' />
       </div>
 
@@ -139,9 +139,7 @@ function HowItWorksSection() {
             >
               {/* Step number */}
               <div className='mb-6 flex items-center gap-4'>
-                <span className='text-5xl font-bold transition-colors'>
-                  {step.number}
-                </span>
+                <span className='text-5xl font-bold transition-colors'>{step.number}</span>
                 <step.icon className='h-8 w-8 text-fundwell-primary' />
               </div>
 
@@ -150,7 +148,7 @@ function HowItWorksSection() {
 
               {/* Connector line (except last item) */}
               {index < steps.length - 1 && (
-                <div className='absolute -right-4 top-1/2 hidden h-px w-8 bg-linear-to-r/srgb from-zinc-700 to-transparent md:block' />
+                <div className='absolute top-1/2 -right-4 hidden h-px w-8 bg-linear-to-r/srgb from-zinc-700 to-transparent md:block' />
               )}
             </div>
           ))}
@@ -231,11 +229,10 @@ function FeaturesSection() {
                 <ShieldCheck className='h-8 w-8 text-fundwell-primary' />
               </div>
             </div>
-            <h3 className='mb-3 text-xl font-semibold text-fundwell-text'>
-              No middleman — You keep 100% of the money
-            </h3>
+            <h3 className='mb-3 text-xl font-semibold text-fundwell-text'>No middleman — You keep 100% of the money</h3>
             <p className='text-base text-zinc-300'>
-              You enter your own Venmo/PayPal information, and participants pay you directly. We never collect or touch the money.
+              You enter your own Venmo/PayPal information, and participants pay you directly. We never collect or touch
+              the money.
             </p>
           </div>
         </div>
@@ -250,8 +247,8 @@ function CTASection() {
       <Container>
         <div className='relative overflow-hidden rounded-3xl border border-zinc-800 bg-linear-to-br/srgb from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20'>
           {/* Background decorations */}
-          <div className='absolute -left-20 -top-20 h-64 w-64 rounded-full blur-3xl' />
-          <div className='absolute -bottom-20 -right-20 h-64 w-64 rounded-full blur-3xl' />
+          <div className='absolute -top-20 -left-20 h-64 w-64 rounded-full blur-3xl' />
+          <div className='absolute -right-20 -bottom-20 h-64 w-64 rounded-full blur-3xl' />
 
           <div className='relative z-10'>
             <h2 className='mb-4 text-3xl font-bold text-fundwell-text md:text-4xl lg:text-5xl'>

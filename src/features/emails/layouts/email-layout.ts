@@ -60,4 +60,3 @@ export function emailLayout({ headerStyle = 'default', children }: EmailLayoutOp
 </body>
 </html>`;
 }
-

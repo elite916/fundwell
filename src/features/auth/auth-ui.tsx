@@ -92,7 +92,7 @@ export function AuthUI({
     <section className='relative mt-16 flex w-full flex-col gap-12 overflow-hidden rounded-2xl border border-zinc-800 p-8 text-center md:p-12'>
       {/* Background decorative elements */}
       <div className='absolute inset-0 -z-10'>
-        <div className='absolute right-0 top-0 h-[300px] w-[300px] rounded-full blur-3xl' />
+        <div className='absolute top-0 right-0 h-[300px] w-[300px] rounded-full blur-3xl' />
         <div className='absolute bottom-0 left-0 h-[250px] w-[250px] rounded-full blur-3xl' />
       </div>
 
@@ -102,9 +102,7 @@ export function AuthUI({
       </div>
 
       {error && (
-        <div className='rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400'>
-          {error}
-        </div>
+        <div className='rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400'>{error}</div>
       )}
 
       <div className='flex flex-col gap-4'>
@@ -121,12 +119,7 @@ export function AuthUI({
 
         <Collapsible open={emailFormOpen} onOpenChange={handleEmailFormOpenChange}>
           <CollapsibleTrigger asChild>
-            <Button
-              variant='outline'
-              size='lg'
-              className='w-full text-base'
-              disabled={pending}
-            >
+            <Button variant='outline' size='lg' className='w-full text-base' disabled={pending}>
               Continue with Email
             </Button>
           </CollapsibleTrigger>
@@ -144,9 +137,7 @@ export function AuthUI({
                     {...register('email')}
                     className={errors.email ? 'border-red-500' : ''}
                   />
-                  {errors.email && (
-                    <p className='text-sm text-red-500'>{errors.email.message}</p>
-                  )}
+                  {errors.email && <p className='text-sm text-red-500'>{errors.email.message}</p>}
                 </div>
                 <div className='flex justify-end gap-2 pt-2'>
                   <Button type='button' onClick={() => handleEmailFormOpenChange(false)} disabled={pending}>
@@ -161,7 +152,7 @@ export function AuthUI({
           </CollapsibleContent>
         </Collapsible>
       </div>
-      <div className='mt-4 space-y-4'>
+      <div className='space-y-4 mt-4'>
         {mode === 'signup' && (
           <>
             <span className='m-auto block max-w-sm text-sm text-zinc-400'>

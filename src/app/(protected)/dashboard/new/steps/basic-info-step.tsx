@@ -58,13 +58,13 @@ export function BasicInfoStep() {
   const currentSport = SPORT_OPTIONS.find((s) => s.value === sportType) || SPORT_OPTIONS[0];
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Sport Type Selector */}
-      <div className="space-y-3">
-        <Label className="text-zinc-200">
-          Sport Type <span className="text-orange-500">*</span>
+      <div className='space-y-3'>
+        <Label className='text-zinc-200'>
+          Sport Type <span className='text-orange-500'>*</span>
         </Label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className='grid grid-cols-3 gap-3'>
           {SPORT_OPTIONS.map((sport) => {
             const isSelected = sportType === sport.value;
             const Icon = sport.icon;
@@ -72,7 +72,7 @@ export function BasicInfoStep() {
             return (
               <button
                 key={sport.value}
-                type="button"
+                type='button'
                 onClick={() => {
                   if (!isDisabled && sport.value !== 'raffle') {
                     setValue('sportType', sport.value as SportType, { shouldValidate: true });
@@ -89,112 +89,112 @@ export function BasicInfoStep() {
                 )}
               >
                 {isDisabled && (
-                  <Badge variant="coming_soon" className="absolute right-2 top-2 text-[10px]">
+                  <Badge variant='coming_soon' className='absolute top-2 right-2 text-[10px]'>
                     Coming Soon
                   </Badge>
                 )}
-                <div className="flex items-center gap-3">
+                <div className='flex items-center gap-3'>
                   <div
                     className={cn(
                       'flex h-10 w-10 items-center justify-center rounded-full',
                       isSelected ? 'bg-orange-500' : 'bg-zinc-700'
                     )}
                   >
-                    <Icon className="h-5 w-5 text-white" />
+                    <Icon className='h-5 w-5 text-white' />
                   </div>
-                  <span className="text-sm font-medium">{sport.label}</span>
+                  <span className='text-sm font-medium'>{sport.label}</span>
                 </div>
               </button>
             );
           })}
         </div>
         {/* Hidden input for form registration */}
-        <input type="hidden" {...register('sportType')} />
+        <input type='hidden' {...register('sportType')} />
       </div>
 
       {/* Contest Name */}
-      <div className="space-y-2">
-        <Label htmlFor="name" className="text-zinc-200">
-          Contest Name <span className="text-orange-500">*</span>
+      <div className='space-y-2'>
+        <Label htmlFor='name' className='text-zinc-200'>
+          Contest Name <span className='text-orange-500'>*</span>
         </Label>
         <Input
-          id="name"
+          id='name'
           placeholder={sportType === 'football' ? 'Super Bowl Squares 2025' : 'World Series Squares 2025'}
           {...register('name')}
           className={cn(errors.name && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
         />
-        {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-        <p className="text-xs text-zinc-500">This is what participants will see when they join your contest.</p>
+        {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
+        <p className='text-xs text-zinc-500'>This is what participants will see when they join your contest.</p>
       </div>
 
       {/* Description */}
-      <div className="space-y-2">
-        <Label htmlFor="description" className="text-zinc-200">
+      <div className='space-y-2'>
+        <Label htmlFor='description' className='text-zinc-200'>
           Description
         </Label>
         <Textarea
-          id="description"
-          placeholder="Fundraiser for our youth sports league. All proceeds go to new equipment!"
+          id='description'
+          placeholder='Fundraiser for our youth sports league. All proceeds go to new equipment!'
           {...register('description')}
           className={cn(errors.description && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
         />
-        {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
-        <p className="text-xs text-zinc-500">Optional. Add context about your fundraiser or organization.</p>
+        {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}
+        <p className='text-xs text-zinc-500'>Optional. Add context about your fundraiser or organization.</p>
       </div>
 
       {/* Team Names */}
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <div>
-          <h3 className="text-sm font-medium text-zinc-200">Team Names</h3>
-          <p className="text-xs text-zinc-500">
+          <h3 className='text-sm font-medium text-zinc-200'>Team Names</h3>
+          <p className='text-xs text-zinc-500'>
             Enter the teams playing in your game. Row team scores will be matched against the row axis.
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className='grid gap-4 sm:grid-cols-2'>
           {/* Row Team */}
-          <div className="space-y-2">
-            <Label htmlFor="rowTeamName" className="text-zinc-200">
-              Row Team (Home) <span className="text-orange-500">*</span>
+          <div className='space-y-2'>
+            <Label htmlFor='rowTeamName' className='text-zinc-200'>
+              Row Team (Home) <span className='text-orange-500'>*</span>
             </Label>
             <Input
-              id="rowTeamName"
+              id='rowTeamName'
               placeholder={currentSport.placeholder.row}
               {...register('rowTeamName')}
               className={cn(errors.rowTeamName && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
             />
-            {errors.rowTeamName && <p className="text-sm text-red-500">{errors.rowTeamName.message}</p>}
+            {errors.rowTeamName && <p className='text-sm text-red-500'>{errors.rowTeamName.message}</p>}
           </div>
 
           {/* Column Team */}
-          <div className="space-y-2">
-            <Label htmlFor="colTeamName" className="text-zinc-200">
-              Column Team (Away) <span className="text-orange-500">*</span>
+          <div className='space-y-2'>
+            <Label htmlFor='colTeamName' className='text-zinc-200'>
+              Column Team (Away) <span className='text-orange-500'>*</span>
             </Label>
             <Input
-              id="colTeamName"
+              id='colTeamName'
               placeholder={currentSport.placeholder.col}
               {...register('colTeamName')}
               className={cn(errors.colTeamName && 'border-red-500 focus:border-red-500 focus:ring-red-500')}
             />
-            {errors.colTeamName && <p className="text-sm text-red-500">{errors.colTeamName.message}</p>}
+            {errors.colTeamName && <p className='text-sm text-red-500'>{errors.colTeamName.message}</p>}
           </div>
         </div>
       </div>
 
       {/* Grid Preview Hint */}
-      <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20">
+      <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+        <div className='flex items-start gap-3'>
+          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20'>
             {sportType === 'football' ? (
-              <IoAmericanFootball className="h-4 w-4 text-orange-400" />
+              <IoAmericanFootball className='h-4 w-4 text-orange-400' />
             ) : (
-              <IoBaseball className="h-4 w-4 text-orange-400" />
+              <IoBaseball className='h-4 w-4 text-orange-400' />
             )}
           </div>
           <div>
-            <p className="text-sm font-medium text-zinc-200">How it works</p>
-            <p className="mt-1 text-xs text-zinc-400">{SPORT_DESCRIPTIONS[sportType as SportType]}</p>
+            <p className='text-sm font-medium text-zinc-200'>How it works</p>
+            <p className='mt-1 text-xs text-zinc-400'>{SPORT_DESCRIPTIONS[sportType as SportType]}</p>
           </div>
         </div>
       </div>

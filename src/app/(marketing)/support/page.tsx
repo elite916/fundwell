@@ -4,7 +4,7 @@ import { Container } from '@/components/container';
 
 export default function SupportPage(): React.ReactElement {
   return (
-    <div className="flex flex-col">
+    <div className='flex flex-col'>
       <HeroSection />
       <FAQSection />
       <ContactSection />
@@ -14,15 +14,11 @@ export default function SupportPage(): React.ReactElement {
 
 function HeroSection() {
   return (
-    <section className="py-20 lg:py-28">
+    <section className='py-20 lg:py-28'>
       <Container>
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-6 text-4xl font-bold text-fundwell-text md:text-5xl">
-            How can we help?
-          </h1>
-          <p className="text-lg text-zinc-400">
-            Find answers to common questions or get in touch with our team
-          </p>
+        <div className='mx-auto max-w-3xl text-center'>
+          <h1 className='mb-6 text-4xl font-bold text-fundwell-text md:text-5xl'>How can we help?</h1>
+          <p className='text-lg text-zinc-400'>Find answers to common questions or get in touch with our team</p>
         </div>
       </Container>
     </section>
@@ -64,17 +60,17 @@ function FAQSection() {
   ];
 
   return (
-    <section className="py-20 lg:py-28">
+    <section className='py-20 lg:py-28'>
       <Container>
-        <div className="mx-auto max-w-3xl">
-          <h2 className="mb-12 text-center text-3xl font-bold text-fundwell-text md:text-4xl">
+        <div className='mx-auto max-w-3xl'>
+          <h2 className='mb-12 text-center text-3xl font-bold text-fundwell-text md:text-4xl'>
             Frequently Asked Questions
           </h2>
           <div>
             {faqs.map((faq) => (
               <div key={faq.question}>
-                <h3 className="mb-2 text-lg font-semibold text-fundwell-text">{faq.question}</h3>
-                <p className="mb-6 text-zinc-400">{faq.answer}</p>
+                <h3 className='mb-2 text-lg font-semibold text-fundwell-text'>{faq.question}</h3>
+                <p className='mb-6 text-zinc-400'>{faq.answer}</p>
               </div>
             ))}
           </div>
@@ -86,19 +82,14 @@ function FAQSection() {
 
 function ContactSection() {
   return (
-    <section className="py-20 lg:py-28">
+    <section className='py-20 lg:py-28'>
       <Container>
-        <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 p-8 text-center">
-          <h2 className="mb-4 text-2xl font-bold text-fundwell-text">Still need help?</h2>
-          <p className="mb-6 text-zinc-400">
-            Send us a message and we&apos;ll get back to you as soon as possible.
-          </p>
-          <p className="text-fundwell-primary">
+        <div className='mx-auto max-w-3xl rounded-xl border border-zinc-800 p-8 text-center'>
+          <h2 className='mb-4 text-2xl font-bold text-fundwell-text'>Still need help?</h2>
+          <p className='mb-6 text-zinc-400'>Send us a message and we&apos;ll get back to you as soon as possible.</p>
+          <p className='text-fundwell-primary'>
             Email us at{' '}
-            <a
-              href="mailto:support@battlebornusa.com"
-              className="font-medium hover:underline"
-            >
+            <a href='mailto:support@battlebornusa.com' className='font-medium hover:underline'>
               support@battlebornusa.com
             </a>
           </p>
@@ -107,4 +98,3 @@ function ContactSection() {
     </section>
   );
 }
-

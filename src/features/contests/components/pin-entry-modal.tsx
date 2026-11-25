@@ -2,18 +2,12 @@
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
-import { Loader2,Lock } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -79,41 +73,41 @@ export function PinEntryModal({ isOpen, contestName, contestSlug, onSuccess }: P
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
-        className="sm:max-w-md"
+        className='sm:max-w-md'
       >
-        <DialogHeader className="text-center sm:text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10">
-            <Lock className="h-6 w-6 text-orange-500" />
+        <DialogHeader className='text-center sm:text-center'>
+          <div className='mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10'>
+            <Lock className='h-6 w-6 text-orange-500' />
           </div>
-          <DialogTitle className="text-xl">{contestName}</DialogTitle>
-          <DialogDescription className="text-zinc-400">
+          <DialogTitle className='text-xl'>{contestName}</DialogTitle>
+          <DialogDescription className='text-zinc-400'>
             This contest is private. Enter the PIN to continue.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="pin" className="text-zinc-200">
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='pin' className='text-zinc-200'>
               Enter PIN to continue
             </Label>
             <Input
-              id="pin"
-              type="text"
+              id='pin'
+              type='text'
               maxLength={6}
-              placeholder="Enter 6-character PIN"
-              autoComplete="off"
+              placeholder='Enter 6-character PIN'
+              autoComplete='off'
               autoFocus
               {...register('pin')}
-              className="text-center font-mono text-lg tracking-widest uppercase"
+              className='text-center font-mono text-lg tracking-widest uppercase'
             />
-            {errors.pin && <p className="text-sm text-red-500">{errors.pin.message}</p>}
-            {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+            {errors.pin && <p className='text-sm text-red-500'>{errors.pin.message}</p>}
+            {serverError && <p className='text-sm text-red-500'>{serverError}</p>}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type='submit' className='w-full' disabled={isPending}>
             {isPending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 Verifying...
               </>
             ) : (
@@ -122,10 +116,10 @@ export function PinEntryModal({ isOpen, contestName, contestSlug, onSuccess }: P
           </Button>
         </form>
 
-        <div className="text-center">
+        <div className='text-center'>
           <Link
-            href="/"
-            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1"
+            href='/'
+            className='inline-flex items-center gap-1 text-sm text-zinc-400 transition-colors hover:text-zinc-200'
           >
             ← Back to home
           </Link>
@@ -134,4 +128,3 @@ export function PinEntryModal({ isOpen, contestName, contestSlug, onSuccess }: P
     </Dialog>
   );
 }
-

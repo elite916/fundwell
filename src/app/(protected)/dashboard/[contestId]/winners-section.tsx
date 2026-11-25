@@ -57,7 +57,7 @@ function getQuarterConfig(sportType: SportType) {
 function getWinnerName(square: GridSquare | undefined): string {
   if (!square) return 'Unclaimed';
   if (!square.claimant_first_name) return 'Unclaimed';
-  
+
   let name = square.claimant_first_name;
   if (square.claimant_last_name) {
     name += ` ${square.claimant_last_name}`;
@@ -106,41 +106,36 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
   }
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900">
+    <Card className='border-zinc-800 bg-zinc-900'>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-white">
-          <Trophy className="h-5 w-5 text-amber-400" />
+        <CardTitle className='flex items-center gap-2 text-white'>
+          <Trophy className='h-5 w-5 text-amber-400' />
           Winners
         </CardTitle>
-        <CardDescription>Scores and winners for each {contest.sport_type === 'football' ? 'quarter' : 'game'}</CardDescription>
+        <CardDescription>
+          Scores and winners for each {contest.sport_type === 'football' ? 'quarter' : 'game'}
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className='space-y-3'>
           {scoresWithWinners.map((item) => (
-            <div
-              key={item!.quarter}
-              className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-3"
-            >
+            <div key={item!.quarter} className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-3'>
               {/* Header row: Quarter label + Payout */}
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-white">{item!.label}</span>
+              <div className='flex items-center justify-between'>
+                <span className='font-semibold text-white'>{item!.label}</span>
                 {contest.prize_type === 'custom' && item!.prizeText ? (
-                  <span className="text-sm font-medium text-orange-400">
-                    {item!.prizeText}
-                  </span>
+                  <span className='text-sm font-medium text-orange-400'>{item!.prizeText}</span>
                 ) : item!.payoutAmount != null ? (
-                  <span className="text-sm font-medium text-orange-400">
-                    {formatPrizeAmount(item!.payoutAmount)}
-                  </span>
+                  <span className='text-sm font-medium text-orange-400'>{formatPrizeAmount(item!.payoutAmount)}</span>
                 ) : null}
               </div>
               {/* Score */}
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className='mt-1 text-sm text-zinc-400'>
                 {contest.row_team_name} {item!.homeScore} - {contest.col_team_name} {item!.awayScore}
               </p>
               {/* Winner */}
-              <div className="mt-1.5 flex items-center gap-1.5">
-                <Trophy className="h-3.5 w-3.5 text-amber-400" />
+              <div className='mt-1.5 flex items-center gap-1.5'>
+                <Trophy className='h-3.5 w-3.5 text-amber-400' />
                 <span className={`text-sm ${item!.hasClaimed ? 'text-green-400' : 'text-zinc-500'}`}>
                   {item!.winnerName}
                 </span>
@@ -152,4 +147,3 @@ export function WinnersSection({ contest, scores, squares }: WinnersSectionProps
     </Card>
   );
 }
-

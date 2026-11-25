@@ -10,12 +10,7 @@ type Contest = Database['public']['Tables']['contests']['Row'];
 export async function getPublicContestBySlug(slug: string): Promise<Contest | null> {
   const supabase = await createSupabaseServerClient();
 
-  const { data, error } = await supabase
-    .from('contests')
-    .select('*')
-    .eq('slug', slug)
-    .is('deleted_at', null)
-    .single();
+  const { data, error } = await supabase.from('contests').select('*').eq('slug', slug).is('deleted_at', null).single();
 
   if (error || !data) {
     return null;

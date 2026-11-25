@@ -22,7 +22,7 @@ function HeroSection() {
     <section className='relative overflow-hidden py-20 lg:py-28'>
       <div className='absolute inset-0 -z-10'>
         <div className='absolute inset-0 bg-linear-to-br/srgb from-fundwell-background via-fundwell-surface to-fundwell-background' />
-        <div className='absolute right-0 top-0 h-[500px] w-[500px] rounded-full blur-3xl' />
+        <div className='absolute top-0 right-0 h-[500px] w-[500px] rounded-full blur-3xl' />
         <div className='absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-3xl' />
       </div>
 
@@ -106,10 +106,7 @@ function WhoItsForSection() {
         </h2>
         <div className='grid gap-6 sm:grid-cols-3'>
           {audiences.map((item) => (
-            <div
-              key={item.title}
-              className='rounded-xl border border-zinc-800/50 p-6 text-center'
-            >
+            <div key={item.title} className='rounded-xl border border-zinc-800/50 p-6 text-center'>
               <div className='mb-4 inline-flex rounded-lg p-3'>
                 <item.icon className='h-6 w-6 text-fundwell-primary' />
               </div>
@@ -143,7 +140,8 @@ function ValuesSection() {
     {
       icon: Wallet,
       title: 'You keep 100% of funds',
-      description: 'We never touch the money. Participants pay you directly through your own Venmo/PayPal, so every dollar raised goes to your team.',
+      description:
+        'We never touch the money. Participants pay you directly through your own Venmo/PayPal, so every dollar raised goes to your team.',
     },
     {
       icon: MessageSquare,
@@ -153,7 +151,8 @@ function ValuesSection() {
     {
       icon: Shuffle,
       title: 'Fair & random',
-      description: 'Numbers are randomly assigned after all squares are claimed, ensuring every participant has an equal chance to win.',
+      description:
+        'Numbers are randomly assigned after all squares are claimed, ensuring every participant has an equal chance to win.',
     },
   ];
 
@@ -163,10 +162,7 @@ function ValuesSection() {
         <h2 className='mb-12 text-center text-3xl font-bold text-fundwell-text md:text-4xl'>What makes us different</h2>
         <div className='grid gap-8 sm:grid-cols-2 lg:grid-cols-3'>
           {values.map((item) => (
-            <div
-              key={item.title}
-              className='rounded-xl border border-zinc-800/50 p-6 text-center'
-            >
+            <div key={item.title} className='rounded-xl border border-zinc-800/50 p-6 text-center'>
               <div className='mb-4 inline-flex rounded-lg p-3'>
                 <item.icon className='h-6 w-6 text-fundwell-primary' />
               </div>
@@ -185,8 +181,8 @@ function CTASection() {
     <section className='py-20 lg:py-28'>
       <Container>
         <div className='relative overflow-hidden rounded-3xl border border-zinc-800 bg-linear-to-br/srgb from-fundwell-surface to-fundwell-background p-12 text-center lg:p-20'>
-          <div className='absolute -left-20 -top-20 h-64 w-64 rounded-full blur-3xl' />
-          <div className='absolute -bottom-20 -right-20 h-64 w-64 rounded-full blur-3xl' />
+          <div className='absolute -top-20 -left-20 h-64 w-64 rounded-full blur-3xl' />
+          <div className='absolute -right-20 -bottom-20 h-64 w-64 rounded-full blur-3xl' />
 
           <div className='relative z-10'>
             <h2 className='mb-8 text-3xl font-bold text-fundwell-text md:text-4xl'>Ready to get started?</h2>

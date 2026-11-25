@@ -12,10 +12,10 @@ type CheckoutPriceRow = {
 export function isCheckoutablePrice(price: CheckoutPriceRow | null): boolean {
   return Boolean(
     price &&
-      price.active === true &&
-      price.type === 'recurring' &&
-      price.unit_amount !== null &&
-      price.unit_amount > 0 &&
-      price.products?.active === true
+    price.active === true &&
+    price.type === 'recurring' &&
+    price.unit_amount !== null &&
+    price.unit_amount > 0 &&
+    price.products?.active === true
   );
 }

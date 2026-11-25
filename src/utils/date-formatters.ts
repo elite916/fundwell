@@ -21,4 +21,3 @@ export function formatDate(dateString: string | null): string {
 export function getCurrentISOString(): string {
   return new Date().toISOString();
 }
-

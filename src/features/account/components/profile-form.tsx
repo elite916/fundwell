@@ -61,27 +61,25 @@ export function ProfileForm({ defaultName }: ProfileFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="fullName" className="text-zinc-200">
-          Full Name <span className="text-orange-500">*</span>
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      <div className='space-y-2'>
+        <Label htmlFor='fullName' className='text-zinc-200'>
+          Full Name <span className='text-orange-500'>*</span>
         </Label>
         <Input
-          id="fullName"
-          placeholder="John Doe"
+          id='fullName'
+          placeholder='John Doe'
           {...register('fullName')}
           className={errors.fullName ? 'border-red-500' : ''}
           disabled={isPending}
         />
-        {errors.fullName && (
-          <p className="text-sm text-red-500">{errors.fullName.message}</p>
-        )}
+        {errors.fullName && <p className='text-sm text-red-500'>{errors.fullName.message}</p>}
       </div>
 
-      <Button type="submit" disabled={isPending} variant="orange">
+      <Button type='submit' disabled={isPending} variant='orange'>
         {isPending ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             Saving...
           </>
         ) : (
@@ -91,4 +89,3 @@ export function ProfileForm({ defaultName }: ProfileFormProps) {
     </form>
   );
 }
-

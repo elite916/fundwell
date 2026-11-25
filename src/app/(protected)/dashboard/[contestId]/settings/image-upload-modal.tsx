@@ -26,13 +26,7 @@ interface ImageUploadModalProps {
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-export function ImageUploadModal({
-  isOpen,
-  onClose,
-  onUpload,
-  imageType,
-  isUploading,
-}: ImageUploadModalProps) {
+export function ImageUploadModal({ isOpen, onClose, onUpload, imageType, isUploading }: ImageUploadModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,55 +120,49 @@ export function ImageUploadModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="border-zinc-800 bg-zinc-900 sm:max-w-md">
+      <DialogContent className='border-zinc-800 bg-zinc-900 sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle className="text-white">{title}</DialogTitle>
+          <DialogTitle className='text-white'>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className='space-y-4 py-4'>
           {/* Drop Zone */}
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors ${
-              isDragOver
-                ? 'border-orange-500 bg-orange-500/10'
-                : 'border-zinc-600 bg-zinc-800/50'
+              isDragOver ? 'border-orange-500 bg-orange-500/10' : 'border-zinc-600 bg-zinc-800/50'
             } ${selectedFile ? 'border-green-500/50' : ''}`}
           >
             {selectedFile ? (
-              <div className="flex flex-col items-center gap-2">
-                <ImageIcon className="h-10 w-10 text-green-500" />
-                <div className="flex items-center gap-2">
-                  <span className="max-w-[200px] truncate text-sm text-zinc-300">
-                    {selectedFile.name}
-                  </span>
+              <div className='flex flex-col items-center gap-2'>
+                <ImageIcon className='h-10 w-10 text-green-500' />
+                <div className='flex items-center gap-2'>
+                  <span className='max-w-[200px] truncate text-sm text-zinc-300'>{selectedFile.name}</span>
                   <button
-                    type="button"
+                    type='button'
                     onClick={clearSelectedFile}
-                    className="rounded-full p-1 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-white"
+                    className='rounded-full p-1 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-white'
                     disabled={isUploading}
                   >
-                    <X className="h-4 w-4" />
+                    <X className='h-4 w-4' />
                   </button>
                 </div>
-                <span className="text-xs text-zinc-500">
-                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                </span>
+                <span className='text-xs text-zinc-500'>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
               </div>
             ) : (
               <>
-                <Upload className="mb-3 h-10 w-10 text-zinc-400" />
-                <p className="mb-1 text-sm text-zinc-300">Drag and drop an image here</p>
-                <p className="mb-3 text-xs text-zinc-500">or</p>
+                <Upload className='mb-3 h-10 w-10 text-zinc-400' />
+                <p className='mb-1 text-sm text-zinc-300'>Drag and drop an image here</p>
+                <p className='mb-3 text-xs text-zinc-500'>or</p>
                 <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
+                  type='button'
+                  variant='outline'
+                  size='sm'
                   onClick={handleBrowseClick}
-                  className="border-zinc-600"
+                  className='border-zinc-600'
                 >
                   Browse Files
                 </Button>
@@ -185,37 +173,31 @@ export function ImageUploadModal({
           {/* Hidden File Input */}
           <input
             ref={fileInputRef}
-            type="file"
+            type='file'
             accept={ACCEPTED_TYPES.join(',')}
             onChange={handleInputChange}
-            className="hidden"
+            className='hidden'
           />
 
           {/* Error Message */}
-          {error && <p className="text-center text-sm text-red-500">{error}</p>}
+          {error && <p className='text-center text-sm text-red-500'>{error}</p>}
 
           {/* File Type Hint */}
-          <p className="text-center text-xs text-zinc-500">
-            Accepted formats: JPEG, PNG, WebP, GIF. Max size: 5MB
-          </p>
+          <p className='text-center text-xs text-zinc-500'>Accepted formats: JPEG, PNG, WebP, GIF. Max size: 5MB</p>
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className='gap-2 sm:gap-0'>
           <Button
-            type="button"
-            variant="outline"
+            type='button'
+            variant='outline'
             onClick={handleClose}
             disabled={isUploading}
-            className="border-zinc-700"
+            className='border-zinc-700'
           >
             Cancel
           </Button>
-          <Button
-            type="button"
-            onClick={handleUpload}
-            disabled={!selectedFile || isUploading}
-          >
-            {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type='button' onClick={handleUpload} disabled={!selectedFile || isUploading}>
+            {isUploading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             Upload
           </Button>
         </DialogFooter>
@@ -223,4 +205,3 @@ export function ImageUploadModal({
     </Dialog>
   );
 }
-

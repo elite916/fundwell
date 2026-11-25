@@ -104,11 +104,7 @@ function calculateWinningSquare(
     return null;
   }
 
-  return (
-    squares.find(
-      (sq) => sq.row_index === winningRowIndex && sq.col_index === winningColIndex
-    ) || null
-  );
+  return squares.find((sq) => sq.row_index === winningRowIndex && sq.col_index === winningColIndex) || null;
 }
 
 function getWinnerDisplay(
@@ -179,19 +175,13 @@ export function EnterScoresModal({
     setScoreEntries(entries);
   }, [existingScores, quarterConfig, contest]);
 
-  const handleScoreChange = (
-    index: number,
-    field: 'homeScore' | 'awayScore',
-    value: string
-  ) => {
+  const handleScoreChange = (index: number, field: 'homeScore' | 'awayScore', value: string) => {
     // Only allow numbers
     if (value !== '' && !/^\d+$/.test(value)) {
       return;
     }
 
-    setScoreEntries((prev) =>
-      prev.map((entry, i) => (i === index ? { ...entry, [field]: value } : entry))
-    );
+    setScoreEntries((prev) => prev.map((entry, i) => (i === index ? { ...entry, [field]: value } : entry)));
   };
 
   const handleSave = () => {
@@ -247,26 +237,26 @@ export function EnterScoresModal({
   if (contest.status !== 'in_progress') {
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>Enter Scores</DialogTitle>
             <DialogDescription>Scores can only be entered during the game.</DialogDescription>
           </DialogHeader>
 
-          <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4 space-y-3">
-            <p className="text-sm text-amber-200">
+          <div className='space-y-3 rounded-lg border border-amber-500/50 bg-amber-500/10 p-4'>
+            <p className='text-sm text-amber-200'>
               Change contest status to &ldquo;In Progress&rdquo; to enter scores.
             </p>
             <Link href={`/dashboard/${contest.id}/settings`}>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Settings className="h-4 w-4" />
+              <Button variant='outline' size='sm' className='gap-2'>
+                <Settings className='h-4 w-4' />
                 Go to Settings
               </Button>
             </Link>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant='outline' onClick={onClose}>
               Close
             </Button>
           </DialogFooter>
@@ -277,25 +267,25 @@ export function EnterScoresModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className='sm:max-w-2xl'>
         <DialogHeader>
           <DialogTitle>Enter Scores</DialogTitle>
           <DialogDescription>
-            Enter the scores for each {contest.sport_type === 'football' ? 'quarter' : 'game'}.
-            Winners are calculated automatically.
+            Enter the scores for each {contest.sport_type === 'football' ? 'quarter' : 'game'}. Winners are calculated
+            automatically.
           </DialogDescription>
         </DialogHeader>
 
         {/* Team Labels */}
-        <div className="grid grid-cols-[120px_1fr_1fr_1fr] gap-2 items-center text-sm font-medium text-zinc-400 px-1">
+        <div className='grid grid-cols-[120px_1fr_1fr_1fr] items-center gap-2 px-1 text-sm font-medium text-zinc-400'>
           <div></div>
-          <div className="text-center">{contest.row_team_name} (Home)</div>
-          <div className="text-center">{contest.col_team_name} (Away)</div>
-          <div className="text-center">Winner</div>
+          <div className='text-center'>{contest.row_team_name} (Home)</div>
+          <div className='text-center'>{contest.col_team_name} (Away)</div>
+          <div className='text-center'>Winner</div>
         </div>
 
         {/* Score Entry Rows */}
-        <div className="space-y-3">
+        <div className='space-y-3'>
           {scoreEntries.map((entry, index) => {
             const winner = getWinnerDisplay(
               entry.homeScore,
@@ -312,66 +302,63 @@ export function EnterScoresModal({
             const prizeText = getPrizeText(contest.prize_type, entry.quarter, contest);
 
             return (
-              <div
-                key={entry.quarter}
-                className="grid grid-cols-[120px_1fr_1fr_1fr] gap-2 items-center"
-              >
+              <div key={entry.quarter} className='grid grid-cols-[120px_1fr_1fr_1fr] items-center gap-2'>
                 {/* Quarter Label with Payout */}
-                <div className="space-y-0.5">
-                  <Label className="text-zinc-200 font-medium">{entry.label}</Label>
+                <div className='space-y-0.5'>
+                  <Label className='font-medium text-zinc-200'>{entry.label}</Label>
                   {contest.prize_type === 'custom' && prizeText ? (
-                    <p className="text-xs text-orange-400">{prizeText}</p>
+                    <p className='text-xs text-orange-400'>{prizeText}</p>
                   ) : payoutAmount != null ? (
-                    <p className="text-xs text-orange-400">{formatPrizeAmount(payoutAmount)} payout</p>
+                    <p className='text-xs text-orange-400'>{formatPrizeAmount(payoutAmount)} payout</p>
                   ) : null}
                 </div>
 
                 {/* Home Score Input */}
                 <Input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  placeholder="0"
+                  type='text'
+                  inputMode='numeric'
+                  pattern='[0-9]*'
+                  placeholder='0'
                   value={entry.homeScore}
                   onChange={(e) => handleScoreChange(index, 'homeScore', e.target.value)}
-                  className="text-center text-lg font-semibold"
+                  className='text-center text-lg font-semibold'
                 />
 
                 {/* Away Score Input */}
                 <Input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  placeholder="0"
+                  type='text'
+                  inputMode='numeric'
+                  pattern='[0-9]*'
+                  placeholder='0'
                   value={entry.awayScore}
                   onChange={(e) => handleScoreChange(index, 'awayScore', e.target.value)}
-                  className="text-center text-lg font-semibold"
+                  className='text-center text-lg font-semibold'
                 />
 
                 {/* Winner Display */}
                 <div
-                  className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-sm ${
+                  className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm ${
                     winner.isWinner
-                      ? 'bg-green-500/10 text-green-400 border border-green-500/30'
+                      ? 'border border-green-500/30 bg-green-500/10 text-green-400'
                       : 'bg-zinc-800 text-zinc-500'
                   }`}
                 >
-                  {winner.isWinner && <Trophy className="h-3.5 w-3.5" />}
-                  <span className="truncate">{winner.text}</span>
+                  {winner.isWinner && <Trophy className='h-3.5 w-3.5' />}
+                  <span className='truncate'>{winner.text}</span>
                 </div>
               </div>
             );
           })}
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={onClose} disabled={isPending}>
+        <DialogFooter className='gap-2 sm:gap-0'>
+          <Button variant='outline' onClick={onClose} disabled={isPending}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={isPending}>
             {isPending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 Saving...
               </>
             ) : (
@@ -383,4 +370,3 @@ export function EnterScoresModal({
     </Dialog>
   );
 }
-

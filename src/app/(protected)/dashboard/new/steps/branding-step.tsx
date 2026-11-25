@@ -37,22 +37,20 @@ export function BrandingStep() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Color Theme */}
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <div>
-          <Label className="text-zinc-200">Color Theme</Label>
-          <p className="text-xs text-zinc-500">
-            Choose colors that match your organization or event.
-          </p>
+          <Label className='text-zinc-200'>Color Theme</Label>
+          <p className='text-xs text-zinc-500'>Choose colors that match your organization or event.</p>
         </div>
 
         {/* Preset Colors */}
-        <div className="flex flex-wrap gap-2">
+        <div className='flex flex-wrap gap-2'>
           {PRESET_COLORS.map((preset) => (
             <button
               key={preset.name}
-              type="button"
+              type='button'
               onClick={() => selectPreset(preset.primary, preset.secondary)}
               className={cn(
                 'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all',
@@ -62,30 +60,30 @@ export function BrandingStep() {
               )}
             >
               <div
-                className="h-4 w-4 rounded-full"
+                className='h-4 w-4 rounded-full'
                 style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.secondary})` }}
               />
-              <span className="text-zinc-300">{preset.name}</span>
+              <span className='text-zinc-300'>{preset.name}</span>
             </button>
           ))}
         </div>
 
         {/* Custom Color Pickers */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="primaryColor" className="text-zinc-200">
+        <div className='grid gap-4 sm:grid-cols-2'>
+          <div className='space-y-2'>
+            <Label htmlFor='primaryColor' className='text-zinc-200'>
               Primary Color
             </Label>
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               <input
-                type="color"
+                type='color'
                 value={primaryColor || '#F97316'}
                 onChange={(e) => setValue('primaryColor', e.target.value, { shouldValidate: true })}
-                className="h-10 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900 p-1"
+                className='h-10 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900 p-1'
               />
               <Input
-                id="primaryColor"
-                placeholder="#F97316"
+                id='primaryColor'
+                placeholder='#F97316'
                 {...register('primaryColor')}
                 className={cn(
                   'flex-1 font-mono uppercase',
@@ -93,25 +91,23 @@ export function BrandingStep() {
                 )}
               />
             </div>
-            {errors.primaryColor && (
-              <p className="text-sm text-red-500">{errors.primaryColor.message}</p>
-            )}
+            {errors.primaryColor && <p className='text-sm text-red-500'>{errors.primaryColor.message}</p>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="secondaryColor" className="text-zinc-200">
+          <div className='space-y-2'>
+            <Label htmlFor='secondaryColor' className='text-zinc-200'>
               Secondary Color
             </Label>
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               <input
-                type="color"
+                type='color'
                 value={secondaryColor || '#D97706'}
                 onChange={(e) => setValue('secondaryColor', e.target.value, { shouldValidate: true })}
-                className="h-10 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900 p-1"
+                className='h-10 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900 p-1'
               />
               <Input
-                id="secondaryColor"
-                placeholder="#D97706"
+                id='secondaryColor'
+                placeholder='#D97706'
                 {...register('secondaryColor')}
                 className={cn(
                   'flex-1 font-mono uppercase',
@@ -119,21 +115,19 @@ export function BrandingStep() {
                 )}
               />
             </div>
-            {errors.secondaryColor && (
-              <p className="text-sm text-red-500">{errors.secondaryColor.message}</p>
-            )}
+            {errors.secondaryColor && <p className='text-sm text-red-500'>{errors.secondaryColor.message}</p>}
           </div>
         </div>
 
         {/* Color Preview */}
         <div
-          className="h-24 rounded-lg"
+          className='h-24 rounded-lg'
           style={{
             background: `linear-gradient(135deg, ${primaryColor || '#F97316'}, ${secondaryColor || '#D97706'})`,
           }}
         >
-          <div className="flex h-full items-center justify-center">
-            <span className="rounded-lg bg-black/30 px-4 py-2 text-lg font-semibold text-white backdrop-blur-xs">
+          <div className='flex h-full items-center justify-center'>
+            <span className='rounded-lg bg-black/30 px-4 py-2 text-lg font-semibold text-white backdrop-blur-xs'>
               Preview
             </span>
           </div>
@@ -141,32 +135,32 @@ export function BrandingStep() {
       </div>
 
       {/* Contest Images Notice */}
-      <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20">
-            <span className="text-lg">🖼️</span>
+      <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+        <div className='flex items-start gap-3'>
+          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20'>
+            <span className='text-lg'>🖼️</span>
           </div>
           <div>
-            <p className="text-sm font-medium text-zinc-200">Contest Images</p>
-            <p className="mt-1 text-xs text-zinc-400">
-              You can upload a hero banner image and organization logo after creating your contest.
-              Simply go to your contest settings and use the image upload feature in the branding section.
+            <p className='text-sm font-medium text-zinc-200'>Contest Images</p>
+            <p className='mt-1 text-xs text-zinc-400'>
+              You can upload a hero banner image and organization logo after creating your contest. Simply go to your
+              contest settings and use the image upload feature in the branding section.
             </p>
           </div>
         </div>
       </div>
 
       {/* Info Note */}
-      <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20">
-            <span className="text-lg">💡</span>
+      <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+        <div className='flex items-start gap-3'>
+          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/20'>
+            <span className='text-lg'>💡</span>
           </div>
           <div>
-            <p className="text-sm font-medium text-zinc-200">Don&apos;t worry!</p>
-            <p className="mt-1 text-xs text-zinc-400">
-              You can always update your contest branding later from the contest settings page.
-              Your contest will be created as a draft, so you can finalize everything before going live.
+            <p className='text-sm font-medium text-zinc-200'>Don&apos;t worry!</p>
+            <p className='mt-1 text-xs text-zinc-400'>
+              You can always update your contest branding later from the contest settings page. Your contest will be
+              created as a draft, so you can finalize everything before going live.
             </p>
           </div>
         </div>
@@ -174,4 +168,3 @@ export function BrandingStep() {
     </div>
   );
 }
-

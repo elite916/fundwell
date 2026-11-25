@@ -80,77 +80,77 @@ export function BasicInfoSection({ contest }: BasicInfoSectionProps) {
   };
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900">
+    <Card className='border-zinc-800 bg-zinc-900'>
       <CardHeader>
-        <CardTitle className="text-white">Basic Information</CardTitle>
+        <CardTitle className='text-white'>Basic Information</CardTitle>
         <CardDescription>Update your contest name, description, and team names.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
           {/* Contest Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Contest Name</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='name'>Contest Name</Label>
             <Input
-              id="name"
+              id='name'
               {...register('name')}
-              className="border-zinc-700 bg-zinc-800"
-              placeholder="Super Bowl Squares 2025"
+              className='border-zinc-700 bg-zinc-800'
+              placeholder='Super Bowl Squares 2025'
             />
-            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+            {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
           </div>
 
           {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='description'>Description (optional)</Label>
             <Textarea
-              id="description"
+              id='description'
               {...register('description')}
-              className="min-h-[100px] border-zinc-700 bg-zinc-800"
-              placeholder="Enter a description for your contest..."
+              className='min-h-[100px] border-zinc-700 bg-zinc-800'
+              placeholder='Enter a description for your contest...'
             />
-            {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
+            {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}
           </div>
 
           {/* Sport Type (read-only) */}
-          <div className="space-y-2">
+          <div className='space-y-2'>
             <Label>Sport Type</Label>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="border-zinc-700 text-zinc-300">
+            <div className='flex items-center gap-2'>
+              <Badge variant='outline' className='border-zinc-700 text-zinc-300'>
                 {SPORT_TYPE_LABELS[contest.sport_type] || contest.sport_type}
               </Badge>
-              <span className="text-xs text-zinc-500">(Cannot be changed after creation)</span>
+              <span className='text-xs text-zinc-500'>(Cannot be changed after creation)</span>
             </div>
           </div>
 
           {/* Team Names */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="row_team_name">Row Team Name</Label>
+          <div className='grid gap-4 sm:grid-cols-2'>
+            <div className='space-y-2'>
+              <Label htmlFor='row_team_name'>Row Team Name</Label>
               <Input
-                id="row_team_name"
+                id='row_team_name'
                 {...register('row_team_name')}
-                className="border-zinc-700 bg-zinc-800"
-                placeholder="Kansas City Chiefs"
+                className='border-zinc-700 bg-zinc-800'
+                placeholder='Kansas City Chiefs'
               />
-              {errors.row_team_name && <p className="text-sm text-red-500">{errors.row_team_name.message}</p>}
+              {errors.row_team_name && <p className='text-sm text-red-500'>{errors.row_team_name.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="col_team_name">Column Team Name</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='col_team_name'>Column Team Name</Label>
               <Input
-                id="col_team_name"
+                id='col_team_name'
                 {...register('col_team_name')}
-                className="border-zinc-700 bg-zinc-800"
-                placeholder="San Francisco 49ers"
+                className='border-zinc-700 bg-zinc-800'
+                placeholder='San Francisco 49ers'
               />
-              {errors.col_team_name && <p className="text-sm text-red-500">{errors.col_team_name.message}</p>}
+              {errors.col_team_name && <p className='text-sm text-red-500'>{errors.col_team_name.message}</p>}
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end pt-4">
-            <Button type="submit" disabled={isPending || !isDirty}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <div className='flex justify-end pt-4'>
+            <Button type='submit' disabled={isPending || !isDirty}>
+              {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
               Save Changes
             </Button>
           </div>
@@ -159,4 +159,3 @@ export function BasicInfoSection({ contest }: BasicInfoSectionProps) {
     </Card>
   );
 }
-

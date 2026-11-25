@@ -38,10 +38,7 @@ export async function updateProfile(input: UpdateProfileFormData): Promise<Actio
   const data = validationResult.data;
 
   // Update user profile
-  const { error: updateError } = await supabase
-    .from('users')
-    .update({ full_name: data.fullName })
-    .eq('id', user.id);
+  const { error: updateError } = await supabase.from('users').update({ full_name: data.fullName }).eq('id', user.id);
 
   if (updateError) {
     logger.error('updateProfile', updateError, {
@@ -57,4 +54,3 @@ export async function updateProfile(input: UpdateProfileFormData): Promise<Actio
 
   return { data: null, error: null };
 }
-

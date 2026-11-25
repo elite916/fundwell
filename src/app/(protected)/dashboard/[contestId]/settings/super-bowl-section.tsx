@@ -49,8 +49,8 @@ export function SuperBowlSection({ contest }: SuperBowlSectionProps) {
           Super Bowl Automation
         </CardTitle>
         <CardDescription>
-          Enable automated score tracking for this contest during the Super Bowl. Scores will be
-          fetched from ESPN, winners determined automatically, and notification emails sent.
+          Enable automated score tracking for this contest during the Super Bowl. Scores will be fetched from ESPN,
+          winners determined automatically, and notification emails sent.
         </CardDescription>
       </CardHeader>
       <CardContent>

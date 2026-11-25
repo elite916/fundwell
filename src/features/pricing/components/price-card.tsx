@@ -72,25 +72,23 @@ export function PricingCard({
 
   return (
     <WithSexyBorder variant={metadata.priceCardVariant} className='w-full flex-1'>
-      <div className={cn(
-        'flex w-full flex-col rounded-md border bg-black p-4 lg:p-8',
-        isPro ? 'border-orange-500/30' : 'border-zinc-800'
-      )}>
-
+      <div
+        className={cn(
+          'flex w-full flex-col rounded-md border bg-black p-4 lg:p-8',
+          isPro ? 'border-orange-500/30' : 'border-zinc-800'
+        )}
+      >
         <div className='p-4 pt-6'>
           <div className='mb-2 text-center font-alt text-2xl font-bold text-white'>{product.name}</div>
-          
+
           {/* Price Display */}
           <div className='mb-2 flex flex-col items-center gap-1'>
             <div className='flex items-baseline justify-center gap-1'>
-              <span className='text-4xl font-bold text-white'>
-                ${displayPrice()}
-              </span>
+              <span className='text-4xl font-bold text-white'>${displayPrice()}</span>
               <span className='text-lg text-zinc-400'>
                 {yearPrice != null && isBillingIntervalYearly ? '/year' : monthPrice != null ? '/month' : null}
               </span>
             </div>
-            
           </div>
 
           <p className='text-center text-sm text-zinc-400'>{product.description}</p>
@@ -103,18 +101,16 @@ export function PricingCard({
         <div className='m-auto flex w-full flex-1 flex-col gap-3 px-4 py-6'>
           {isPro ? (
             <>
-              <CheckItem icon={Zap} text="Unlimited active contests" />
-              <CheckItem icon={Shield} text="No ads on your contests" />
-              <CheckItem icon={Star} text="Custom branding & colors" />
-              <CheckItem icon={Crown} text="Priority email support" />
+              <CheckItem icon={Zap} text='Unlimited active contests' />
+              <CheckItem icon={Shield} text='No ads on your contests' />
+              <CheckItem icon={Star} text='Custom branding & colors' />
+              <CheckItem icon={Crown} text='Priority email support' />
             </>
           ) : (
             <>
-              <CheckItem 
-                text={metadata.activeContests === '1' ? '1 active contest at a time' : 'Unlimited contests'}
-              />
+              <CheckItem text={metadata.activeContests === '1' ? '1 active contest at a time' : 'Unlimited contests'} />
               <CheckItem text={metadata.hasAds ? 'Non-obtrusive ads' : 'No ads'} />
-              <CheckItem text="Custom branding & colors" />
+              <CheckItem text='Custom branding & colors' />
             </>
           )}
         </div>
@@ -133,8 +129,10 @@ export function PricingCard({
                     <Zap className='mr-2 h-5 w-5' />
                     {isLoggedIn ? 'Upgrade to Pro' : 'Sign up to subscribe'}
                   </>
+                ) : isLoggedIn ? (
+                  'Get Started'
                 ) : (
-                  isLoggedIn ? 'Get Started' : 'Get started free'
+                  'Get started free'
                 )}
               </Button>
             ) : !currentPrice ? (
@@ -142,11 +140,7 @@ export function PricingCard({
                 <Link href='/support'>Contact Us</Link>
               </Button>
             ) : (
-              <Button
-                variant="outline"
-                className='w-full border-zinc-700 text-zinc-400'
-                disabled
-              >
+              <Button variant='outline' className='w-full border-zinc-700 text-zinc-400' disabled>
                 Current Plan
               </Button>
             )}
@@ -184,11 +178,7 @@ export function WithSexyBorder({
       </SexyBorder>
     );
   } else {
-    return (
-      <div className={cn('rounded-md border-2 border-zinc-800', className)}>
-        {children}
-      </div>
-    );
+    return <div className={cn('rounded-md border-2 border-zinc-800', className)}>{children}</div>;
   }
 }
 

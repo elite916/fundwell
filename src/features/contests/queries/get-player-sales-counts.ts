@@ -31,4 +31,3 @@ export async function getPlayerSalesCounts(contestId: string): Promise<Record<st
 
   return counts;
 }
-

@@ -30,24 +30,25 @@ export function NavItems({ onClick, isAdmin }: NavItemsProps) {
 
   return (
     <>
-      {navItems.filter((item) => isAdmin || !item.adminOnly).map((item) => {
-        const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onClick}
-            className={cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-              isActive ? 'bg-orange-500/10 text-orange-500' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
-            )}
-          >
-            <item.icon className='h-5 w-5' />
-            {item.label}
-          </Link>
-        );
-      })}
+      {navItems
+        .filter((item) => isAdmin || !item.adminOnly)
+        .map((item) => {
+          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClick}
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                isActive ? 'bg-orange-500/10 text-orange-500' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+              )}
+            >
+              <item.icon className='h-5 w-5' />
+              {item.label}
+            </Link>
+          );
+        })}
     </>
   );
 }
-

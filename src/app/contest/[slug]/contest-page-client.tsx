@@ -79,7 +79,7 @@ function getObjectPosition(position?: string): string {
     'top-center': '50% 0%',
     'top-right': '100% 0%',
     'center-left': '0% 50%',
-    'center': '50% 50%',
+    center: '50% 50%',
     'center-right': '100% 50%',
     'bottom-left': '0% 100%',
     'bottom-center': '50% 100%',
@@ -88,7 +88,14 @@ function getObjectPosition(position?: string): string {
   return positionMap[position || 'center'] || '50% 50%';
 }
 
-export function ContestPageClient({ contest, squares, scores, hasAccess, showAds, paymentOptions }: ContestPageClientProps) {
+export function ContestPageClient({
+  contest,
+  squares,
+  scores,
+  hasAccess,
+  showAds,
+  paymentOptions,
+}: ContestPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const refParam = searchParams.get('ref');
@@ -103,15 +110,16 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
   useEffect(() => {
     if (refParam && contest.enable_player_tracking) {
       const players = (contest.players as Player[]) || [];
-      const found = players.find(p => p.slug.toLowerCase() === refParam.toLowerCase());
+      const found = players.find((p) => p.slug.toLowerCase() === refParam.toLowerCase());
       setReferredByPlayer(found || null);
     }
   }, [refParam, contest.enable_player_tracking, contest.players]);
 
   // Build contest URL for sharing (preserve ref param if present)
-  const contestUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/contest/${contest.slug}${refParam ? `?ref=${refParam}` : ''}`
-    : `/contest/${contest.slug}`;
+  const contestUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/contest/${contest.slug}${refParam ? `?ref=${refParam}` : ''}`
+      : `/contest/${contest.slug}`;
   const realtimeSquares = useRealtimeSquares(contest.id, squares);
 
   // Get winning square IDs for highlighting
@@ -158,20 +166,26 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
     };
 
     if (contest.prize_type === 'custom') {
-      return FOOTBALL_QUARTER_LABELS
-        .map((q) => ({ label: q.label, quarter: q.key as GameQuarter, percent: null, prizeText: prizeTextMap[q.key] }))
-        .filter((p) => p.prizeText);
+      return FOOTBALL_QUARTER_LABELS.map((q) => ({
+        label: q.label,
+        quarter: q.key as GameQuarter,
+        percent: null,
+        prizeText: prizeTextMap[q.key],
+      })).filter((p) => p.prizeText);
     }
 
-    return FOOTBALL_QUARTER_LABELS
-      .map((q) => ({ label: q.label, quarter: q.key as GameQuarter, percent: payoutMap[q.key] }))
-      .filter((p) => p.percent && p.percent > 0);
+    return FOOTBALL_QUARTER_LABELS.map((q) => ({
+      label: q.label,
+      quarter: q.key as GameQuarter,
+      percent: payoutMap[q.key],
+    })).filter((p) => p.percent && p.percent > 0);
   };
 
   const payoutList = buildPayoutList();
 
   // Show payouts if we have payout items OR if custom prizes exist
-  const hasCustomPrizes = contest.prize_type === 'custom' && 
+  const hasCustomPrizes =
+    contest.prize_type === 'custom' &&
     (contest.prize_q1_text || contest.prize_q2_text || contest.prize_q3_text || contest.prize_final_text);
   const showPayouts = !hasWinners && (payoutList.length > 0 || hasCustomPrizes);
   const showSidebar = showAds || hasWinners || showPayouts;
@@ -187,17 +201,16 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
     return payoutMap[quarter] ?? 0;
   };
 
-
   // Get winner info from square
   const getWinnerInfo = (squareId: string): { name: string; row: number; col: number } | null => {
     const square = realtimeSquares.find((s) => s.id === squareId);
     if (!square) return null;
-    
+
     const hasName = square.claimant_first_name || square.claimant_last_name;
-    const name = hasName 
+    const name = hasName
       ? `${square.claimant_first_name || ''} ${square.claimant_last_name || ''}`.trim()
       : `Row ${square.row_index}, Col ${square.col_index}`;
-    
+
     return { name, row: square.row_index, col: square.col_index };
   };
 
@@ -250,15 +263,19 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
   const getStatusBadge = () => {
     switch (contest.status) {
       case 'draft':
-        return <Badge variant="secondary" className="bg-zinc-700 text-zinc-300">Draft</Badge>;
+        return (
+          <Badge variant='secondary' className='bg-zinc-700 text-zinc-300'>
+            Draft
+          </Badge>
+        );
       case 'open':
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/50">Open for Claims</Badge>;
+        return <Badge className='border-green-500/50 bg-green-500/20 text-green-400'>Open for Claims</Badge>;
       case 'locked':
-        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/50">Locked</Badge>;
+        return <Badge className='border-amber-500/50 bg-amber-500/20 text-amber-400'>Locked</Badge>;
       case 'in_progress':
-        return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50">Game in Progress</Badge>;
+        return <Badge className='border-orange-500/50 bg-orange-500/20 text-orange-400'>Game in Progress</Badge>;
       case 'completed':
-        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">Completed</Badge>;
+        return <Badge className='border-blue-500/50 bg-blue-500/20 text-blue-400'>Completed</Badge>;
       default:
         return null;
     }
@@ -267,7 +284,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
   // Show PIN modal if needed
   if (showPinModal) {
     return (
-      <div className="min-h-screen bg-zinc-900">
+      <div className='min-h-screen bg-zinc-900'>
         <PinEntryModal
           isOpen={true}
           contestName={contest.name}
@@ -279,65 +296,63 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900">
+    <div className='min-h-screen bg-zinc-900'>
       {/* Hero Section */}
-      <div className="relative">
+      <div className='relative'>
         {/* Hero Banner */}
-        <div className="relative h-64 w-full md:h-96">
+        <div className='relative h-64 w-full md:h-96'>
           {contest.hero_image_url ? (
             <Image
               src={contest.hero_image_url}
               alt={contest.name}
               fill
-              className="object-cover"
+              className='object-cover'
               style={{ objectPosition: getObjectPosition(contest.hero_image_position) }}
               priority
             />
           ) : (
             <div
-              className="h-full w-full"
+              className='h-full w-full'
               style={{
                 background: `linear-gradient(135deg, ${contest.primary_color} 0%, ${contest.secondary_color} 100%)`,
               }}
             />
           )}
           {/* Dark gradient overlay at bottom for readability */}
-          <div className="absolute inset-0 bg-linear-to-t/srgb from-zinc-900/80 to-transparent" />
+          <div className='absolute inset-0 bg-linear-to-t/srgb from-zinc-900/80 to-transparent' />
         </div>
 
         {/* Circle Logo Overlay */}
-        <div className="absolute -bottom-10 left-4 md:-bottom-14 md:left-8">
+        <div className='absolute -bottom-10 left-4 md:-bottom-14 md:left-8'>
           <div
-            className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-zinc-900 shadow-xl md:h-28 md:w-28"
+            className='flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-zinc-900 shadow-xl md:h-28 md:w-28'
             style={{ backgroundColor: contest.primary_color }}
           >
             {contest.org_image_url ? (
               <Image
                 src={contest.org_image_url}
-                alt="Organization logo"
+                alt='Organization logo'
                 width={112}
                 height={112}
-                className="h-full w-full object-cover"
+                className='h-full w-full object-cover'
               />
             ) : (
-              <span className="text-xl font-bold text-white md:text-3xl">
-                {getInitials()}
-              </span>
+              <span className='text-xl font-bold text-white md:text-3xl'>{getInitials()}</span>
             )}
           </div>
         </div>
       </div>
 
       {/* Content with padding to account for overlapping logo */}
-      <div className="pt-14 px-4 md:pt-20">
-        <div className="mx-auto max-w-6xl">
+      <div className='px-4 pt-14 md:pt-20'>
+        <div className='mx-auto max-w-6xl'>
           {/* Contest Name & Status */}
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-white sm:text-3xl md:text-4xl">{contest.name}</h1>
-            <div className="flex flex-wrap items-center gap-2">
+          <div className='space-y-2'>
+            <h1 className='text-2xl font-bold text-white sm:text-3xl md:text-4xl'>{contest.name}</h1>
+            <div className='flex flex-wrap items-center gap-2'>
               {getStatusBadge()}
               <Badge
-                className="border-0"
+                className='border-0'
                 style={{
                   backgroundColor: `${contest.primary_color}20`,
                   color: contest.primary_color,
@@ -349,63 +364,58 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
           </div>
 
           {/* Team Matchup */}
-          <div className="mt-4 flex items-center gap-4">
-            <div className="flex items-center gap-3 rounded-lg bg-zinc-800/50 px-4 py-3 backdrop-blur-xs">
-              <span className="text-lg font-semibold text-white">{contest.row_team_name}</span>
-              <span className="text-zinc-500">vs</span>
-              <span className="text-lg font-semibold text-white">{contest.col_team_name}</span>
+          <div className='mt-4 flex items-center gap-4'>
+            <div className='flex items-center gap-3 rounded-lg bg-zinc-800/50 px-4 py-3 backdrop-blur-xs'>
+              <span className='text-lg font-semibold text-white'>{contest.row_team_name}</span>
+              <span className='text-zinc-500'>vs</span>
+              <span className='text-lg font-semibold text-white'>{contest.col_team_name}</span>
             </div>
           </div>
 
           {/* Description */}
-          {contest.description && (
-            <p className="mt-3 max-w-2xl text-zinc-400">{contest.description}</p>
-          )}
+          {contest.description && <p className='mt-3 max-w-2xl text-zinc-400'>{contest.description}</p>}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-6xl px-4 pt-6 pb-8 sm:px-6 lg:px-8">
+      <div className='mx-auto max-w-6xl px-4 pt-6 pb-8 sm:px-6 lg:px-8'>
         <div
           className={cn(
             'space-y-6',
-            showSidebar && 'lg:grid lg:grid-cols-[1fr_300px] lg:gap-8 lg:items-start lg:space-y-0'
+            showSidebar && 'lg:space-y-0 lg:grid lg:grid-cols-[1fr_300px] lg:items-start lg:gap-8'
           )}
         >
-          <div className="space-y-6">
+          <div className='space-y-6'>
             {/* Status Message */}
             {contest.status === 'draft' && (
-              <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4">
-                <p className="text-amber-400">
+              <div className='rounded-lg border border-amber-500/50 bg-amber-500/10 p-4'>
+                <p className='text-amber-400'>
                   🔒 This contest is still in draft mode and not yet open for square claims.
                 </p>
               </div>
             )}
 
             {contest.status === 'locked' && (
-              <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4">
-                <p className="text-amber-400">
-                  🔒 This contest is locked. No more squares can be claimed.
-                </p>
+              <div className='rounded-lg border border-amber-500/50 bg-amber-500/10 p-4'>
+                <p className='text-amber-400'>🔒 This contest is locked. No more squares can be claimed.</p>
               </div>
             )}
 
             {contest.status === 'completed' && (
-              <div className="rounded-lg border border-blue-500/50 bg-blue-500/10 p-4">
-                <p className="text-blue-400">
-                  🏆 This contest has been completed. Check the scores below!
-                </p>
+              <div className='rounded-lg border border-blue-500/50 bg-blue-500/10 p-4'>
+                <p className='text-blue-400'>🏆 This contest has been completed. Check the scores below!</p>
               </div>
             )}
 
             {/* Claiming Instructions */}
             {contest.status === 'open' && (
-              <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4">
-                <p className="text-green-400">
+              <div className='rounded-lg border border-green-500/50 bg-green-500/10 p-4'>
+                <p className='text-green-400'>
                   ✨ Click on any available square to claim it!
                   {contest.max_squares_per_person && (
-                    <span className="ml-2 text-green-300">
-                      (Limit: {contest.max_squares_per_person} square{contest.max_squares_per_person > 1 ? 's' : ''} per person)
+                    <span className='ml-2 text-green-300'>
+                      (Limit: {contest.max_squares_per_person} square{contest.max_squares_per_person > 1 ? 's' : ''} per
+                      person)
                     </span>
                   )}
                 </p>
@@ -413,7 +423,7 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
             )}
 
             {/* Squares Grid */}
-            <div className="rounded-lg border border-zinc-700 bg-zinc-800/50">
+            <div className='rounded-lg border border-zinc-700 bg-zinc-800/50'>
               <SquaresGrid
                 squares={realtimeSquares}
                 rowTeamName={contest.row_team_name}
@@ -430,150 +440,140 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
 
           {/* Right Sidebar: Payouts/Winners + Ad */}
           {showSidebar && (
-          <div className="space-y-4">
-            {/* Payouts Section (only when no winners yet) */}
-            {showPayouts && (
-              <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-                <h2 className="text-lg font-bold text-white mb-1">Payouts if all squares sell</h2>
-                <p className="text-xs text-zinc-400 mb-3">
-                  Help sell all squares —{' '}
-                  <button
-                    onClick={() => setIsShareModalOpen(true)}
-                    className="text-orange-400 hover:text-orange-300 inline-flex items-center gap-1"
-                  >
-                    <Share2 className="h-3 w-3" />
-                    share now
-                  </button>
-                </p>
-                <div className="space-y-2">
-                  {payoutList.map((payout) => {
-                    const prizeText = contest.prize_type === 'custom' 
-                      ? (payout as { prizeText?: string | null }).prizeText
-                      : getPrizeText(contest.prize_type, payout.quarter, contest);
-                    
-                    if (contest.prize_type === 'custom' && prizeText) {
+            <div className='space-y-4'>
+              {/* Payouts Section (only when no winners yet) */}
+              {showPayouts && (
+                <div className='rounded-lg border border-zinc-700 bg-zinc-800/50 p-4'>
+                  <h2 className='mb-1 text-lg font-bold text-white'>Payouts if all squares sell</h2>
+                  <p className='mb-3 text-xs text-zinc-400'>
+                    Help sell all squares —{' '}
+                    <button
+                      onClick={() => setIsShareModalOpen(true)}
+                      className='inline-flex items-center gap-1 text-orange-400 hover:text-orange-300'
+                    >
+                      <Share2 className='h-3 w-3' />
+                      share now
+                    </button>
+                  </p>
+                  <div className='space-y-2'>
+                    {payoutList.map((payout) => {
+                      const prizeText =
+                        contest.prize_type === 'custom'
+                          ? (payout as { prizeText?: string | null }).prizeText
+                          : getPrizeText(contest.prize_type, payout.quarter, contest);
+
+                      if (contest.prize_type === 'custom' && prizeText) {
+                        return (
+                          <div
+                            key={payout.label}
+                            className='flex items-center justify-between rounded bg-zinc-800 px-3 py-2'
+                          >
+                            <span className='text-sm text-zinc-300'>{payout.label}</span>
+                            <span className='text-sm font-semibold text-white'>{prizeText}</span>
+                          </div>
+                        );
+                      }
+                      const percent = payout.percent ?? 0;
+                      const expectedPayout = calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, percent);
+                      const currentPayout = calculatePrizeAmount(squaresSold, contest.square_price, percent);
                       return (
                         <div
                           key={payout.label}
-                          className="flex items-center justify-between rounded bg-zinc-800 px-3 py-2"
+                          className='flex items-center justify-between rounded bg-zinc-800 px-3 py-2'
                         >
-                          <span className="text-sm text-zinc-300">{payout.label}</span>
-                          <span className="text-sm font-semibold text-white">{prizeText}</span>
-                        </div>
-                      );
-                    }
-                    const percent = payout.percent ?? 0;
-                    const expectedPayout = calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, percent);
-                    const currentPayout = calculatePrizeAmount(squaresSold, contest.square_price, percent);
-                    return (
-                      <div
-                        key={payout.label}
-                        className="flex items-center justify-between rounded bg-zinc-800 px-3 py-2"
-                      >
-                        <span className="text-sm text-zinc-300">{payout.label}</span>
-                        <div className="text-right">
-                          <span className="text-sm font-semibold text-white">
-                            {formatPrizeAmount(expectedPayout)}
-                          </span>
-                          <span className="text-xs text-zinc-500 ml-1">
-                            ({formatPrizeAmount(currentPayout)} now)
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {contest.prize_type !== 'custom' && (
-                  <div className="mt-3 pt-3 border-t border-zinc-700 flex justify-between">
-                    <span className="text-sm text-zinc-400">Total Payouts</span>
-                    <div className="text-right">
-                      {(() => {
-                        const totalPercent = payoutList.reduce((sum, p) => sum + (p.percent || 0), 0);
-                        const expectedTotal = calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, totalPercent);
-                        const currentTotal = calculatePrizeAmount(squaresSold, contest.square_price, totalPercent);
-                        return (
-                          <>
-                            <span className="text-sm font-bold text-white">{formatPrizeAmount(expectedTotal)}</span>
-                            <span className="text-xs text-zinc-500 ml-1">({formatPrizeAmount(currentTotal)} now)</span>
-                          </>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Winners Section */}
-            {hasWinners && (
-              <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Trophy className="h-5 w-5 text-amber-400" />
-                  <h2 className="text-lg font-bold text-white">Winners</h2>
-                </div>
-                <div className="space-y-3">
-                  {scores
-                    .filter((score) => score.winning_square_id)
-                    .map((score) => {
-                      const winnerInfo = getWinnerInfo(score.winning_square_id!);
-                      const payoutPercent = getPayoutPercent(score.quarter);
-                      const payoutAmount = calculatePrizeAmount(squaresSold, contest.square_price, payoutPercent);
-                      const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
-
-                      return (
-                        <div
-                          key={score.id}
-                          className="rounded-lg bg-zinc-800/50 p-3"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-amber-400 text-sm">
-                              {quarterDisplayNames[score.quarter]}
+                          <span className='text-sm text-zinc-300'>{payout.label}</span>
+                          <div className='text-right'>
+                            <span className='text-sm font-semibold text-white'>
+                              {formatPrizeAmount(expectedPayout)}
                             </span>
-                            {contest.prize_type === 'custom' && prizeText ? (
-                              <span className="text-sm font-bold text-green-400">
-                                {prizeText}
-                              </span>
-                            ) : payoutPercent > 0 ? (
-                              <span className="text-sm font-bold text-green-400">
-                                {formatPrizeAmount(payoutAmount)}
-                              </span>
-                            ) : null}
+                            <span className='ml-1 text-xs text-zinc-500'>({formatPrizeAmount(currentPayout)} now)</span>
                           </div>
-                          <p className="text-xs text-zinc-400 mt-1">
-                            {contest.row_team_name} {score.home_score} - {contest.col_team_name} {score.away_score}
-                          </p>
-                          {winnerInfo && (
-                            <p className="text-sm text-white mt-1 font-medium">
-                              {winnerInfo.name}
-                            </p>
-                          )}
                         </div>
                       );
                     })}
+                  </div>
+                  {contest.prize_type !== 'custom' && (
+                    <div className='mt-3 flex justify-between border-t border-zinc-700 pt-3'>
+                      <span className='text-sm text-zinc-400'>Total Payouts</span>
+                      <div className='text-right'>
+                        {(() => {
+                          const totalPercent = payoutList.reduce((sum, p) => sum + (p.percent || 0), 0);
+                          const expectedTotal = calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, totalPercent);
+                          const currentTotal = calculatePrizeAmount(squaresSold, contest.square_price, totalPercent);
+                          return (
+                            <>
+                              <span className='text-sm font-bold text-white'>{formatPrizeAmount(expectedTotal)}</span>
+                              <span className='ml-1 text-xs text-zinc-500'>
+                                ({formatPrizeAmount(currentTotal)} now)
+                              </span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Ad */}
-            {showAds && (
-              <AdPlaceholder size="rectangle" className="mx-auto lg:mx-0" />
-            )}
-          </div>
+              {/* Winners Section */}
+              {hasWinners && (
+                <div className='rounded-lg border border-amber-500/30 bg-amber-500/5 p-4'>
+                  <div className='mb-3 flex items-center gap-2'>
+                    <Trophy className='h-5 w-5 text-amber-400' />
+                    <h2 className='text-lg font-bold text-white'>Winners</h2>
+                  </div>
+                  <div className='space-y-3'>
+                    {scores
+                      .filter((score) => score.winning_square_id)
+                      .map((score) => {
+                        const winnerInfo = getWinnerInfo(score.winning_square_id!);
+                        const payoutPercent = getPayoutPercent(score.quarter);
+                        const payoutAmount = calculatePrizeAmount(squaresSold, contest.square_price, payoutPercent);
+                        const prizeText = getPrizeText(contest.prize_type, score.quarter, contest);
+
+                        return (
+                          <div key={score.id} className='rounded-lg bg-zinc-800/50 p-3'>
+                            <div className='flex items-center justify-between gap-2'>
+                              <span className='text-sm font-semibold text-amber-400'>
+                                {quarterDisplayNames[score.quarter]}
+                              </span>
+                              {contest.prize_type === 'custom' && prizeText ? (
+                                <span className='text-sm font-bold text-green-400'>{prizeText}</span>
+                              ) : payoutPercent > 0 ? (
+                                <span className='text-sm font-bold text-green-400'>
+                                  {formatPrizeAmount(payoutAmount)}
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className='mt-1 text-xs text-zinc-400'>
+                              {contest.row_team_name} {score.home_score} - {contest.col_team_name} {score.away_score}
+                            </p>
+                            {winnerInfo && <p className='mt-1 text-sm font-medium text-white'>{winnerInfo.name}</p>}
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {/* Ad */}
+              {showAds && <AdPlaceholder size='rectangle' className='mx-auto lg:mx-0' />}
+            </div>
           )}
         </div>
       </div>
 
       {/* Bottom Ad */}
       {showAds && (
-        <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6 lg:px-8">
-          <div className="flex justify-center">
-            <AdPlaceholder size="banner" />
+        <div className='mx-auto max-w-6xl px-4 pb-8 sm:px-6 lg:px-8'>
+          <div className='flex justify-center'>
+            <AdPlaceholder size='banner' />
           </div>
         </div>
       )}
 
       {/* Footer (shared styling from marketing pages) */}
-      <div className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
+      <div className='mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8'>
         <MarketingFooter />
       </div>
 
@@ -605,5 +605,3 @@ export function ContestPageClient({ contest, squares, scores, hasAccess, showAds
     </div>
   );
 }
-
-

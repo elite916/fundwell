@@ -14,16 +14,15 @@ export async function deleteContest(contestId: string): Promise<ActionResponse<n
   return withContestOwnership<null>(contestId, async (user, supabase, contest) => {
     // Check if already deleted
     if (contest.deleted_at) {
-      logger.error('deleteContest', new Error('Contest already deleted'), { 
-        contestId, 
-        deletedAt: contest.deleted_at 
+      logger.error('deleteContest', new Error('Contest already deleted'), {
+        contestId,
+        deletedAt: contest.deleted_at,
       });
       throw new ValidationError('Contest has already been deleted');
     }
 
     // Use the database function instead of direct UPDATE
-    const { data, error: deleteError } = await supabase
-      .rpc('soft_delete_contest', { contest_id: contestId });
+    const { data, error: deleteError } = await supabase.rpc('soft_delete_contest', { contest_id: contestId });
 
     if (deleteError) {
       logger.error('deleteContest', deleteError, {

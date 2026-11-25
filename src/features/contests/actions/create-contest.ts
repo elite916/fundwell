@@ -117,18 +117,14 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
     // Prize settings
     prize_type: data.prizeType,
     // Prize text fields - only include values when prizeType is 'custom', otherwise null
-    prize_q1_text: data.prizeType === 'custom' ? (data.prizeQ1Text || null) : null,
-    prize_q2_text: data.prizeType === 'custom' ? (data.prizeQ2Text || null) : null,
-    prize_q3_text: data.prizeType === 'custom' ? (data.prizeQ3Text || null) : null,
-    prize_final_text: data.prizeType === 'custom' ? (data.prizeFinalText || null) : null,
+    prize_q1_text: data.prizeType === 'custom' ? data.prizeQ1Text || null : null,
+    prize_q2_text: data.prizeType === 'custom' ? data.prizeQ2Text || null : null,
+    prize_q3_text: data.prizeType === 'custom' ? data.prizeQ3Text || null : null,
+    prize_final_text: data.prizeType === 'custom' ? data.prizeFinalText || null : null,
     status: 'draft',
   };
 
-  const { data: contest, error: insertError } = await supabase
-    .from('contests')
-    .insert(insertData)
-    .select()
-    .single();
+  const { data: contest, error: insertError } = await supabase.from('contests').insert(insertData).select().single();
 
   if (insertError) {
     logger.error('createContest', insertError, {

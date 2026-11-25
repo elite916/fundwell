@@ -50,7 +50,7 @@ export function RouteProgress() {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
-      
+
       if (anchor?.href && anchor.href.startsWith(window.location.origin)) {
         const url = new URL(anchor.href);
         if (url.pathname !== pathname) {
@@ -70,7 +70,7 @@ export function RouteProgress() {
   if (!isLoading && progress === 0) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-0.5">
+    <div className='fixed top-0 right-0 left-0 z-50 h-0.5'>
       <div
         className={cn(
           'h-full bg-linear-to-r/srgb from-orange-500 to-amber-400 transition-all duration-200 ease-out',
@@ -81,4 +81,3 @@ export function RouteProgress() {
     </div>
   );
 }
-

@@ -56,7 +56,7 @@ export default function ConfirmEmailPage() {
       <div className='relative mt-16 flex w-full flex-col gap-8 overflow-hidden rounded-2xl border border-zinc-800 p-8 text-center md:p-12'>
         {/* Background decorative elements */}
         <div className='absolute inset-0 -z-10'>
-          <div className='absolute right-0 top-0 h-[300px] w-[300px] rounded-full blur-3xl' />
+          <div className='absolute top-0 right-0 h-[300px] w-[300px] rounded-full blur-3xl' />
           <div className='absolute bottom-0 left-0 h-[250px] w-[250px] rounded-full blur-3xl' />
         </div>
 
@@ -64,8 +64,8 @@ export default function ConfirmEmailPage() {
           <Logo size='lg' className='m-auto' />
           <h1 className='text-2xl font-bold text-fundwell-text md:text-3xl'>Check your email</h1>
           <p className='text-zinc-400'>
-            We sent a magic link to <span className='font-medium text-fundwell-text'>{email}</span>.
-            Click the link in the email to continue.
+            We sent a magic link to <span className='font-medium text-fundwell-text'>{email}</span>. Click the link in
+            the email to continue.
           </p>
         </div>
 
@@ -95,10 +95,7 @@ export default function ConfirmEmailPage() {
             {canResend ? 'Resend email' : `Resend email in ${countdown}s`}
           </Button>
 
-          <Link
-            href='/login'
-            className='text-sm text-zinc-400 underline transition-colors hover:text-fundwell-primary'
-          >
+          <Link href='/login' className='text-sm text-zinc-400 underline transition-colors hover:text-fundwell-primary'>
             Back to login
           </Link>
         </div>
@@ -106,4 +103,3 @@ export default function ConfirmEmailPage() {
     </section>
   );
 }
-
