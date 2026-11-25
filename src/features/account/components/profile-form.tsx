@@ -3,7 +3,7 @@
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { TextField } from '@/components/studio/text-field';
 import { useToast } from '@/components/ui/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -72,9 +72,9 @@ export function ProfileForm({ defaultName }: ProfileFormProps) {
       />
 
       <div className={css.save}>
-        <DashButton type='submit' disabled={isPending} aria-busy={isPending}>
+        <BusyButton busy={isPending} type='submit'>
           {isPending ? 'Saving...' : 'Save Changes'}
-        </DashButton>
+        </BusyButton>
       </div>
     </form>
   );

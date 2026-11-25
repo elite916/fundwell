@@ -55,6 +55,11 @@
     border-radius: 14px;
     background: var(--studio-sheet);
   }
+  @media (max-width: 479px) {
+    .form {
+      padding: 18px 12px;
+    }
+  }
   .formButtons {
     display: flex;
     flex-wrap: wrap;

@@ -117,6 +117,7 @@ export function AuthUI({
                 error={errors.email?.message}
                 {...register('email')}
               />
+              {/* A captcha goes here: 300px wide fits from 360px screens up */}
               <div className={css.formButtons}>
                 <Button look='link' onClick={() => handleEmailFormOpenChange(false)} disabled={pending}>
                   Cancel

@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 
 import { DashButton, IconButton } from '@/components/studio/dashboard/dash-button';
 import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { cn } from '@/utils/cn';
 
 import css from '@/components/studio/setup/setup.module.css';
@@ -161,9 +162,9 @@ export function ImageUploadModal({ isOpen, onClose, onUpload, imageType, isUploa
         <DashButton look='quiet' onClick={handleClose} disabled={isUploading}>
           Cancel
         </DashButton>
-        <DashButton onClick={handleUpload} disabled={!selectedFile || isUploading} aria-busy={isUploading}>
+        <BusyButton busy={isUploading} onClick={handleUpload} disabled={!selectedFile}>
           Upload
-        </DashButton>
+        </BusyButton>
       </DashDialogFoot>
     </DashDialog>
   );

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
 import { Tag } from '@/components/studio/dashboard/dash-page';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { SetupSection } from '@/components/studio/setup/section';
 import { useToast } from '@/components/ui/use-toast';
 import { Database } from '@/libs/supabase/types';
@@ -173,9 +174,9 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
           <DashButton look='quiet' onClick={() => setConfirmDialog(null)} disabled={isPending}>
             Cancel
           </DashButton>
-          <DashButton onClick={confirmTransition} disabled={isPending} aria-busy={isPending}>
+          <BusyButton busy={isPending} onClick={confirmTransition}>
             {confirmDialog?.label}
-          </DashButton>
+          </BusyButton>
         </DashDialogFoot>
       </DashDialog>
     </SetupSection>

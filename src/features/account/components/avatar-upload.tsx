@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from 'react';
 import Image from 'next/image';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { useToast } from '@/components/ui/use-toast';
 
 import { uploadAvatar } from '../actions/upload-avatar';
@@ -159,9 +160,9 @@ export function AvatarUpload({ currentAvatarUrl, userEmail }: AvatarUploadProps)
           </div>
 
           <div className={css.row}>
-            <DashButton onClick={handleUpload} disabled={isPending} aria-busy={isPending}>
+            <BusyButton busy={isPending} onClick={handleUpload}>
               {isPending ? 'Uploading...' : 'Upload'}
-            </DashButton>
+            </BusyButton>
             <DashButton look='quiet' onClick={handleCancel} disabled={isPending}>
               Cancel
             </DashButton>

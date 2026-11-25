@@ -6,6 +6,7 @@ import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 
 import { DashButton, IconButton } from '@/components/studio/dashboard/dash-button';
 import { Select } from '@/components/studio/select';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { SetupSection } from '@/components/studio/setup/section';
 import { TextField } from '@/components/studio/text-field';
 import { srOnly } from '@/components/studio/theme';
@@ -485,15 +486,15 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
                 disabled={option.id.startsWith('new-')}
               />
               <div className={css.row}>
-                <DashButton
+                <BusyButton
+                  busy={uploadingQrId === option.id}
                   look='quiet'
                   onClick={() => fileInputRefs.current[option.id]?.click()}
-                  disabled={uploadingQrId === option.id || option.id.startsWith('new-')}
-                  aria-busy={uploadingQrId === option.id}
+                  disabled={option.id.startsWith('new-')}
                 >
                   {uploadingQrId === option.id ? 'Uploading...' : option.qr_code_url ? 'Replace' : 'Upload QR Code'}
                   <span className={srOnly}> for Payment Option {index + 1}</span>
-                </DashButton>
+                </BusyButton>
                 {option.qr_code_url && (
                   <DashButton look='quiet' onClick={() => handleQrDelete(option.id, option.qr_code_url)}>
                     Remove
@@ -518,9 +519,9 @@ export function PaymentOptionsSection({ contest, paymentOptions }: PaymentOption
 
       {/* Save Button */}
       <div className={css.save}>
-        <DashButton onClick={handleSave} disabled={isPending || !hasChanges} aria-busy={isPending}>
+        <BusyButton busy={isPending} onClick={handleSave} disabled={!hasChanges}>
           Save Changes
-        </DashButton>
+        </BusyButton>
       </div>
     </SetupSection>
   );

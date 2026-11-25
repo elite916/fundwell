@@ -5,6 +5,7 @@ import { Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
 import { DashButton, DashInput, IconButton } from '@/components/studio/dashboard/dash-button';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { SwitchRow } from '@/components/studio/setup/fields';
 import { SetupSection } from '@/components/studio/setup/section';
 import { srOnly } from '@/components/studio/theme';
@@ -180,9 +181,9 @@ export function PlayerTrackingSection({ contest, squaresPerPlayer = {} }: Player
                 type='number'
                 {...register('number')}
               />
-              <DashButton type='submit' look='quiet' disabled={isPending} aria-busy={isPending}>
+              <BusyButton busy={isPending} type='submit' look='quiet'>
                 Add
-              </DashButton>
+              </BusyButton>
             </div>
           </form>
 

@@ -4,7 +4,7 @@ import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { PinField, SwitchRow } from '@/components/studio/setup/fields';
 import { SetupSection } from '@/components/studio/setup/section';
 import { useToast } from '@/components/ui/use-toast';
@@ -158,9 +158,9 @@ export function AccessControlSection({ contest, accessPin }: AccessControlSectio
 
         {/* Submit Button */}
         <div className={css.save}>
-          <DashButton type='submit' disabled={isPending || !isDirty} aria-busy={isPending}>
+          <BusyButton busy={isPending} type='submit' disabled={!isDirty}>
             Save Changes
-          </DashButton>
+          </BusyButton>
         </div>
       </form>
     </SetupSection>

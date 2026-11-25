@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { ColorField } from '@/components/studio/setup/fields';
 import { SetupSection } from '@/components/studio/setup/section';
 import { srOnly } from '@/components/studio/theme';
@@ -279,13 +280,13 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
       <div className={css.row}>
         <DashButton look='quiet' onClick={() => setHeroModalOpen(true)}>
           {heroImageUrl ? 'Replace' : 'Upload Image'}
-          <span className={srOnly}>, Hero Image</span>
+          <span className={srOnly}> Hero Image</span>
         </DashButton>
 
         {heroImageUrl && (
-          <DashButton look='quiet' onClick={handleHeroDelete} disabled={heroDeleting} aria-busy={heroDeleting}>
-            Remove<span className={srOnly}>, Hero Image</span>
-          </DashButton>
+          <BusyButton busy={heroDeleting} look='quiet' onClick={handleHeroDelete}>
+            Remove<span className={srOnly}> Hero Image</span>
+          </BusyButton>
         )}
       </div>
 
@@ -315,13 +316,13 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
       <div className={css.row}>
         <DashButton look='quiet' onClick={() => setLogoModalOpen(true)}>
           {logoImageUrl ? 'Replace' : 'Upload Image'}
-          <span className={srOnly}>, Organization Logo</span>
+          <span className={srOnly}> Organization Logo</span>
         </DashButton>
 
         {logoImageUrl && (
-          <DashButton look='quiet' onClick={handleLogoDelete} disabled={logoDeleting} aria-busy={logoDeleting}>
-            Remove<span className={srOnly}>, Organization Logo</span>
-          </DashButton>
+          <BusyButton busy={logoDeleting} look='quiet' onClick={handleLogoDelete}>
+            Remove<span className={srOnly}> Organization Logo</span>
+          </BusyButton>
         )}
       </div>
 
@@ -357,9 +358,9 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
 
         {/* Submit Button */}
         <div className={css.save}>
-          <DashButton type='submit' disabled={isPending || !isDirty} aria-busy={isPending}>
+          <BusyButton busy={isPending} type='submit' disabled={!isDirty}>
             Save Colors
-          </DashButton>
+          </BusyButton>
         </div>
       </form>
 

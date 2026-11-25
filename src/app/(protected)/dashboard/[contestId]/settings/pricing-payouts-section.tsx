@@ -4,8 +4,8 @@ import { useTransition } from 'react';
 import { type Resolver, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { Note } from '@/components/studio/dashboard/dash-page';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { Segmented } from '@/components/studio/setup/fields';
 import { SetupSection } from '@/components/studio/setup/section';
 import { TextField } from '@/components/studio/text-field';
@@ -301,9 +301,9 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
           )}
 
           <div className={css.save}>
-            <DashButton type='submit' disabled={isPending || !isDirty} aria-busy={isPending}>
+            <BusyButton busy={isPending} type='submit' disabled={!isDirty}>
               Save Changes
-            </DashButton>
+            </BusyButton>
           </div>
         </fieldset>
       </form>
@@ -456,9 +456,9 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
           </dl>
 
           <div className={css.save}>
-            <DashButton type='submit' disabled={isPending || !isDirty} aria-busy={isPending}>
+            <BusyButton busy={isPending} type='submit' disabled={!isDirty}>
               Save Changes
-            </DashButton>
+            </BusyButton>
           </div>
         </fieldset>
       </form>

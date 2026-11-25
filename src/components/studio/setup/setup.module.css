@@ -373,6 +373,8 @@
     border-radius: 6px;
   }
   .upper {
+    /* Host Grotesk turns an X between digits into a times sign: wrong in a PIN */
+    font-variant-ligatures: none;
     text-transform: uppercase;
   }
   .upper::placeholder {
@@ -382,6 +384,24 @@
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+
+  /* Saving: a ring in the button, as today */
+  .busy::before {
+    content: '';
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin-right: 9px;
+    border: 2px solid currentcolor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: setup-turn 0.8s linear infinite;
+  }
+  @keyframes setup-turn {
+    to {
+      transform: rotate(1turn);
+    }
   }
 
   /* Payment options */
@@ -552,6 +572,7 @@
   }
   .stepDone i::before {
     content: '';
+    box-sizing: content-box;
     width: 12px;
     height: 6px;
     border: solid var(--studio-ink);

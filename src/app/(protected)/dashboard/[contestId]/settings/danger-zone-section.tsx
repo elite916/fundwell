@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { DashButton, DashInput } from '@/components/studio/dashboard/dash-button';
 import { DashDialog, DashDialogFoot } from '@/components/studio/dashboard/dash-dialog';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { SetupSection } from '@/components/studio/setup/section';
 import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
@@ -95,9 +96,9 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
           <DashButton look='quiet' onClick={() => setIsDialogOpen(false)} disabled={isPending}>
             Cancel
           </DashButton>
-          <DashButton onClick={handleDelete} disabled={!isConfirmationValid || isPending} aria-busy={isPending}>
+          <BusyButton busy={isPending} onClick={handleDelete} disabled={!isConfirmationValid}>
             Delete Contest
-          </DashButton>
+          </BusyButton>
         </DashDialogFoot>
       </DashDialog>
     </SetupSection>

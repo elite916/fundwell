@@ -6,6 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { BackLink, DashPage, PageHead, Panel } from '@/components/studio/dashboard/dash-page';
+import { BusyButton } from '@/components/studio/setup/busy-button';
 import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
 import { createContest } from '@/features/contests/actions/create-contest';
@@ -180,9 +181,9 @@ export function NewContestForm() {
                   Next
                 </DashButton>
               ) : (
-                <DashButton key='create' type='submit' disabled={isSubmitting} aria-busy={isSubmitting}>
+                <BusyButton busy={isSubmitting} key='create' type='submit'>
                   {isSubmitting ? 'Creating...' : 'Create Contest'}
-                </DashButton>
+                </BusyButton>
               )}
             </div>
           </form>
