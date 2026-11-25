@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { SquaresGrid } from '@/features/contests/components';
 import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
+import { ContestStatusType } from '@/features/contests/constants';
 import { useRealtimeSquares } from '@/hooks/use-realtime-squares';
 
 interface DashboardGridClientProps {
@@ -12,6 +13,7 @@ interface DashboardGridClientProps {
   rowTeamName: string;
   colTeamName: string;
   contestId: string;
+  contestStatus: ContestStatusType;
   squarePrice: number;
   rowNumbers?: number[] | null;
   colNumbers?: number[] | null;
@@ -23,6 +25,7 @@ export function DashboardGridClient({
   rowTeamName,
   colTeamName,
   contestId,
+  contestStatus,
   squarePrice,
   rowNumbers,
   colNumbers,
@@ -66,6 +69,7 @@ export function DashboardGridClient({
         onClose={handleCloseModal}
         square={selectedSquare}
         contestId={contestId}
+        contestStatus={contestStatus}
         squarePrice={squarePrice}
         onSuccess={handleSuccess}
       />

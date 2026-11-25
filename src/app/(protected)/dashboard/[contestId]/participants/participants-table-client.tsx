@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from '@/components/ui/use-toast';
 import { bulkUpdateSquares } from '@/features/contests/actions/bulk-update-squares';
 import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
+import { ContestStatusType } from '@/features/contests/constants';
 import { Participant } from '@/features/contests/queries/get-participants';
 
 type FilterStatus = 'all' | 'pending' | 'paid';
@@ -18,6 +19,7 @@ type FilterStatus = 'all' | 'pending' | 'paid';
 interface ParticipantsTableClientProps {
   participants: Participant[];
   contestId: string;
+  contestStatus: ContestStatusType;
   contestName: string;
   squarePrice: number;
 }
@@ -51,6 +53,7 @@ function slugify(text: string): string {
 export function ParticipantsTableClient({
   participants,
   contestId,
+  contestStatus,
   contestName,
   squarePrice,
 }: ParticipantsTableClientProps) {
@@ -367,6 +370,7 @@ export function ParticipantsTableClient({
         onClose={handleCloseModal}
         square={selectedSquare}
         contestId={contestId}
+        contestStatus={contestStatus}
         squarePrice={squarePrice}
         onSuccess={handleSuccess}
       />

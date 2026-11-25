@@ -1,11 +1,12 @@
 'use server';
 
-import { PaymentStatus, PaymentStatusType } from '@/features/contests/constants';
+import { hasGameStarted, NO_SQUARES_CHANGED, PaymentStatus, PaymentStatusType } from '@/features/contests/constants';
 import { ContestErrors } from '@/features/contests/constants/error-messages';
 import { ActionResponse } from '@/types/action-response';
 import { getCurrentISOString } from '@/utils/date-formatters';
 
 import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
+import { getSquareChangeRefusal, getSquareChangeRefusalFromDb } from '../utils/square-rules';
 
 interface BulkUpdateSquaresInput {
   contestId: string;
@@ -21,6 +22,28 @@ export async function bulkUpdateSquares({
   return withContestOwnership<{ updated: number }>(contestId, async (user, supabase, contest) => {
     if (squareIds.length === 0) {
       throw new ValidationError(ContestErrors.NO_SQUARES_SELECTED);
+    }
+
+    // After the start, one square that isn't allowed refuses the whole action
+    if (hasGameStarted(contest.status)) {
+      const { data: selected, error: selectError } = await supabase
+        .from('squares')
+        .select('payment_status')
+        .eq('contest_id', contestId)
+        .in('id', squareIds);
+
+      if (selectError) {
+        throw new Error(ContestErrors.FAILED_TO_UPDATE);
+      }
+
+      const refusal = getSquareChangeRefusal(
+        contest.status,
+        selected.map((s) => s.payment_status),
+        newStatus
+      );
+      if (refusal) {
+        throw new ValidationError(NO_SQUARES_CHANGED(refusal));
+      }
     }
 
     // Build update data based on new status
@@ -57,6 +80,10 @@ export async function bulkUpdateSquares({
       .in('id', squareIds);
 
     if (updateError) {
+      const dbRefusal = getSquareChangeRefusalFromDb(updateError.message);
+      if (dbRefusal) {
+        throw new ValidationError(NO_SQUARES_CHANGED(dbRefusal));
+      }
       throw new Error(ContestErrors.FAILED_TO_UPDATE);
     }
 
