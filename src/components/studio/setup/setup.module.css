@@ -373,8 +373,6 @@
     border-radius: 6px;
   }
   .upper {
-    /* Host Grotesk turns an X between digits into a times sign: wrong in a PIN */
-    font-variant-ligatures: none;
     text-transform: uppercase;
   }
   .upper::placeholder {

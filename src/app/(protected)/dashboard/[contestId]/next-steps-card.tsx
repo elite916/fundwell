@@ -31,7 +31,7 @@ function getNextStep(
 
   if (status === 'open') {
     return !hasNumbers
-      ? { message: 'Enter numbers or let them auto-generate when you lock the contest', actionLink: null }
+      ? { message: 'Enter numbers or shuffle them', actionLink: null }
       : { message: 'Lock the contest to prevent new claims and prepare for game day', actionLink: null };
   }
 

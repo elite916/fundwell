@@ -3,10 +3,11 @@
 import { useMemo, useState } from 'react';
 
 import { DashButton, DashInput } from '@/components/studio/dashboard/dash-button';
-import { say } from '@/components/studio/dashboard/dash-toast';
+import { say, sayProblem } from '@/components/studio/dashboard/dash-toast';
 import { srOnly } from '@/components/studio/theme';
 import { Player } from '@/features/contests/types/player';
 import { cn } from '@/utils/cn';
+import { copyText } from '@/utils/copy-text';
 import { getURL } from '@/utils/get-url';
 
 import css from '../table.module.css';
@@ -52,8 +53,8 @@ export function TeamMembersTableClient({
 
   const copyLink = async (player: Player) => {
     const url = getReferralLink(player);
-    await navigator.clipboard.writeText(url);
-    say(`Link copied for ${player.name}`);
+    if (await copyText(url)) say(`Link copied for ${player.name}`);
+    else sayProblem('Something went wrong. Please try again.');
   };
 
   const handleExportCSV = () => {

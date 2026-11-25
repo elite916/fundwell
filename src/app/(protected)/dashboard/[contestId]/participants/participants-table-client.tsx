@@ -11,6 +11,7 @@ import { bulkUpdateSquares } from '@/features/contests/actions/bulk-update-squar
 import { ManageSquare, ManageSquareModal } from '@/features/contests/components/manage-square-modal';
 import { ContestStatusType } from '@/features/contests/constants';
 import { Participant } from '@/features/contests/queries/get-participants';
+import { PaymentStatus } from '@/features/contests/types';
 import { cn } from '@/utils/cn';
 
 import css from '../table.module.css';
@@ -66,6 +67,7 @@ export function ParticipantsTableClient({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const selectAllRef = useRef<HTMLInputElement>(null);
+  const endFocusRef = useRef<HTMLElement | null>(null);
 
   // Filter participants based on search and status
   const filteredParticipants = useMemo(() => {
@@ -98,7 +100,9 @@ export function ParticipantsTableClient({
 
   // Check if all filtered participants are selected
   const allSelected = filteredParticipants.length > 0 && filteredParticipants.every((p) => selectedIds.has(p.id));
-  const someSelected = selectedIds.size > 0;
+  // A square released somewhere else may still be in `selectedIds`
+  const selectedSquareIds = participants.filter((p) => selectedIds.has(p.id)).map((p) => p.id);
+  const someSelected = selectedSquareIds.length > 0;
 
   const handleSelectAll = () => {
     if (allSelected) {
@@ -134,7 +138,7 @@ export function ParticipantsTableClient({
     startTransition(async () => {
       const result = await bulkUpdateSquares({
         contestId,
-        squareIds: Array.from(selectedIds),
+        squareIds: selectedSquareIds,
         newStatus: 'paid',
       });
 
@@ -151,6 +155,7 @@ export function ParticipantsTableClient({
   };
 
   const handleRowClick = (participant: Participant) => {
+    endFocusRef.current = null;
     setSelectedSquare(participant as ManageSquare);
     setIsModalOpen(true);
   };
@@ -160,7 +165,20 @@ export function ParticipantsTableClient({
     setSelectedSquare(null);
   };
 
-  const handleSuccess = () => {
+  const handleSuccess = (newStatus: PaymentStatus) => {
+    const square = selectedSquare;
+
+    if (square && newStatus === 'available') {
+      setSelectedIds((ids) => new Set([...ids].filter((id) => id !== square.id)));
+    }
+
+    // The square's row goes away: focus goes to the next one, or the one before it
+    if (square && (newStatus === 'available' || filterStatus !== 'all')) {
+      const index = filteredParticipants.findIndex((p) => p.id === square.id);
+      const near = filteredParticipants[index + 1] ?? filteredParticipants[index - 1];
+      endFocusRef.current = near ? document.getElementById(`manage-${near.id}`) : selectAllRef.current;
+    }
+
     router.refresh();
   };
 
@@ -202,7 +220,7 @@ export function ParticipantsTableClient({
       {/* Bulk Action Bar */}
       {someSelected && (
         <div role='region' aria-label='Selected' className={css.bulk}>
-          <span aria-live='polite'>{selectedIds.size} selected</span>
+          <span aria-live='polite'>{selectedSquareIds.length} selected</span>
           <DashButton onClick={handleBulkMarkAsPaid} disabled={isPending}>
             Mark as Paid
           </DashButton>
@@ -317,7 +335,7 @@ export function ParticipantsTableClient({
                     {formatDate(participant.claimed_at)}
                   </td>
                   <td role='cell' className={css.go}>
-                    <DashButton look='link' onClick={() => handleRowClick(participant)}>
+                    <DashButton look='link' id={`manage-${participant.id}`} onClick={() => handleRowClick(participant)}>
                       Manage<span className={srOnly}> {spoken}</span>
                     </DashButton>
                   </td>
@@ -337,6 +355,7 @@ export function ParticipantsTableClient({
         contestStatus={contestStatus}
         squarePrice={squarePrice}
         onSuccess={handleSuccess}
+        endFocus={() => endFocusRef.current}
       />
     </>
   );

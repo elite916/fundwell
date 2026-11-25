@@ -38,7 +38,9 @@ interface ManageSquareModalProps {
   contestId: string;
   contestStatus: ContestStatusType;
   squarePrice: number;
-  onSuccess?: () => void;
+  onSuccess?: (newStatus: PaymentStatus) => void;
+  /** Where focus goes when it closes, if what opened it is about to go away. */
+  endFocus?: () => HTMLElement | null | undefined;
 }
 
 const STATUS_LABELS: Record<PaymentStatus, string> = {
@@ -55,6 +57,7 @@ export function ManageSquareModal({
   contestStatus,
   squarePrice,
   onSuccess,
+  endFocus,
 }: ManageSquareModalProps) {
   const [isPending, startTransition] = useTransition();
 
@@ -81,7 +84,7 @@ export function ManageSquareModal({
 
       say(messages[newStatus]);
 
-      onSuccess?.();
+      onSuccess?.(newStatus);
       onClose();
     });
   };
@@ -95,6 +98,7 @@ export function ManageSquareModal({
       onClose={onClose}
       title='Manage Square'
       description={`Row ${square.row_index + 1}, Column ${square.col_index + 1}`}
+      endFocus={endFocus}
     >
       {/* Square Status */}
       <dl className={css.square}>

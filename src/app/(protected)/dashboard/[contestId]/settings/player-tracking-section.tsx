@@ -14,6 +14,7 @@ import { updateContest } from '@/features/contests/actions/update-contest';
 import { Player } from '@/features/contests/types/player';
 import { generatePlayerSlug } from '@/features/contests/utils/player-slug';
 import { Database } from '@/libs/supabase/types';
+import { copyText } from '@/utils/copy-text';
 import { getURL } from '@/utils/get-url';
 
 import css from '@/components/studio/setup/setup.module.css';
@@ -140,7 +141,10 @@ export function PlayerTrackingSection({ contest, squaresPerPlayer = {} }: Player
 
   const copyLink = async (player: Player) => {
     const url = `${getURL()}/contest/${contest.slug}?ref=${player.slug}`;
-    await navigator.clipboard.writeText(url);
+    if (!(await copyText(url))) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Something went wrong. Please try again.' });
+      return;
+    }
     toast({
       title: 'Link copied',
       description: `Referral link for ${player.name} copied to clipboard.`,

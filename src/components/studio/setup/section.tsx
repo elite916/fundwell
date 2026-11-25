@@ -14,7 +14,9 @@ export function SetupSection({ id, title, description, children }: SetupSectionP
   return (
     <section id={id} aria-labelledby={`${id}-title`} className={css.section}>
       <header>
-        <h2 id={`${id}-title`}>{title}</h2>
+        <h2 id={`${id}-title`} tabIndex={-1}>
+          {title}
+        </h2>
         <p>{description}</p>
       </header>
       <div>{children}</div>

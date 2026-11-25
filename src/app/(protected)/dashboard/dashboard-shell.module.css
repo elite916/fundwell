@@ -140,6 +140,9 @@
     font-weight: 600;
     text-transform: uppercase;
   }
+  .avatar[data-letter]::before {
+    content: attr(data-letter);
+  }
   .avatar img {
     object-fit: cover;
   }

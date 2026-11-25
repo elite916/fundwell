@@ -7,7 +7,7 @@ import { Button } from '@/components/studio/button';
 import { Sheet } from '@/components/studio/sheet';
 import { srOnly } from '@/components/studio/theme';
 import { Mid, Soft } from '@/components/studio/type';
-import { logger } from '@/utils/logger';
+import { copyText, selectText } from '@/utils/copy-text';
 
 import css from './contest.module.css';
 
@@ -27,6 +27,7 @@ export function ShareButton({ contestName, contestSlug, referral, accessPin, col
   const [isCopied, setIsCopied] = useState(false);
   const [hasQr, setHasQr] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
+  const urlRef = useRef<HTMLSpanElement>(null);
 
   // Only read once the sheet is open, so never on the server
   const contestUrl = isOpen
@@ -40,12 +41,12 @@ export function ShareButton({ contestName, contestSlug, referral, accessPin, col
   };
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(contestUrl);
+    if (await copyText(contestUrl)) {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-    } catch (error) {
-      logger.error('share-button', error);
+    } else {
+      // Ready to copy by hand
+      selectText(urlRef.current);
     }
   };
 
@@ -88,7 +89,9 @@ export function ShareButton({ contestName, contestSlug, referral, accessPin, col
           </>
         }
       >
-        <Mid className={css.url}>{contestUrl.replace(/^https?:\/\//, '')}</Mid>
+        <Mid className={css.url}>
+          <span ref={urlRef}>{contestUrl.replace(/^https?:\/\//, '')}</span>
+        </Mid>
         {accessPin && (
           <Soft className={css.accessPin}>
             Access PIN <strong>{accessPin}</strong>

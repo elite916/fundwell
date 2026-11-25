@@ -9,7 +9,7 @@ import { CreateContestInput, SportType } from '@/features/contests/models/contes
 import css from '@/components/studio/setup/setup.module.css';
 
 const SPORT_OPTIONS: {
-  value: SportType | 'raffle';
+  value: SportType | 'hit-a-thon';
   label: string;
   placeholder: { row: string; col: string };
   comingSoon?: boolean;
@@ -26,8 +26,8 @@ const SPORT_OPTIONS: {
     comingSoon: true,
   },
   {
-    value: 'raffle',
-    label: 'Raffle Fundraiser',
+    value: 'hit-a-thon',
+    label: 'Hit-a-thon',
     placeholder: { row: 'Team 1', col: 'Team 2' },
     comingSoon: true,
   },
@@ -67,7 +67,7 @@ export function BasicInfoStep() {
                   className={css.over}
                   checked={sportType === sport.value}
                   onChange={() => {
-                    if (!isDisabled && sport.value !== 'raffle') {
+                    if (!isDisabled && sport.value !== 'hit-a-thon') {
                       setValue('sportType', sport.value as SportType, { shouldValidate: true });
                     }
                   }}

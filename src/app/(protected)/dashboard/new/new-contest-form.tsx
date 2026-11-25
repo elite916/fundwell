@@ -67,11 +67,16 @@ export function NewContestForm() {
     mode: 'onTouched',
   });
 
-  const { handleSubmit, trigger } = methods;
+  const { handleSubmit, trigger, getFieldState, getValues, setValue } = methods;
 
   async function validateCurrentStep(): Promise<boolean> {
     const fields = STEP_FIELDS[currentStep] as (keyof CreateContestInput)[];
     const isValid = await trigger(fields);
+    // As if the person had been in the fields with an error: each one checks again while they type, so its message goes
+    // away then. Going away on blur moved Next from under the pointer mid-click.
+    for (const field of fields) {
+      if (getFieldState(field).invalid) setValue(field, getValues(field), { shouldTouch: true });
+    }
     return isValid;
   }
 

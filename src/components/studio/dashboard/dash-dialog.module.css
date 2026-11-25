@@ -144,14 +144,15 @@
       padding: 12px 18px 18px;
       background: var(--dash-panel);
     }
-    .foot > * {
+    /* Doubled so these win over the button's own flex whichever file loads first */
+    .foot.foot > * {
       flex: 1;
       min-width: 0;
     }
     .stack {
       position: static;
     }
-    .stack > * {
+    .foot.stack > * {
       flex: none;
     }
   }

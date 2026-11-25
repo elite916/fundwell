@@ -97,8 +97,9 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
           {/* User Menu */}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger className={css.who} aria-label={`${userEmail}, account menu`}>
-              <span aria-hidden='true' className={css.avatar}>
-                {avatarUrl ? <Image src={avatarUrl} alt='' fill sizes='32px' /> : userEmail.charAt(0)}
+              {/* The letter is drawn with CSS: as text it would be part of the visible label, and not of the spoken one */}
+              <span aria-hidden='true' className={css.avatar} data-letter={avatarUrl ? undefined : userEmail.charAt(0)}>
+                {avatarUrl && <Image src={avatarUrl} alt='' fill sizes='32px' />}
               </span>
               <span aria-hidden='true' className={css.email}>
                 {userEmail}
