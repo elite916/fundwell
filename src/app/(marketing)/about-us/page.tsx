@@ -24,7 +24,7 @@ export default function AboutUsPage(): ReactElement {
             You set up a fundraiser and share one link. Supporters pay you directly, and Fundwell takes no cut. You pay
             the winners, and your team keeps the rest. Payment apps may charge their own fees.
           </Soft>
-          <Soft>Squares is ready now. Hit-a-thon is coming soon.</Soft>
+          <Soft>Squares and hit-a-thons are both ready.</Soft>
           <TextLink look='button' href='/signup' className={css.button}>
             Start a fundraiser
           </TextLink>

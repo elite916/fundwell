@@ -102,7 +102,7 @@ export function HomeFilm() {
             Hit-a-thon
           </Display>
           <div className={css.twoSay}>
-            <Soft>Supporters pledge per hit or a flat amount. Coming soon.</Soft>
+            <Soft>Supporters pledge per hit or a flat amount.</Soft>
           </div>
         </section>
       </div>
