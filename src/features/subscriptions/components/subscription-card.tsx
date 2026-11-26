@@ -45,6 +45,7 @@ export function SubscriptionCard({ subscription, products }: SubscriptionCardPro
   const willBill = status === 'active' || status === 'trialing';
   const nextBillingDate =
     willBill && subscription?.current_period_end ? formatDate(subscription.current_period_end) : null;
+  const isOverdue = status === 'past_due' || status === 'unpaid';
 
   return (
     <Panel>
@@ -58,6 +59,9 @@ export function SubscriptionCard({ subscription, products }: SubscriptionCardPro
       </div>
       {price && <p className={css.price}>{formatPrice()}</p>}
       {nextBillingDate && <p className={css.soft}>Next billing: {nextBillingDate}</p>}
+      {isOverdue && (
+        <p className={css.soft}>Your last payment didn&apos;t go through. Update your card to get Pro back.</p>
+      )}
       {!subscription && <p className={css.soft}>Upgrade to unlock unlimited contests</p>}
       {subscription ? (
         // A plain <a>, not <Link>: every request opens a Stripe portal session.
