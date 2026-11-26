@@ -4,6 +4,9 @@ import { z } from 'zod';
 export const sportTypes = ['football', 'baseball'] as const;
 export type SportType = (typeof sportTypes)[number];
 
+// Which game a contest is (contests.kind). Separate from the sport.
+export type ContestKind = 'squares' | 'hit_a_thon';
+
 // Schema for Step 1 - Basic Info
 export const basicInfoSchema = z.object({
   sportType: z.enum(sportTypes),
@@ -120,14 +123,49 @@ export const createContestSchema = basicInfoSchema
     }
   );
 
+const PITCHES_ERROR = 'Enter a whole number of pitches, from 1 to 100.';
+const GOAL_ERROR = 'Enter a goal of at least $1, or leave it blank.';
+
+// Hit-a-thon settings: shared by Create and contest settings. The database allows 1 to 100 pitches.
+export const hitAThonSettingsSchema = z.object({
+  pitchesPerPlayer: z.coerce
+    .number({ error: PITCHES_ERROR })
+    .int(PITCHES_ERROR)
+    .min(1, PITCHES_ERROR)
+    .max(100, PITCHES_ERROR),
+  playerGoal: z
+    .union([z.literal(''), z.coerce.number({ error: GOAL_ERROR }).min(1, GOAL_ERROR)])
+    .transform((val) => (val === '' ? null : val))
+    .nullable(),
+});
+
+// A hit-a-thon: no teams, squares price or payouts.
+export const createHitAThonSchema = z
+  .object({ kind: z.literal('hit_a_thon') })
+  .merge(basicInfoSchema.pick({ name: true, description: true }))
+  .merge(hitAThonSettingsSchema)
+  .merge(settingsBaseSchema.pick({ requirePin: true, accessPin: true }))
+  .merge(brandingSchema);
+
 // Type exports
 export type BasicInfoInput = z.infer<typeof basicInfoSchema>;
 export type SettingsInput = z.infer<typeof settingsSchema>;
 export type BrandingInput = z.infer<typeof brandingSchema>;
 export type CreateContestInput = z.infer<typeof createContestSchema>;
+export type CreateHitAThonInput = z.infer<typeof createHitAThonSchema>;
+
+// The Create form holds both kinds' fields; the schema for the picked kind checks them.
+export type CreateContestFormValues = CreateContestInput & {
+  kind: ContestKind;
+  pitchesPerPlayer?: number;
+  playerGoal?: number | null;
+};
 
 // Default values for the form
-export const defaultContestValues: CreateContestInput = {
+export const defaultContestValues: CreateContestFormValues = {
+  kind: 'squares',
+  pitchesPerPlayer: undefined,
+  playerGoal: null,
   sportType: 'football',
   name: '',
   description: '',

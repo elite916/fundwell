@@ -6,7 +6,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { PinField, Segmented, SwitchRow, UnitField } from '@/components/studio/setup/fields';
 import { TextField } from '@/components/studio/text-field';
 import { FOOTBALL_QUARTER_LABELS, PRIZE_TEXT_MAX_LENGTH } from '@/features/contests/constants';
-import { CreateContestInput, SportType } from '@/features/contests/models/contest';
+import { CreateContestFormValues, CreateContestInput, SportType } from '@/features/contests/models/contest';
 
 import css from '@/components/studio/setup/setup.module.css';
 
@@ -59,10 +59,11 @@ export function SettingsStep() {
     formState: { errors },
     control,
     setValue,
-  } = useFormContext<CreateContestInput>();
+  } = useFormContext<CreateContestFormValues>();
 
   const [hasGeneratedPin, setHasGeneratedPin] = useState(false);
 
+  const isHitAThon = useWatch({ control, name: 'kind' }) === 'hit_a_thon';
   const sportType = useWatch({ control, name: 'sportType' }) as SportType;
   const squarePrice = useWatch({ control, name: 'squarePrice' });
   const requirePin = useWatch({ control, name: 'requirePin' });
@@ -104,176 +105,206 @@ export function SettingsStep() {
 
   return (
     <>
-      <div className={css.two}>
-        <UnitField
-          id='squarePrice'
-          label='Price Per Square *'
-          unit='$'
-          min='1'
-          step='1'
-          placeholder='10'
-          hint={totalPot > 0 && `Total pot if all squares sell: $${totalPot.toLocaleString()}`}
-          error={errors.squarePrice?.message}
-          {...register('squarePrice')}
-        />
-        <TextField
-          id='maxSquaresPerPerson'
-          label='Max Squares Per Person'
-          type='number'
-          min='1'
-          max='100'
-          placeholder='No limit'
-          hint='Leave blank to allow unlimited squares per participant.'
-          error={errors.maxSquaresPerPerson?.message}
-          {...register('maxSquaresPerPerson')}
-        />
-      </div>
-
-      {/* Prize Type Selection */}
-      <p className={css.label}>Prize Type</p>
-      <Segmented
-        legend='Prize Type'
-        name='prize-type'
-        value={prizeType ?? 'percentage'}
-        onChange={(value) => setValue('prizeType', value)}
-        options={[
-          { value: 'percentage', label: 'Cash Payouts' },
-          { value: 'custom', label: 'Custom Prizes' },
-        ]}
-      />
-      <input type='hidden' {...register('prizeType')} />
-      {errors.prizeType && <p className={css.error}>{errors.prizeType.message}</p>}
-
-      {/* Payout Distribution - Show when prizeType is 'percentage' */}
-      {prizeType === 'percentage' && (
+      {isHitAThon ? (
+        <div className={css.two}>
+          <TextField
+            id='pitchesPerPlayer'
+            label='Pitches per player *'
+            type='number'
+            min='1'
+            max='100'
+            step='1'
+            placeholder='10'
+            hint="A player can't get more hits than this. Supporters see the most they could owe."
+            error={errors.pitchesPerPlayer?.message}
+            {...register('pitchesPerPlayer')}
+          />
+          <UnitField
+            id='playerGoal'
+            label='Goal per player'
+            unit='$'
+            min='1'
+            step='1'
+            placeholder='No goal'
+            hint="Optional. Shown on each player's page. The team goal is this times the number of players."
+            error={errors.playerGoal?.message}
+            {...register('playerGoal')}
+          />
+        </div>
+      ) : (
         <>
-          <div className={css.groupFirst}>
-            <h3>Payout Distribution</h3>
-            <p>
-              {isFootball
-                ? 'How winnings are split between quarters. The rest goes to your fundraiser.'
-                : 'How winnings are split between games. The rest goes to your fundraiser.'}
-            </p>
-            {!isFootball && <p>If the series ends early, remaining game payouts go to the fundraiser.</p>}
+          <div className={css.two}>
+            <UnitField
+              id='squarePrice'
+              label='Price Per Square *'
+              unit='$'
+              min='1'
+              step='1'
+              placeholder='10'
+              hint={totalPot > 0 && `Total pot if all squares sell: $${totalPot.toLocaleString()}`}
+              error={errors.squarePrice?.message}
+              {...register('squarePrice')}
+            />
+            <TextField
+              id='maxSquaresPerPerson'
+              label='Max Squares Per Person'
+              type='number'
+              min='1'
+              max='100'
+              placeholder='No limit'
+              hint='Leave blank to allow unlimited squares per participant.'
+              error={errors.maxSquaresPerPerson?.message}
+              {...register('maxSquaresPerPerson')}
+            />
           </div>
 
-          {/* Visual Progress Bar */}
-          <div className={css.bars} aria-hidden='true'>
-            {payoutFields.map((field, index) => (
-              <i key={field.name} style={{ width: `${Number(payoutValues[index]) || 0}%` }} />
-            ))}
-          </div>
+          {/* Prize Type Selection */}
+          <p className={css.label}>Prize Type</p>
+          <Segmented
+            legend='Prize Type'
+            name='prize-type'
+            value={prizeType ?? 'percentage'}
+            onChange={(value) => setValue('prizeType', value)}
+            options={[
+              { value: 'percentage', label: 'Cash Payouts' },
+              { value: 'custom', label: 'Custom Prizes' },
+            ]}
+          />
+          <input type='hidden' {...register('prizeType')} />
+          {errors.prizeType && <p className={css.error}>{errors.prizeType.message}</p>}
 
-          {/* Payout Inputs */}
-          <div className={css.four}>
-            {payoutFields.map((field) => (
-              <UnitField
-                key={field.name}
-                id={field.name}
-                label={field.label}
-                unit='%'
-                min='0'
-                max='100'
-                aria-invalid={errors[field.name] ? true : undefined}
-                {...register(field.name)}
-              />
-            ))}
-          </div>
-
-          {/* Total Indicator */}
-          <p className={css.totalLine} role='status'>
-            <span>Total Payouts: {totalPayout}%</span>
-            {totalPayout <= 100 ? (
-              <span>✓ Valid ({100 - totalPayout}% to fundraiser)</span>
-            ) : (
-              <span>{totalPayout - 100}% over limit</span>
-            )}
-          </p>
-
-          {errors.payoutFinalPercent && <p className={css.error}>{errors.payoutFinalPercent.message}</p>}
-          {errors.payoutGame7Percent && <p className={css.error}>{errors.payoutGame7Percent.message}</p>}
-
-          {/* Payout Breakdown */}
-          {totalPot > 0 && totalPayout <= 100 && (
+          {/* Payout Distribution - Show when prizeType is 'percentage' */}
+          {prizeType === 'percentage' && (
             <>
-              <h3>Payout Breakdown</h3>
-              <dl className={css.breakdown}>
-                <dt>Total Pot (100 squares × ${Number(squarePrice).toLocaleString()})</dt>
-                <dd>${totalPot.toLocaleString()}</dd>
+              <div className={css.groupFirst}>
+                <h3>Payout Distribution</h3>
+                <p>
+                  {isFootball
+                    ? 'How winnings are split between quarters. The rest goes to your fundraiser.'
+                    : 'How winnings are split between games. The rest goes to your fundraiser.'}
+                </p>
+                {!isFootball && <p>If the series ends early, remaining game payouts go to the fundraiser.</p>}
+              </div>
 
-                {/* Payouts by quarter/game */}
-                {payoutFields.map((field, index) => {
-                  const percent = Number(payoutValues[index]) || 0;
-                  const amount = (totalPot * percent) / 100;
-                  return (
-                    <Fragment key={field.name}>
-                      <dt className={css.soft}>
-                        {field.label}: {percent}%
-                      </dt>
-                      <dd>${amount.toLocaleString()}</dd>
-                    </Fragment>
-                  );
-                })}
+              {/* Visual Progress Bar */}
+              <div className={css.bars} aria-hidden='true'>
+                {payoutFields.map((field, index) => (
+                  <i key={field.name} style={{ width: `${Number(payoutValues[index]) || 0}%` }} />
+                ))}
+              </div>
 
-                {/* Total Payouts */}
-                <dt data-line='rule'>Total Payouts ({totalPayout}%)</dt>
-                <dd data-line='rule'>${((totalPot * totalPayout) / 100).toLocaleString()}</dd>
+              {/* Payout Inputs */}
+              <div className={css.four}>
+                {payoutFields.map((field) => (
+                  <UnitField
+                    key={field.name}
+                    id={field.name}
+                    label={field.label}
+                    unit='%'
+                    min='0'
+                    max='100'
+                    aria-invalid={errors[field.name] ? true : undefined}
+                    {...register(field.name)}
+                  />
+                ))}
+              </div>
 
-                {/* Fundraiser Keeps */}
-                <dt data-line='total'>Fundraiser Keeps ({100 - totalPayout}%)</dt>
-                <dd data-line='total'>${((totalPot * (100 - totalPayout)) / 100).toLocaleString()}</dd>
-              </dl>
+              {/* Total Indicator */}
+              <p className={css.totalLine} role='status'>
+                <span>Total Payouts: {totalPayout}%</span>
+                {totalPayout <= 100 ? (
+                  <span>✓ Valid ({100 - totalPayout}% to fundraiser)</span>
+                ) : (
+                  <span>{totalPayout - 100}% over limit</span>
+                )}
+              </p>
+
+              {errors.payoutFinalPercent && <p className={css.error}>{errors.payoutFinalPercent.message}</p>}
+              {errors.payoutGame7Percent && <p className={css.error}>{errors.payoutGame7Percent.message}</p>}
+
+              {/* Payout Breakdown */}
+              {totalPot > 0 && totalPayout <= 100 && (
+                <>
+                  <h3>Payout Breakdown</h3>
+                  <dl className={css.breakdown}>
+                    <dt>Total Pot (100 squares × ${Number(squarePrice).toLocaleString()})</dt>
+                    <dd>${totalPot.toLocaleString()}</dd>
+
+                    {/* Payouts by quarter/game */}
+                    {payoutFields.map((field, index) => {
+                      const percent = Number(payoutValues[index]) || 0;
+                      const amount = (totalPot * percent) / 100;
+                      return (
+                        <Fragment key={field.name}>
+                          <dt className={css.soft}>
+                            {field.label}: {percent}%
+                          </dt>
+                          <dd>${amount.toLocaleString()}</dd>
+                        </Fragment>
+                      );
+                    })}
+
+                    {/* Total Payouts */}
+                    <dt data-line='rule'>Total Payouts ({totalPayout}%)</dt>
+                    <dd data-line='rule'>${((totalPot * totalPayout) / 100).toLocaleString()}</dd>
+
+                    {/* Fundraiser Keeps */}
+                    <dt data-line='total'>Fundraiser Keeps ({100 - totalPayout}%)</dt>
+                    <dd data-line='total'>${((totalPot * (100 - totalPayout)) / 100).toLocaleString()}</dd>
+                  </dl>
+                </>
+              )}
             </>
           )}
-        </>
-      )}
 
-      {/* Custom Prize Text Inputs - Show when prizeType is 'custom' */}
-      {prizeType === 'custom' && (
-        <>
-          <div className={css.groupFirst}>
-            <h3>Custom Prize Descriptions</h3>
-            <p>Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).</p>
-          </div>
+          {/* Custom Prize Text Inputs - Show when prizeType is 'custom' */}
+          {prizeType === 'custom' && (
+            <>
+              <div className={css.groupFirst}>
+                <h3>Custom Prize Descriptions</h3>
+                <p>Enter prize descriptions for each quarter (max {PRIZE_TEXT_MAX_LENGTH} characters each).</p>
+              </div>
 
-          <div className={css.two}>
-            <TextField
-              id='prizeQ1Text'
-              label='Q1 Prize'
-              type='text'
-              maxLength={PRIZE_TEXT_MAX_LENGTH}
-              placeholder='e.g., $100 Gift Card'
-              error={errors.prizeQ1Text?.message}
-              {...register('prizeQ1Text')}
-            />
-            <TextField
-              id='prizeQ2Text'
-              label='Halftime Prize'
-              type='text'
-              maxLength={PRIZE_TEXT_MAX_LENGTH}
-              placeholder='e.g., $200 Gift Card'
-              error={errors.prizeQ2Text?.message}
-              {...register('prizeQ2Text')}
-            />
-            <TextField
-              id='prizeQ3Text'
-              label='Q3 Prize'
-              type='text'
-              maxLength={PRIZE_TEXT_MAX_LENGTH}
-              placeholder='e.g., $300 Gift Card'
-              error={errors.prizeQ3Text?.message}
-              {...register('prizeQ3Text')}
-            />
-            <TextField
-              id='prizeFinalText'
-              label='Final Prize'
-              type='text'
-              maxLength={PRIZE_TEXT_MAX_LENGTH}
-              placeholder='e.g., $500 Gift Card'
-              error={errors.prizeFinalText?.message}
-              {...register('prizeFinalText')}
-            />
-          </div>
+              <div className={css.two}>
+                <TextField
+                  id='prizeQ1Text'
+                  label='Q1 Prize'
+                  type='text'
+                  maxLength={PRIZE_TEXT_MAX_LENGTH}
+                  placeholder='e.g., $100 Gift Card'
+                  error={errors.prizeQ1Text?.message}
+                  {...register('prizeQ1Text')}
+                />
+                <TextField
+                  id='prizeQ2Text'
+                  label='Halftime Prize'
+                  type='text'
+                  maxLength={PRIZE_TEXT_MAX_LENGTH}
+                  placeholder='e.g., $200 Gift Card'
+                  error={errors.prizeQ2Text?.message}
+                  {...register('prizeQ2Text')}
+                />
+                <TextField
+                  id='prizeQ3Text'
+                  label='Q3 Prize'
+                  type='text'
+                  maxLength={PRIZE_TEXT_MAX_LENGTH}
+                  placeholder='e.g., $300 Gift Card'
+                  error={errors.prizeQ3Text?.message}
+                  {...register('prizeQ3Text')}
+                />
+                <TextField
+                  id='prizeFinalText'
+                  label='Final Prize'
+                  type='text'
+                  maxLength={PRIZE_TEXT_MAX_LENGTH}
+                  placeholder='e.g., $500 Gift Card'
+                  error={errors.prizeFinalText?.message}
+                  {...register('prizeFinalText')}
+                />
+              </div>
+            </>
+          )}
         </>
       )}
 

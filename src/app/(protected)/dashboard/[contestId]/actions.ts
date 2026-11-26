@@ -1,6 +1,6 @@
 'use server';
 
-import { CONTEST_LIMIT_MESSAGE } from '@/features/contests/constants';
+import { CONTEST_LIMIT_MESSAGE, HitAThonErrors } from '@/features/contests/constants';
 import { isAllowedStatusTransition } from '@/features/contests/constants/status-transitions';
 import { ValidationError, withContestOwnership } from '@/features/contests/middleware/auth-middleware';
 import { Database, Tables } from '@/libs/supabase/types';
@@ -34,6 +34,18 @@ export async function updateContestStatus(
 
         if (scoresCount && scoresCount > 0) {
           throw new ValidationError('Cannot unlock contest after scores have been entered');
+        }
+      }
+
+      // A hit-a-thon opens with at least one player (the database checks too)
+      if (contest.kind === 'hit_a_thon') {
+        const { count: playersCount } = await supabase
+          .from('hit_players')
+          .select('*', { count: 'exact', head: true })
+          .eq('contest_id', contestId);
+
+        if (!playersCount) {
+          throw new ValidationError(HitAThonErrors.PLAYERS_REQUIRED);
         }
       }
 
@@ -81,6 +93,9 @@ export async function updateContestStatus(
       }
       if (updateError.message.includes('contest_limit_reached')) {
         throw new ValidationError(CONTEST_LIMIT_MESSAGE);
+      }
+      if (updateError.message.includes('players_required')) {
+        throw new ValidationError(HitAThonErrors.PLAYERS_REQUIRED);
       }
       throw updateError;
     }

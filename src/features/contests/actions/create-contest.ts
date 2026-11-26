@@ -13,7 +13,7 @@ import { Database } from '@/libs/supabase/types';
 import { ActionResponse } from '@/types/action-response';
 import { logger } from '@/utils/logger';
 
-import { CreateContestInput, createContestSchema } from '../models/contest';
+import { CreateContestInput, createContestSchema, CreateHitAThonInput, createHitAThonSchema } from '../models/contest';
 
 type ContestInsert = Database['public']['Tables']['contests']['Insert'];
 
@@ -43,7 +43,10 @@ function generateSlug(name: string, uniqueId: string): string {
   return `${baseSlug}-${uniqueId}`;
 }
 
-export async function createContest(input: CreateContestInput, retryCount = 0): Promise<ActionResponse> {
+export async function createContest(
+  input: CreateContestInput | CreateHitAThonInput,
+  retryCount = 0
+): Promise<ActionResponse> {
   const supabase = await createSupabaseServerClient();
 
   // Verify user is authenticated
@@ -59,8 +62,9 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
     return { data: null, error: { message: 'You must be logged in to create a contest' } };
   }
 
-  // Validate input
-  const validationResult = createContestSchema.safeParse(input);
+  // Validate input. A hit-a-thon says so; anything else is squares, as before.
+  const isHitAThon = (input as { kind?: unknown } | null)?.kind === 'hit_a_thon';
+  const validationResult = isHitAThon ? createHitAThonSchema.safeParse(input) : createContestSchema.safeParse(input);
 
   if (!validationResult.success) {
     return {
@@ -87,49 +91,52 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
   const slug = generateSlug(data.name, uniqueId);
 
   // After the final it would be the next game's contest
-  const isSuperBowl = data.isSuperBowl && data.sportType === 'football' && (await isSeasonOpen());
+  const isSuperBowl = !('kind' in data) && data.isSuperBowl && data.sportType === 'football' && (await isSeasonOpen());
 
   // Insert contest into database. Owners may insert only these columns
   // (contest_write_rules migration), so a new column needs a grant too.
-  const insertData: ContestInsert = {
-    owner_id: user.id,
-    code,
-    slug,
-    name: data.name,
-    description: data.description || null,
-    sport_type: data.sportType,
-    super_bowl_season: isSuperBowl ? SUPER_BOWL_SEASON : null,
-    row_team_name: data.rowTeamName,
-    col_team_name: data.colTeamName,
-    square_price: data.squarePrice,
-    max_squares_per_person: data.maxSquaresPerPerson || null,
-    // Football payouts
-    payout_q1_percent: data.payoutQ1Percent,
-    payout_q2_percent: data.payoutQ2Percent,
-    payout_q3_percent: data.payoutQ3Percent,
-    payout_final_percent: data.payoutFinalPercent,
-    // Baseball payouts
-    payout_game1_percent: data.payoutGame1Percent,
-    payout_game2_percent: data.payoutGame2Percent,
-    payout_game3_percent: data.payoutGame3Percent,
-    payout_game4_percent: data.payoutGame4Percent,
-    payout_game5_percent: data.payoutGame5Percent,
-    payout_game6_percent: data.payoutGame6Percent,
-    payout_game7_percent: data.payoutGame7Percent,
-    hero_image_url: data.heroImageUrl || null,
-    hero_image_position: data.heroImagePosition,
-    org_image_url: data.orgImageUrl || null,
-    primary_color: data.primaryColor,
-    secondary_color: data.secondaryColor,
-    // Prize settings
-    prize_type: data.prizeType,
-    // Prize text fields - only include values when prizeType is 'custom', otherwise null
-    prize_q1_text: data.prizeType === 'custom' ? data.prizeQ1Text || null : null,
-    prize_q2_text: data.prizeType === 'custom' ? data.prizeQ2Text || null : null,
-    prize_q3_text: data.prizeType === 'custom' ? data.prizeQ3Text || null : null,
-    prize_final_text: data.prizeType === 'custom' ? data.prizeFinalText || null : null,
-    status: 'draft',
-  };
+  const insertData: ContestInsert =
+    'kind' in data
+      ? hitAThonInsert(data, user.id, code, slug)
+      : {
+          owner_id: user.id,
+          code,
+          slug,
+          name: data.name,
+          description: data.description || null,
+          sport_type: data.sportType,
+          super_bowl_season: isSuperBowl ? SUPER_BOWL_SEASON : null,
+          row_team_name: data.rowTeamName,
+          col_team_name: data.colTeamName,
+          square_price: data.squarePrice,
+          max_squares_per_person: data.maxSquaresPerPerson || null,
+          // Football payouts
+          payout_q1_percent: data.payoutQ1Percent,
+          payout_q2_percent: data.payoutQ2Percent,
+          payout_q3_percent: data.payoutQ3Percent,
+          payout_final_percent: data.payoutFinalPercent,
+          // Baseball payouts
+          payout_game1_percent: data.payoutGame1Percent,
+          payout_game2_percent: data.payoutGame2Percent,
+          payout_game3_percent: data.payoutGame3Percent,
+          payout_game4_percent: data.payoutGame4Percent,
+          payout_game5_percent: data.payoutGame5Percent,
+          payout_game6_percent: data.payoutGame6Percent,
+          payout_game7_percent: data.payoutGame7Percent,
+          hero_image_url: data.heroImageUrl || null,
+          hero_image_position: data.heroImagePosition,
+          org_image_url: data.orgImageUrl || null,
+          primary_color: data.primaryColor,
+          secondary_color: data.secondaryColor,
+          // Prize settings
+          prize_type: data.prizeType,
+          // Prize text fields - only include values when prizeType is 'custom', otherwise null
+          prize_q1_text: data.prizeType === 'custom' ? data.prizeQ1Text || null : null,
+          prize_q2_text: data.prizeType === 'custom' ? data.prizeQ2Text || null : null,
+          prize_q3_text: data.prizeType === 'custom' ? data.prizeQ3Text || null : null,
+          prize_final_text: data.prizeType === 'custom' ? data.prizeFinalText || null : null,
+          status: 'draft',
+        };
 
   const { data: contest, error: insertError } = await supabase.from('contests').insert(insertData).select().single();
 
@@ -170,4 +177,24 @@ export async function createContest(input: CreateContestInput, retryCount = 0): 
 
   // Redirect to the new contest's management page
   redirect(`/dashboard/${contest.id}`);
+}
+
+/** A hit-a-thon: no squares columns. It never joins a Super Bowl season, and sport_type keeps its default. */
+function hitAThonInsert(data: CreateHitAThonInput, ownerId: string, code: string, slug: string): ContestInsert {
+  return {
+    owner_id: ownerId,
+    code,
+    slug,
+    kind: 'hit_a_thon',
+    name: data.name,
+    description: data.description || null,
+    pitches_per_player: data.pitchesPerPlayer,
+    player_goal: data.playerGoal,
+    hero_image_url: data.heroImageUrl || null,
+    hero_image_position: data.heroImagePosition,
+    org_image_url: data.orgImageUrl || null,
+    primary_color: data.primaryColor,
+    secondary_color: data.secondaryColor,
+    status: 'draft',
+  };
 }

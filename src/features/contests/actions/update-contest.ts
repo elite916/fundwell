@@ -1,6 +1,12 @@
 'use server';
 
-import { ContestErrors, ContestStatus, hasGameStarted } from '@/features/contests/constants';
+import {
+  ContestErrors,
+  ContestStatus,
+  hasGameStarted,
+  HitAThonErrors,
+  PITCHES_BELOW_HITS,
+} from '@/features/contests/constants';
 import type { ContestUpdate } from '@/features/contests/types';
 import { isSeasonOpen } from '@/features/super-bowl/queries';
 import { SUPER_BOWL_SEASON } from '@/features/super-bowl/season';
@@ -44,6 +50,8 @@ const UPDATABLE_COLUMNS = [
   'secondary_color',
   'enable_player_tracking',
   'players',
+  'pitches_per_player',
+  'player_goal',
 ] as const satisfies readonly (keyof ContestUpdate)[];
 
 // Columns that can't change once the game starts. The database enforces the same
@@ -122,6 +130,23 @@ export async function updateContest(
       // Raised by the database trigger when the game started in between
       if (error.message.includes('contest_rules_locked')) {
         throw new ValidationError(ContestErrors.RULES_LOCKED);
+      }
+      // Hit-a-thon pitches (enforce_contest_kind_rules trigger)
+      if (error.message.includes('pitches_locked')) {
+        throw new ValidationError(HitAThonErrors.PITCHES_LOCKED);
+      }
+      if (error.message.includes('pitches_below_hits')) {
+        const { data: player } = await supabase
+          .from('hit_players')
+          .select('first_name, hits')
+          .eq('contest_id', contestId)
+          .gt('hits', updates.pitches_per_player ?? 0)
+          .order('hits', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (player?.hits != null) {
+          throw new ValidationError(PITCHES_BELOW_HITS(player.first_name, player.hits));
+        }
       }
       throw new Error('Failed to update contest');
     }
