@@ -41,7 +41,10 @@ export function SubscriptionCard({ subscription, products }: SubscriptionCardPro
     return `$${amount.toFixed(2)}/${interval}`;
   };
 
-  const nextBillingDate = subscription?.current_period_end ? formatDate(subscription.current_period_end) : null;
+  // Only active and trialing subscriptions have a next billing date
+  const willBill = status === 'active' || status === 'trialing';
+  const nextBillingDate =
+    willBill && subscription?.current_period_end ? formatDate(subscription.current_period_end) : null;
 
   return (
     <Panel>

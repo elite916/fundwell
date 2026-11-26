@@ -99,12 +99,12 @@ export async function updateSquareStatus(
       };
     }
 
-    // Update the square
-    const { error: updateError } = await supabase
-      .from('squares')
-      .update(updateData)
-      .eq('id', squareId)
-      .eq('contest_id', contestId);
+    // Update the square. Marking an already-paid square paid changes nothing, so it sends no email.
+    let updateQuery = supabase.from('squares').update(updateData).eq('id', squareId).eq('contest_id', contestId);
+    if (newStatus === PaymentStatus.PAID) {
+      updateQuery = updateQuery.neq('payment_status', PaymentStatus.PAID);
+    }
+    const { data: updatedRows, error: updateError } = await updateQuery.select('id');
 
     if (updateError) {
       const dbRefusal = getSquareChangeRefusalFromDb(updateError.message);
@@ -123,7 +123,7 @@ export async function updateSquareStatus(
     }
 
     // Send confirmation email after the response when marking as paid (don't block on failure)
-    if (newStatus === PaymentStatus.PAID && claimantEmail) {
+    if (newStatus === PaymentStatus.PAID && claimantEmail && updatedRows.length > 0) {
       const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
       after(() =>

@@ -8,6 +8,7 @@ import { srOnly } from '@/components/studio/theme';
 import { Player } from '@/features/contests/types/player';
 import { cn } from '@/utils/cn';
 import { copyText } from '@/utils/copy-text';
+import { escapeCsvCell } from '@/utils/csv';
 import { getURL } from '@/utils/get-url';
 
 import css from '../table.module.css';
@@ -65,7 +66,7 @@ export function TeamMembersTableClient({
       return [player.name, player.number?.toString() || '', player.slug, referralLink, salesCount.toString()];
     });
 
-    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
+    const csvContent = [headers, ...rows].map((row) => row.map(escapeCsvCell).join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
