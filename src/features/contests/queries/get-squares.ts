@@ -1,4 +1,6 @@
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import type { Database } from '@/libs/supabase/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 /** Partial square data for grid display */
 export interface GridSquare {
@@ -12,10 +14,14 @@ export interface GridSquare {
 }
 
 /**
- * Fetches all 100 squares for a contest, ordered by position
+ * Fetches all 100 squares for a contest, ordered by position.
+ * Pass `client` to read with another client (the contest page passes the service role after its PIN check).
  */
-export async function getSquaresForContest(contestId: string): Promise<GridSquare[]> {
-  const supabase = await createSupabaseServerClient();
+export async function getSquaresForContest(
+  contestId: string,
+  client?: SupabaseClient<Database>
+): Promise<GridSquare[]> {
+  const supabase = client ?? (await createSupabaseServerClient());
 
   const { data, error } = await supabase
     .from('squares')

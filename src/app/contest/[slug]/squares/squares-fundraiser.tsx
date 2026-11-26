@@ -29,6 +29,8 @@ interface SquaresFundraiserProps {
   /** The player slug in a referral link. */
   referral: string | null;
   colors: CSSProperties;
+  /** Subscribe to live changes. Off for PIN contests, whose rows the database hides from visitors. */
+  realtime: boolean;
   /** The organizer's image and words, which aren't about squares. */
   organizer: ReactNode;
 }
@@ -41,10 +43,11 @@ export function SquaresFundraiser({
   paymentOptions,
   referral,
   colors,
+  realtime,
   organizer,
 }: SquaresFundraiserProps) {
-  const squares = useRealtimeSquares(contest.id, initialSquares);
-  useRefreshOnScores(contest.id);
+  const squares = useRealtimeSquares(contest.id, initialSquares, realtime);
+  useRefreshOnScores(contest.id, realtime);
   const [pickedName, setPickedName] = useState('');
   const [chosen, setChosen] = useState<GridSquare | null>(null);
 

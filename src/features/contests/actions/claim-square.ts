@@ -171,7 +171,8 @@ export async function claimSquare(
   }
 
   // Send confirmation email after the response (don't block on failure)
-  const paymentOptions = await getPaymentOptionsForContest(contestId);
+  // Service role: past the PIN check, and the database hides a PIN contest's payment options from visitors
+  const paymentOptions = await getPaymentOptionsForContest(contestId, supabaseAdminClient);
   const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
   after(() =>

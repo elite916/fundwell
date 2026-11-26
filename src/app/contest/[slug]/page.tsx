@@ -12,6 +12,7 @@ import {
   getSquaresForContest,
 } from '@/features/contests/queries';
 import { getPublicContestBySlug } from '@/features/contests/queries/get-contest-safe';
+import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 
 import { SquaresFundraiser } from './squares/squares-fundraiser';
 import { ContestMessage } from './contest-message';
@@ -67,10 +68,12 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
     isOwner = false;
   }
 
+  // Past the PIN check, so read with the service role: the database hides these rows from
+  // anyone but the owner when the contest has a PIN
   const [squares, paymentOptions, scores, { ref }] = await Promise.all([
-    getSquaresForContest(contest.id),
-    getPaymentOptionsForContest(contest.id),
-    getScoresForContest(contest.id),
+    getSquaresForContest(contest.id, supabaseAdminClient),
+    getPaymentOptionsForContest(contest.id, supabaseAdminClient),
+    getScoresForContest(contest.id, supabaseAdminClient),
     searchParams,
   ]);
   const referral = (Array.isArray(ref) ? ref[0] : ref) || null;
@@ -137,6 +140,8 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
         paymentOptions={paymentOptions}
         referral={referral}
         colors={colors}
+        // Live updates only for contests without a PIN; a PIN contest refreshes when its tab comes back
+        realtime={!accessPin}
         organizer={
           <OrganizerPrint
             contestName={contest.name}
