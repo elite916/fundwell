@@ -1,6 +1,8 @@
 import { headers } from 'next/headers';
+import { createHmac } from 'crypto';
 
 import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
+import { getEnvVar } from '@/utils/get-env-var';
 import { logger } from '@/utils/logger';
 
 // Server-only. Fixed-window limits kept in the database (`rate_limits`), so
@@ -16,6 +18,14 @@ export async function getClientIp(): Promise<string> {
   const headerStore = await headers();
   const forwardedFor = headerStore.get('x-forwarded-for')?.split(',')[0].trim();
   return headerStore.get('x-real-ip') || forwardedFor || 'unknown';
+}
+
+/** Keyed hash, so the limit rows hold no email or IP. */
+export function hashLimitKey(...parts: string[]): string {
+  const secret = getEnvVar(process.env.SUPABASE_SERVICE_ROLE_KEY, 'SUPABASE_SERVICE_ROLE_KEY');
+  return createHmac('sha256', secret)
+    .update(['fundwell:claim-limit', ...parts].join('\0'))
+    .digest('hex');
 }
 
 /**

@@ -13,6 +13,7 @@ import { ContestStatusType } from '@/features/contests/constants';
 import { Participant } from '@/features/contests/queries/get-participants';
 import { PaymentStatus } from '@/features/contests/types';
 import { cn } from '@/utils/cn';
+import { escapeCsvCell } from '@/utils/csv';
 
 import css from '../table.module.css';
 
@@ -194,9 +195,7 @@ export function ParticipantsTableClient({
       formatDateISO(p.paid_at),
     ]);
 
-    // Claimants type these values: a leading ' stops spreadsheets running them as formulas
-    const escapeCell = (cell: string) => `"${cell.replace(/^[=+\-@\t\r]/, "'$&").replace(/"/g, '""')}"`;
-    const csvContent = [headers, ...rows].map((row) => row.map(escapeCell).join(',')).join('\n');
+    const csvContent = [headers, ...rows].map((row) => row.map(escapeCsvCell).join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

@@ -1,7 +1,4 @@
-import { createHmac } from 'crypto';
-
-import { getEnvVar } from '@/utils/get-env-var';
-import { getClientIp, hitRateLimit, type RateLimit, undoRateLimitHit } from '@/utils/rate-limit';
+import { getClientIp, hashLimitKey, hitRateLimit, type RateLimit, undoRateLimitHit } from '@/utils/rate-limit';
 
 // Server-only limits on claiming squares. Every claim emails the typed
 // address, so these bound how many emails a visitor can trigger. Not a
@@ -17,14 +14,6 @@ const IP_LIMIT = { max: 50, windowSeconds: 60 * 60 };
 // Successful claims per contest: a full board of 100, plus squares the owner
 // releases and people claim again.
 const CONTEST_LIMIT = { max: 150, windowSeconds: 60 * 60 };
-
-/** Keyed hash, so the limit rows hold no email or IP. */
-function hash(...parts: string[]): string {
-  const secret = getEnvVar(process.env.SUPABASE_SERVICE_ROLE_KEY, 'SUPABASE_SERVICE_ROLE_KEY');
-  return createHmac('sha256', secret)
-    .update(['fundwell:claim-limit', ...parts].join('\0'))
-    .digest('hex');
-}
 
 const contestKey = (contestId: string) => `claim:contest:${contestId}`;
 
@@ -49,8 +38,8 @@ async function isWithinLimit(key: string, limit: RateLimit): Promise<boolean> {
  */
 export async function isClaimWithinLimits(contestId: string, email: string): Promise<boolean> {
   const ip = await getClientIp();
-  if (!(await isWithinLimit(`claim:ip:${contestId}:${hash('ip', contestId, ip)}`, IP_LIMIT))) return false;
-  if (!(await isWithinLimit(`claim:email:${hash('email', email.toLowerCase())}`, EMAIL_LIMIT))) return false;
+  if (!(await isWithinLimit(`claim:ip:${contestId}:${hashLimitKey('ip', contestId, ip)}`, IP_LIMIT))) return false;
+  if (!(await isWithinLimit(`claim:email:${hashLimitKey('email', email.toLowerCase())}`, EMAIL_LIMIT))) return false;
   if (!(await isWithinLimit(contestKey(contestId), CONTEST_LIMIT))) {
     await undoContestClaimHit(contestId);
     return false;
