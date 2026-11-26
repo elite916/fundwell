@@ -33,6 +33,8 @@ export const HitAThonErrors = {
 export const PITCHES_BELOW_HITS = (name: string, hits: number): string =>
   `${name} already has ${hits} hits. Pitches can't be fewer than that.`;
 
+export const HITS_RANGE = (pitches: number): string => `Enter a whole number from 0 to ${pitches}.`;
+
 export const PLAYER_HAS_PLEDGES = (name: string): string => `${name} has pledges. Cancel them first to remove ${name}.`;
 
 export const MAX_SQUARES_REACHED = (max: number): string =>

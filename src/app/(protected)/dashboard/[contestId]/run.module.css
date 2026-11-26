@@ -66,6 +66,10 @@
     margin: 0 0 26px;
     font-variant-numeric: tabular-nums;
   }
+  /* A hit-a-thon's summary */
+  .stats.four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
   .stats dt {
     color: var(--studio-soft);
     font-size: 13px;
@@ -221,6 +225,67 @@
     gap: 8px 24px;
   }
 
+  /* A hit-a-thon's hits */
+  .intro {
+    margin: 2px 0 14px;
+    color: var(--studio-soft);
+    font-size: 13px;
+  }
+  .hitTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .hitTable th {
+    padding: 8px 12px 8px 0;
+    border-bottom: 1px solid var(--dash-rule);
+    color: var(--studio-soft);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .hitTable td {
+    height: 60px;
+    padding: 6px 12px 6px 0;
+    border-bottom: 1px solid var(--dash-hair);
+  }
+  .hitTable th:last-child,
+  .hitTable td:last-child {
+    padding-right: 0;
+    text-align: right;
+  }
+  .hitTable .blank {
+    height: auto;
+    padding: 20px 0;
+    color: var(--studio-soft);
+    text-align: left;
+  }
+  .player {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .soft {
+    color: var(--studio-soft);
+  }
+  .hitField {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+  }
+  .hitField > input {
+    width: 72px;
+  }
+  .error {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .save {
+    margin-top: 16px;
+  }
+
   @media (max-width: 1239px) {
     .run {
       grid-template-columns: minmax(0, 720px);
@@ -243,7 +308,8 @@
     .next {
       order: 3;
     }
-    .squares {
+    .squares,
+    .hits {
       order: 4;
       min-width: 0;
     }
@@ -319,6 +385,9 @@
       border-radius: var(--dash-radius);
       background: var(--dash-panel);
     }
+    .stats.four {
+      grid-template-columns: minmax(0, 1fr);
+    }
     .stats > div {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -362,6 +431,13 @@
     }
     .next > a {
       margin-left: 38px;
+    }
+
+    .hitTable td {
+      padding-right: 8px;
+    }
+    .hitField > input {
+      width: 60px;
     }
 
     .gridHead {

@@ -2,9 +2,10 @@
 
 import { z } from 'zod';
 
-import { HitAThonErrors, PLAYER_HAS_PLEDGES } from '@/features/contests/constants';
+import { HitAThonErrors, HITS_RANGE, PLAYER_HAS_PLEDGES } from '@/features/contests/constants';
 import type { HitPlayer } from '@/features/contests/utils/hit-players';
 import { generatePlayerSlug } from '@/features/contests/utils/player-slug';
+import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 import type { ActionResponse } from '@/types/action-response';
 
 import { ValidationError, withContestOwnership } from '../middleware/auth-middleware';
@@ -61,29 +62,59 @@ export async function addHitPlayer(
   })();
 }
 
-/** Removes a player. Refused while the player has pledges, cancelled ones included (the database's foreign key). */
+/**
+ * Removes a player. Refused while the player has a pledge that isn't cancelled. Their cancelled pledges are deleted
+ * first (the service role: owners can't delete pledges), since the database's foreign key refuses removing a player
+ * with any pledge. A pledge made in between keeps the player: the foreign key refuses the delete.
+ */
 export async function removeHitPlayer(contestId: string, playerId: string): Promise<ActionResponse<{ id: string }>> {
   return withContestOwnership<{ id: string }>(contestId, async (_user, supabase) => {
     if (typeof playerId !== 'string') {
       throw new Error('Invalid player');
     }
 
+    const { data: player, error: playerError } = await supabase
+      .from('hit_players')
+      .select('first_name')
+      .eq('contest_id', contestId)
+      .eq('id', playerId)
+      .maybeSingle();
+    if (playerError) throw playerError;
+    if (!player) {
+      throw new Error('Player not found');
+    }
+
+    const { count, error: countError } = await supabase
+      .from('pledges')
+      .select('id', { count: 'exact', head: true })
+      .eq('contest_id', contestId)
+      .eq('player_id', playerId)
+      .neq('status', 'cancelled');
+    if (countError) throw countError;
+    if (count) {
+      throw new ValidationError(PLAYER_HAS_PLEDGES(player.first_name));
+    }
+
+    // Their contacts go with them (on delete cascade)
+    const { error: pledgesError } = await supabaseAdminClient
+      .from('pledges')
+      .delete()
+      .eq('contest_id', contestId)
+      .eq('player_id', playerId)
+      .eq('status', 'cancelled');
+    if (pledgesError) throw pledgesError;
+
     const { data, error } = await supabase
       .from('hit_players')
       .delete()
       .eq('contest_id', contestId)
       .eq('id', playerId)
-      .select('id, first_name');
+      .select('id');
 
     if (error) {
+      // A pledge arrived in between
       if (error.code === '23503') {
-        const { data: player } = await supabase
-          .from('hit_players')
-          .select('first_name')
-          .eq('contest_id', contestId)
-          .eq('id', playerId)
-          .maybeSingle();
-        if (player) throw new ValidationError(PLAYER_HAS_PLEDGES(player.first_name));
+        throw new ValidationError(PLAYER_HAS_PLEDGES(player.first_name));
       }
       throw error;
     }
@@ -92,5 +123,59 @@ export async function removeHitPlayer(contestId: string, playerId: string): Prom
     }
 
     return { id: data[0].id };
+  })();
+}
+
+/**
+ * Saves the hits entered on the owner's overview. Each count is a whole number from 0 to the pitches per player, or
+ * empty (not entered yet). Only changed counts are written.
+ */
+export async function saveHits(
+  contestId: string,
+  entries: { playerId: string; hits: number | null }[]
+): Promise<ActionResponse<{ saved: number }>> {
+  return withContestOwnership<{ saved: number }>(contestId, async (_user, supabase, contest) => {
+    if (contest.kind !== 'hit_a_thon' || contest.pitches_per_player === null) {
+      throw new Error('Not a hit-a-thon');
+    }
+    const pitches = contest.pitches_per_player;
+
+    const parsed = z
+      .array(z.object({ playerId: z.string(), hits: z.number().int().min(0).max(pitches).nullable() }))
+      .safeParse(entries);
+    if (!parsed.success) {
+      throw new ValidationError(HITS_RANGE(pitches));
+    }
+
+    const { data: players, error: readError } = await supabase
+      .from('hit_players')
+      .select('id, hits')
+      .eq('contest_id', contestId);
+    if (readError) throw readError;
+
+    const current = new Map(players.map((p) => [p.id, p.hits]));
+    const changed = parsed.data.filter((e) => current.has(e.playerId) && current.get(e.playerId) !== e.hits);
+
+    for (const { playerId, hits } of changed) {
+      const { data, error } = await supabase
+        .from('hit_players')
+        .update({ hits })
+        .eq('contest_id', contestId)
+        .eq('id', playerId)
+        .select('id');
+
+      if (error) {
+        // Pitches lowered in between (enforce_hit_player_rules)
+        if (error.message.includes('hits_over_pitches')) {
+          throw new ValidationError(HITS_RANGE(pitches));
+        }
+        throw error;
+      }
+      if (!data.length) {
+        throw new Error('Player not found');
+      }
+    }
+
+    return { saved: changed.length };
   })();
 }
