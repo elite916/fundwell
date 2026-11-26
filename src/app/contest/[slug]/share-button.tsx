@@ -19,10 +19,21 @@ interface ShareButtonProps {
   /** Only for the owner. */
   accessPin: string | null;
   colors: CSSProperties;
+  /** The sheet's words. A hit-a-thon player's page has its own. */
+  title?: string;
+  description?: string;
 }
 
 /** "Share", and the sheet it opens: the link, and a QR code to show or download. */
-export function ShareButton({ contestName, contestSlug, referral, accessPin, colors }: ShareButtonProps) {
+export function ShareButton({
+  contestName,
+  contestSlug,
+  referral,
+  accessPin,
+  colors,
+  title = 'Share',
+  description = 'Send this link to anyone who might help.',
+}: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [hasQr, setHasQr] = useState(false);
@@ -69,8 +80,8 @@ export function ShareButton({ contestName, contestSlug, referral, accessPin, col
         open={isOpen}
         onOpenChange={handleOpenChange}
         style={colors}
-        title='Share'
-        description='Send this link to anyone who might help.'
+        title={title}
+        description={description}
         footer={
           <>
             <Button onClick={handleCopy}>{isCopied ? 'Copied!' : 'Copy link'}</Button>
