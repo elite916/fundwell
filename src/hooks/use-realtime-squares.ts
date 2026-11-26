@@ -6,7 +6,7 @@ import { createSupabaseBrowserClient } from '@/libs/supabase/supabase-browser-cl
 
 type BaseSquare = { id: string };
 
-export function useRealtimeSquares<T extends BaseSquare>(contestId: string, initialSquares: T[]) {
+export function useRealtimeSquares<T extends BaseSquare>(contestId: string, initialSquares: T[], realtime = true) {
   const [squares, setSquares] = useState<T[]>(initialSquares);
 
   // Sync state when initialSquares prop changes
@@ -16,6 +16,7 @@ export function useRealtimeSquares<T extends BaseSquare>(contestId: string, init
 
   // Subscribe to realtime updates
   useEffect(() => {
+    if (!realtime) return;
     const supabase = createSupabaseBrowserClient();
 
     const channel = supabase
@@ -46,7 +47,7 @@ export function useRealtimeSquares<T extends BaseSquare>(contestId: string, init
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [contestId]);
+  }, [contestId, realtime]);
 
   return squares;
 }

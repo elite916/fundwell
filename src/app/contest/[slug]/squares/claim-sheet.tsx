@@ -1,6 +1,7 @@
 'use client';
 
 import { type CSSProperties, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/studio/button';
@@ -43,6 +44,7 @@ export function ClaimSheet({
   colors,
   onClose,
 }: ClaimSheetProps) {
+  const router = useRouter();
   const [isClaimed, setIsClaimed] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState('');
@@ -82,8 +84,9 @@ export function ClaimSheet({
           return;
         }
 
-        // The board updates itself over realtime
+        // Reload the board: a PIN contest has no realtime, so the claimed square would still look free
         setIsClaimed(true);
+        router.refresh();
       } catch {
         setServerError('An unexpected error occurred. Please try again.');
       }
