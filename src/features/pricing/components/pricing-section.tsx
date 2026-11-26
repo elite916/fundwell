@@ -3,6 +3,7 @@ import { getUser } from '@/features/account/controllers/get-user';
 import { PricingCard } from '@/features/pricing/components/price-card';
 import { getProducts } from '@/features/pricing/controllers/get-products';
 import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
+import { hasOverdueSubscription } from '@/features/subscriptions/has-overdue-subscription';
 import { cn } from '@/utils/cn';
 
 import { createCheckoutAction } from '../actions/create-checkout-action';
@@ -12,7 +13,10 @@ import css from './pricing.module.css';
 export async function PricingSection({ isPricingPage = false }: { isPricingPage?: boolean }) {
   const [products, user] = await Promise.all([getProducts(), getUser()]);
   const isLoggedIn = !!user;
-  const hasPro = await hasActiveSubscription(user?.id ?? null);
+  const [hasPro, isOverdue] = await Promise.all([
+    hasActiveSubscription(user?.id ?? null),
+    hasOverdueSubscription(user?.id ?? null),
+  ]);
 
   return (
     <section className={cn(css.section, isPricingPage && css.page)}>
@@ -27,6 +31,7 @@ export async function PricingSection({ isPricingPage = false }: { isPricingPage?
             createCheckoutAction={createCheckoutAction}
             isLoggedIn={isLoggedIn}
             hasPro={hasPro}
+            isOverdue={isOverdue}
             hasIntervals={isPricingPage}
             heading={isPricingPage ? 'h2' : 'h3'}
           />

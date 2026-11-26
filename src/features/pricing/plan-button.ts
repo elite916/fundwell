@@ -4,25 +4,33 @@ import type { Price } from './types';
 export type PlanButton =
   | { kind: 'checkout'; label: string; priceId: string }
   | { kind: 'link'; label: string; href: string }
+  // A plain <a>: every request opens a Stripe portal session, and next/link prefetches it.
+  | { kind: 'portal'; label: string; href: string }
   | { kind: 'current'; label: string }
   | null;
 
-/** What a plan's button does: signed out, on Free and on Pro. */
+/** What a plan's button does: signed out, on Free, on Pro and with Pro unpaid. */
 export function planButton({
   variant,
   price,
   isLoggedIn,
   hasPro,
+  isOverdue,
 }: {
   variant: PriceCardVariant;
   price: Pick<Price, 'id' | 'unit_amount'> | null | undefined;
   isLoggedIn: boolean;
   hasPro: boolean;
+  /** A paid subscription is past due or unpaid. */
+  isOverdue: boolean;
 }): PlanButton {
   const isPro = variant === 'pro';
 
   // Nobody on Pro is offered Free.
   if (!isPro && hasPro) return null;
+
+  // An unpaid Pro is paid from the Stripe portal, not a second checkout.
+  if (isPro && isOverdue && !hasPro) return { kind: 'portal', label: 'Update payment', href: '/manage-subscription' };
 
   if (price && price.unit_amount !== 0 && !hasPro) {
     const proLabel = isLoggedIn ? 'Upgrade to Pro' : 'Sign up to subscribe';

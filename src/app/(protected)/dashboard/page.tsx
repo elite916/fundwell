@@ -7,6 +7,7 @@ import { ContestStatus } from '@/features/contests/constants/status';
 import { listContestsForOwner } from '@/features/contests/queries';
 import { UpgradeBanner } from '@/features/subscriptions/components/upgrade-banner';
 import { hasActiveSubscription } from '@/features/subscriptions/has-active-subscription';
+import { hasOverdueSubscription } from '@/features/subscriptions/has-overdue-subscription';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
 import css from './contest-list.module.css';
@@ -37,7 +38,10 @@ export default async function DashboardPage() {
   }
 
   // Check if user has active subscription
-  const userHasSubscription = await hasActiveSubscription(user.id);
+  const [userHasSubscription, isOverdue] = await Promise.all([
+    hasActiveSubscription(user.id),
+    hasOverdueSubscription(user.id),
+  ]);
 
   // Fetch contests with claimed squares count
   const contests = await listContestsForOwner(user.id);
@@ -57,8 +61,8 @@ export default async function DashboardPage() {
 
   return (
     <DashPage>
-      {/* Show upgrade banner only for free users */}
-      {!userHasSubscription && <UpgradeBanner activeContestCount={activeContestCount} />}
+      {/* Show upgrade banner only for free users, or the payment banner if their Pro is unpaid */}
+      {!userHasSubscription && <UpgradeBanner activeContestCount={activeContestCount} isOverdue={isOverdue} />}
 
       <div className={css.head}>
         <h1>My Contests</h1>

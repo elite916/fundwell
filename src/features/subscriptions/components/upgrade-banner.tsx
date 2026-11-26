@@ -9,9 +9,13 @@ import { DashButton, IconButton } from '@/components/studio/dashboard/dash-butto
 import css from './upgrade-banner.module.css';
 
 const STORAGE_KEY = 'upgrade-banner-dismissed';
+// Its own key, so dismissing the Free banner doesn't hide this one.
+const OVERDUE_STORAGE_KEY = 'payment-banner-dismissed';
 
 interface UpgradeBannerProps {
   activeContestCount?: number;
+  /** A paid subscription is past due or unpaid. */
+  isOverdue?: boolean;
 }
 
 const subscribe = (onChange: () => void) => {
@@ -19,20 +23,39 @@ const subscribe = (onChange: () => void) => {
   return () => window.removeEventListener('storage', onChange);
 };
 
-export function UpgradeBanner({ activeContestCount }: UpgradeBannerProps) {
+export function UpgradeBanner({ activeContestCount, isOverdue }: UpgradeBannerProps) {
+  const storageKey = isOverdue ? OVERDUE_STORAGE_KEY : STORAGE_KEY;
   const wasDismissed = useSyncExternalStore(
     subscribe,
-    () => !!localStorage.getItem(STORAGE_KEY),
+    () => !!localStorage.getItem(storageKey),
     () => true
   );
   const [isDismissed, setIsDismissed] = useState(false);
 
   const handleDismiss = () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
+    localStorage.setItem(storageKey, 'true');
     setIsDismissed(true);
   };
 
   if (wasDismissed || isDismissed) return null;
+
+  if (isOverdue) {
+    return (
+      <div className={css.banner}>
+        <div>
+          <p className={css.title}>Your Pro payment didn&apos;t go through</p>
+          <p className={css.soft}>You&apos;re limited to 1 active contest until it&apos;s paid.</p>
+        </div>
+        {/* A plain <a>, not <Link>: every request opens a Stripe portal session. */}
+        <DashButton asChild look='light' className={css.upgrade}>
+          <a href='/manage-subscription'>Update payment</a>
+        </DashButton>
+        <IconButton label='Dismiss' onClick={handleDismiss}>
+          <X aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
+        </IconButton>
+      </div>
+    );
+  }
 
   return (
     <div className={css.banner}>
