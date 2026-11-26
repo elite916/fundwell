@@ -1,11 +1,18 @@
 import Link from 'next/link';
+import { after } from 'next/server';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { BackLink, DashPage, Tag } from '@/components/studio/dashboard/dash-page';
-import { getContestPinForOwner, getHitPlayersWithHits, getPledgesForOwner } from '@/features/contests/queries';
+import {
+  getContestPinForOwner,
+  getHitPlayersWithHits,
+  getPaymentOptionsForContest,
+  getPledgesForOwner,
+} from '@/features/contests/queries';
 import type { Contest } from '@/features/contests/types';
 import { formatPrizeAmount } from '@/features/contests/utils';
 import { pledgeTotal, sumMoney } from '@/features/contests/utils/pledges';
+import { countTotalsSent, resumeHitAThonEmails } from '@/features/emails/hit-a-thon-emails';
 import { cn } from '@/utils/cn';
 import { getURL } from '@/utils/get-url';
 
@@ -27,11 +34,16 @@ interface HitAThonOverviewProps {
 export async function HitAThonOverview({ contest, statusLabel }: HitAThonOverviewProps) {
   const pitches = contest.pitches_per_player ?? 0;
 
-  const [players, pledges, accessPin] = await Promise.all([
+  const [players, pledges, accessPin, paymentOptions, totalsSent] = await Promise.all([
     getHitPlayersWithHits(contest.id),
     getPledgesForOwner(contest.id),
     getContestPinForOwner(contest.id),
+    getPaymentOptionsForContest(contest.id),
+    contest.hits_locked_at ? countTotalsSent(contest.id) : 0,
   ]);
+
+  // Sends what an earlier lock, reminder or payment left queued (or didn't get to queue), after the page is sent
+  after(() => resumeHitAThonEmails(contest));
 
   const owedOf = (status: 'pending' | 'paid') =>
     sumMoney(pledges.filter((p) => p.status === status).map((p) => Number(p.amount_owed ?? 0)));
@@ -53,6 +65,29 @@ export async function HitAThonOverview({ contest, statusLabel }: HitAThonOvervie
   });
 
   const publicUrl = getURL(`/contest/${contest.slug}`);
+
+  // Formatted here, so the server and the browser show the same day
+  const locked = contest.hits_locked_at
+    ? {
+        on: new Date(contest.hits_locked_at).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          timeZone: 'America/Los_Angeles',
+        }),
+        totalsSent,
+      }
+    : null;
+  // Who gets a total: per-hit pledges, and flat gifts not yet paid
+  const lock =
+    !contest.hits_locked_at && (contest.status === 'open' || contest.status === 'locked')
+      ? {
+          hasPaymentOption: paymentOptions.length > 0,
+          supportersToEmail: pledges.filter(
+            (p) => (p.kind === 'per_hit' && p.status === 'pledged') || (p.kind === 'flat' && p.status === 'pending')
+          ).length,
+        }
+      : null;
 
   return (
     <DashPage>
@@ -115,7 +150,7 @@ export async function HitAThonOverview({ contest, statusLabel }: HitAThonOvervie
           ))}
         </dl>
 
-        <HitsSection contestId={contest.id} pitches={pitches} players={rows} />
+        <HitsSection contestId={contest.id} pitches={pitches} players={rows} locked={locked} lock={lock} />
       </div>
     </DashPage>
   );

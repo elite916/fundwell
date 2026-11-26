@@ -10,6 +10,7 @@ import { say, sayProblem } from '@/components/studio/dashboard/dash-toast';
 import { BusyButton } from '@/components/studio/setup/busy-button';
 import { srOnly } from '@/components/studio/theme';
 import { bulkMarkPledgesPaid, updatePledgeStatus } from '@/features/contests/actions/pledges';
+import { emailUnpaidSupporters } from '@/features/contests/actions/send-totals';
 import type { HitPlayerWithHits, OwnerPledge } from '@/features/contests/queries/get-pledges';
 import { formatPrizeAmount } from '@/features/contests/utils';
 import { pledgeLabel, pledgeTotal } from '@/features/contests/utils/pledges';
@@ -23,6 +24,8 @@ interface PledgesTableClientProps {
   players: HitPlayerWithHits[];
   /** Cancelled pledges left out, like released squares. */
   pledges: OwnerPledge[];
+  /** Hits are locked: the totals have gone out, so reminders can. */
+  isLocked: boolean;
 }
 
 function formatDate(dateString: string): string {
@@ -46,12 +49,13 @@ const STATUS_TAGS: Record<OwnerPledge['status'], { label: string; tone?: 'owes' 
   cancelled: { label: '' },
 };
 
-/** A hit-a-thon's pledges: the squares Participants table's counterpart. Marking paid sends no email yet. */
-export function PledgesTableClient({ contestId, pitches, players, pledges }: PledgesTableClientProps) {
+/** A hit-a-thon's pledges: the squares Participants table's counterpart. Marking one paid emails the supporter. */
+export function PledgesTableClient({ contestId, pitches, players, pledges, isLocked }: PledgesTableClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [cancelling, setCancelling] = useState<OwnerPledge | null>(null);
+  const [isReminding, setIsReminding] = useState(false);
   const selectAllRef = useRef<HTMLInputElement>(null);
   const endFocusRef = useRef<HTMLElement | null>(null);
 
@@ -147,6 +151,23 @@ export function PledgesTableClient({ contestId, pitches, players, pledges }: Ple
     });
   };
 
+  const unpaid = pledges.filter((p) => p.status === 'pending').length;
+
+  const confirmReminders = () => {
+    startTransition(async () => {
+      const result = await emailUnpaidSupporters(contestId);
+
+      if (!result || result.error) {
+        sayProblem(result?.error?.message ?? 'Something went wrong. Please try again.');
+        setIsReminding(false);
+        return;
+      }
+
+      say('Reminders sent');
+      setIsReminding(false);
+    });
+  };
+
   // What the player's total drops by: this pledge's part of the overview's "Total"
   const cancellingPlayer = cancelling ? playersById.get(cancelling.player_id) : undefined;
   const cancellingDrop = cancelling ? pledgeTotal(cancelling, cancellingPlayer?.hits ?? null, pitches) : 0;
@@ -164,6 +185,12 @@ export function PledgesTableClient({ contestId, pitches, players, pledges }: Ple
             Clear Selection
           </DashButton>
         </div>
+      )}
+
+      {isLocked && unpaid > 0 && (
+        <DashButton look='quiet' onClick={() => setIsReminding(true)} disabled={isPending} className={css.remind}>
+          Email Unpaid Supporters
+        </DashButton>
       )}
 
       {pledges.length === 0 && <p className={css.empty}>No pledges yet.</p>}
@@ -246,6 +273,22 @@ export function PledgesTableClient({ contestId, pitches, players, pledges }: Ple
           </tbody>
         </table>
       )}
+
+      <DashDialog
+        open={isReminding}
+        onClose={() => !isPending && setIsReminding(false)}
+        title={unpaid === 1 ? 'Email 1 supporter who still owes?' : `Email ${unpaid} supporters who still owe?`}
+        description="They'll get their total and your payment options again."
+      >
+        <DashDialogFoot>
+          <DashButton look='quiet' onClick={() => setIsReminding(false)} disabled={isPending}>
+            Cancel
+          </DashButton>
+          <BusyButton busy={isPending} onClick={confirmReminders}>
+            Send
+          </BusyButton>
+        </DashDialogFoot>
+      </DashDialog>
 
       <DashDialog
         open={!!cancelling}

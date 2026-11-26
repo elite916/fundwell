@@ -15,18 +15,18 @@ import { sendEmail } from './send-email';
 
 import 'server-only';
 
-const STUCK_AFTER_MS = 10 * 60 * 1000;
+export const STUCK_AFTER_MS = 10 * 60 * 1000;
 const SEND_TIMEOUT_MS = 15 * 1000;
-const SEND_GAP_MS = 500;
-const RATE_LIMIT_WAIT_MS = 2000;
+export const SEND_GAP_MS = 500;
+export const RATE_LIMIT_WAIT_MS = 2000;
 
 const CLOSES_AFTER_MS = 14 * 24 * 60 * 60 * 1000;
 
-type QueuedEmail = Pick<
+export type QueuedEmail = Pick<
   Tables<'email_logs'>,
   'id' | 'contest_id' | 'square_id' | 'recipient_email' | 'email_type' | 'status' | 'dedupe_key'
 >;
-type EmailContent = { subject: string; html: string };
+export type EmailContent = { subject: string; html: string };
 type Outcome = 'sent' | 'failed' | 'rate_limited' | 'unconfirmed';
 
 /**
@@ -125,7 +125,7 @@ async function enqueue(
   throwIfError(error);
 }
 
-async function getAccountEmail(userId: string): Promise<string> {
+export async function getAccountEmail(userId: string): Promise<string> {
   const { data, error } = await supabaseAdminClient.auth.admin.getUserById(userId);
   if (error || !data.user.email) throw new Error(`No account email: ${error?.code}`);
   return data.user.email;
@@ -217,7 +217,7 @@ async function claimEmail(email: QueuedEmail): Promise<boolean> {
   return !!data?.length;
 }
 
-async function setStatus(
+export async function setStatus(
   email: QueuedEmail,
   update: Pick<Tables<'email_logs'>, 'status'> & Partial<Pick<Tables<'email_logs'>, 'resend_id' | 'sent_at'>>
 ): Promise<void> {
@@ -226,7 +226,7 @@ async function setStatus(
 }
 
 /** Only a refusal with a status code is known not to have gone out. Anything unclear is never sent again. */
-async function send(
+export async function send(
   email: QueuedEmail,
   { subject, html }: EmailContent
 ): Promise<{ outcome: Outcome; resendId: string | null }> {
@@ -414,10 +414,10 @@ async function getClosingTime(
 }
 
 /** Keeps the code and message only: a database error's details can hold the row, and so an email address. */
-function throwIfError(error: { code: string; message: string } | null): void {
+export function throwIfError(error: { code: string; message: string } | null): void {
   if (error) throw new Error(`${error.code} ${error.message}`);
 }
 
-function wait(ms: number): Promise<undefined> {
+export function wait(ms: number): Promise<undefined> {
   return new Promise((resolve) => setTimeout(() => resolve(undefined), ms));
 }

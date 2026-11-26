@@ -910,6 +910,16 @@ export type Database = {
           status: Database['public']['Enums']['pledge_status'];
         }[];
       };
+      lock_hit_a_thon: {
+        Args: { p_contest_id: string };
+        Returns: {
+          flat_pending: number;
+          hits_locked_at: string;
+          per_hit_owed: number;
+          per_hit_zero: number;
+          total_owed: number;
+        }[];
+      };
       owner_has_pro: { Args: { uid: string }; Returns: boolean };
       rate_limit_hit: { Args: { p_key: string; p_max: number; p_window_seconds: number }; Returns: boolean };
       rate_limit_undo_hit: { Args: { p_key: string; p_window_seconds: number }; Returns: undefined };

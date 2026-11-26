@@ -139,6 +139,10 @@ export async function saveHits(
       throw new Error('Not a hit-a-thon');
     }
     const pitches = contest.pitches_per_player;
+    // The totals have gone out (the database refuses too)
+    if (contest.hits_locked_at) {
+      throw new Error('Hits are locked');
+    }
 
     const parsed = z
       .array(z.object({ playerId: z.string(), hits: z.number().int().min(0).max(pitches).nullable() }))
