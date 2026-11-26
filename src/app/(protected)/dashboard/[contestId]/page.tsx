@@ -42,6 +42,9 @@ const STATUS_LABELS: Record<ContestStatus, string> = {
   completed: 'Completed',
 };
 
+// A hit-a-thon's "Lock and Send Totals" sends its emails after the response, a batch at a time
+export const maxDuration = 300;
+
 export default async function ContestDetailPage({ params }: ContestDetailPageProps) {
   const { contestId } = await params;
   const supabase = await createSupabaseServerClient();

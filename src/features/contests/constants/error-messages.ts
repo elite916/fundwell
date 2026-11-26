@@ -28,12 +28,16 @@ export const HitAThonErrors = {
   CAP_BELOW_AMOUNT: 'Your cap must be at least your amount per hit.',
   CAP_MAX: 'Your cap can be up to $10,000.',
   NOT_TAKING_PLEDGES: "This fundraiser isn't taking pledges right now.",
+  PAYMENT_OPTION_FIRST: 'Add a payment option in Settings first, so supporters know how to pay.',
 } as const;
 
 export const PITCHES_BELOW_HITS = (name: string, hits: number): string =>
   `${name} already has ${hits} hits. Pitches can't be fewer than that.`;
 
 export const HITS_RANGE = (pitches: number): string => `Enter a whole number from 0 to ${pitches}.`;
+
+/** Why "Lock and Send Totals" can't be pressed yet. */
+export const HITS_LEFT = (left: number): string => `Enter hits for every player first. ${left} left.`;
 
 export const PLAYER_HAS_PLEDGES = (name: string): string => `${name} has pledges. Cancel them first to remove ${name}.`;
 

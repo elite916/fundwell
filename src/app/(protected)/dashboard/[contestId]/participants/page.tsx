@@ -18,6 +18,9 @@ interface ParticipantsPageProps {
   params: Promise<{ contestId: string }>;
 }
 
+// A hit-a-thon's "Email Unpaid Supporters" sends its emails after the response, a batch at a time
+export const maxDuration = 300;
+
 export default async function ParticipantsPage({ params }: ParticipantsPageProps) {
   const { contestId } = await params;
   const supabase = await createSupabaseServerClient();
@@ -56,6 +59,7 @@ export default async function ParticipantsPage({ params }: ParticipantsPageProps
             pitches={contest.pitches_per_player ?? 0}
             players={players}
             pledges={pledges}
+            isLocked={!!contest.hits_locked_at}
           />
         </Panel>
       </DashPage>
