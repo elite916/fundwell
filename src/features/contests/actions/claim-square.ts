@@ -67,6 +67,14 @@ export async function claimSquare(
   }
   const { firstName, lastName, venmoHandle } = parsed.data;
 
+  // Ids that can't exist are a plain not-found, not a database error
+  if (!z.guid().safeParse(contestId).success || !z.guid().safeParse(squareId).success) {
+    return {
+      data: null,
+      error: { message: ContestErrors.NOT_FOUND },
+    };
+  }
+
   // Fetch contest for the PIN check, referral names and the email
   const { data: contest, error: contestError } = await supabaseAdminClient
     .from('contests')
@@ -76,7 +84,10 @@ export async function claimSquare(
     .single();
 
   if (contestError || !contest) {
-    logger.error('claimSquare', contestError, { contestId, squareId });
+    // No such contest (PGRST116) or a malformed id (22P02) isn't worth a Sentry event
+    if (!['PGRST116', '22P02'].includes(contestError?.code ?? '')) {
+      logger.error('claimSquare', contestError, { contestId, squareId });
+    }
     return {
       data: null,
       error: { message: ContestErrors.NOT_FOUND },

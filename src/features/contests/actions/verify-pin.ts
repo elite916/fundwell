@@ -5,7 +5,7 @@ import { timingSafeEqual } from 'crypto';
 
 import { contestAccessCookieName, contestAccessToken } from '@/features/contests/access';
 import { getContestPin } from '@/features/contests/queries';
-import { getClientIp, hitRateLimit, undoRateLimitHit } from '@/utils/rate-limit';
+import { getClientIp, hashLimitKey, hitRateLimit, undoRateLimitHit } from '@/utils/rate-limit';
 
 interface VerifyPinInput {
   contestSlug: string;
@@ -51,7 +51,7 @@ export async function verifyPin(input: VerifyPinInput): Promise<VerifyPinRespons
   // the limit. A correct PIN gives its attempt back below. If the limiter can't
   // be reached this throws, so the PIN check fails closed.
   const ip = await getClientIp();
-  const ipKey = `pin:ip:${contestSlug}:${ip}`;
+  const ipKey = `pin:ip:${contestSlug}:${hashLimitKey('pin-ip', contestSlug, ip)}`;
   const contestKey = `pin:contest:${contestSlug}`;
   const withinLimits = (await hitRateLimit(ipKey, IP_LIMIT)) && (await hitRateLimit(contestKey, CONTEST_LIMIT));
 
