@@ -90,6 +90,33 @@ const STATUS_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
   completed: [],
 };
 
+// A hit-a-thon starts only through "Lock and Send Totals" (release 4), so there's no Start Game
+const HIT_A_THON_TRANSITIONS: Record<ContestStatus, StatusTransition[]> = {
+  draft: [
+    {
+      targetStatus: 'open',
+      label: 'Open Contest',
+      description: 'This makes your hit-a-thon visible so supporters can pledge.',
+    },
+  ],
+  open: [
+    {
+      targetStatus: 'locked',
+      label: 'Close Pledges',
+      description: "Supporters can't pledge after this. You can reopen it later.",
+    },
+  ],
+  locked: [
+    {
+      targetStatus: 'open',
+      label: 'Reopen Pledges',
+      description: 'Supporters can pledge again.',
+    },
+  ],
+  in_progress: STATUS_TRANSITIONS.in_progress,
+  completed: [],
+};
+
 interface ContestStatusSectionProps {
   contest: Contest;
 }
@@ -103,7 +130,8 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
 
   const currentStatus = contest.status as ContestStatus;
   const statusConfig = STATUS_CONFIG[currentStatus];
-  const availableTransitions = STATUS_TRANSITIONS[currentStatus];
+  const isHitAThon = contest.kind === 'hit_a_thon';
+  const availableTransitions = (isHitAThon ? HIT_A_THON_TRANSITIONS : STATUS_TRANSITIONS)[currentStatus];
 
   const handleTransition = (transition: StatusTransition) => {
     isDoneRef.current = false;
@@ -142,7 +170,8 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
       {/* Current Status */}
       <p className={`${css.row} ${css.statusRow}`}>
         <Tag tone='now'>{statusConfig.label}</Tag>
-        <span>{statusConfig.description}</span>
+        {/* The descriptions are about squares */}
+        {!isHitAThon && <span>{statusConfig.description}</span>}
       </p>
 
       {/* Available Transitions */}

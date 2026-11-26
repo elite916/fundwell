@@ -19,6 +19,18 @@ export const ContestErrors = {
   FAILED_TO_DELETE: 'Failed to delete',
 } as const;
 
+// Hit-a-thon (redesign-copy/hit-a-thon.md)
+export const HitAThonErrors = {
+  PITCHES_LOCKED: "Pitches per player can't change after hits are locked.",
+  PLAYERS_REQUIRED: 'Add at least one player before opening.',
+  DUPLICATE_PLAYER: 'A player with this name already exists.',
+} as const;
+
+export const PITCHES_BELOW_HITS = (name: string, hits: number): string =>
+  `${name} already has ${hits} hits. Pitches can't be fewer than that.`;
+
+export const PLAYER_HAS_PLEDGES = (name: string): string => `${name} has pledges. Cancel them first to remove ${name}.`;
+
 export const MAX_SQUARES_REACHED = (max: number): string =>
   `You have already claimed the maximum of ${max} square(s) for this contest.`;
 

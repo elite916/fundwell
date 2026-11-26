@@ -2,7 +2,12 @@ import { notFound, redirect } from 'next/navigation';
 
 import { BackLink, DashPage, PageHead } from '@/components/studio/dashboard/dash-page';
 import { ContestStatus } from '@/features/contests/constants';
-import { getContestById, getContestPinForOwner, getPaymentOptionsForContest } from '@/features/contests/queries';
+import {
+  getContestById,
+  getContestPinForOwner,
+  getHitPlayers,
+  getPaymentOptionsForContest,
+} from '@/features/contests/queries';
 import { getPlayerSalesCounts } from '@/features/contests/queries/get-player-sales-counts';
 import { isSeasonOpen } from '@/features/super-bowl/queries';
 import { SUPER_BOWL_SEASON } from '@/features/super-bowl/season';
@@ -13,7 +18,9 @@ import { BasicInfoSection } from './basic-info-section';
 import { BrandingSection } from './branding-section';
 import { ContestStatusSection } from './contest-status-section';
 import { DangerZoneSection } from './danger-zone-section';
+import { HitPlayersSection } from './hit-players-section';
 import { PaymentOptionsSection } from './payment-options-section';
+import { PitchesGoalSection } from './pitches-goal-section';
 import { PlayerTrackingSection } from './player-tracking-section';
 import { PricingPayoutsSection } from './pricing-payouts-section';
 
@@ -52,8 +59,11 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   // Fetch payment options
   const paymentOptions = await getPaymentOptionsForContest(contestId);
 
-  // Fetch player sales counts
-  const playerSalesCounts = await getPlayerSalesCounts(contestId);
+  const isHitAThon = contest.kind === 'hit_a_thon';
+
+  // Fetch player sales counts (squares), or the hit-a-thon's players
+  const playerSalesCounts = isHitAThon ? {} : await getPlayerSalesCounts(contestId);
+  const hitPlayers = isHitAThon ? await getHitPlayers(contestId) : [];
 
   // Access PIN (owner-only table)
   const accessPin = await getContestPinForOwner(contestId);
@@ -65,9 +75,9 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   const sections = [
     ['basic-information', 'Basic Information'],
     ['contest-status', 'Contest Status'],
-    ['pricing-payouts', 'Pricing & Payouts'],
+    isHitAThon ? ['pitches-goal', 'Pitches and goal'] : ['pricing-payouts', 'Pricing & Payouts'],
     ['payment-options', 'Payment Options'],
-    ['player-tracking', 'Player Tracking'],
+    isHitAThon ? ['players', 'Players'] : ['player-tracking', 'Player Tracking'],
     ['access-control', 'Access Control'],
     ['branding', 'Branding'],
     ['danger-zone', 'Danger Zone'],
@@ -91,9 +101,13 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
         <div>
           <BasicInfoSection contest={contest} season={SUPER_BOWL_SEASON} canJoinSuperBowl={canJoinSuperBowl} />
           <ContestStatusSection contest={contest} />
-          <PricingPayoutsSection contest={contest} />
+          {isHitAThon ? <PitchesGoalSection contest={contest} /> : <PricingPayoutsSection contest={contest} />}
           <PaymentOptionsSection contest={contest} paymentOptions={paymentOptions} />
-          <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
+          {isHitAThon ? (
+            <HitPlayersSection contest={contest} players={hitPlayers} />
+          ) : (
+            <PlayerTrackingSection contest={contest} squaresPerPlayer={playerSalesCounts} />
+          )}
           <AccessControlSection contest={contest} accessPin={accessPin} />
           <BrandingSection contest={contest} />
           <DangerZoneSection contest={contest} />

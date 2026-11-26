@@ -5,7 +5,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { DashCheckbox } from '@/components/studio/dashboard/dash-button';
 import { TextArea } from '@/components/studio/setup/fields';
 import { TextField } from '@/components/studio/text-field';
-import { CreateContestInput, SportType } from '@/features/contests/models/contest';
+import { CreateContestFormValues, SportType } from '@/features/contests/models/contest';
 
 import css from '@/components/studio/setup/setup.module.css';
 
@@ -14,6 +14,7 @@ const SPORT_OPTIONS: {
   label: string;
   placeholder: { row: string; col: string };
   comingSoon?: boolean;
+  description?: string;
 }[] = [
   {
     value: 'football',
@@ -30,9 +31,13 @@ const SPORT_OPTIONS: {
     value: 'hit-a-thon',
     label: 'Hit-a-thon',
     placeholder: { row: 'Team 1', col: 'Team 2' },
-    comingSoon: true,
+    description:
+      "Supporters pledge to one player, per hit or a flat amount. After the event, you enter each player's hits.",
   },
 ];
+
+const HIT_A_THON_HOW_IT_WORKS =
+  "Supporters pledge to one player, either an amount per hit or a flat gift. After the event, you enter each player's hits and lock them. Fundwell then emails each supporter their total and your payment options.";
 
 const SPORT_DESCRIPTIONS: Record<SportType, string> = {
   football:
@@ -47,10 +52,12 @@ export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean })
     formState: { errors },
     control,
     setValue,
-  } = useFormContext<CreateContestInput>();
+  } = useFormContext<CreateContestFormValues>();
 
+  const isHitAThon = useWatch({ control, name: 'kind' }) === 'hit_a_thon';
   const sportType = useWatch({ control, name: 'sportType' }) || 'football';
   const currentSport = SPORT_OPTIONS.find((s) => s.value === sportType) || SPORT_OPTIONS[0];
+  const picked = isHitAThon ? 'hit-a-thon' : sportType;
 
   return (
     <>
@@ -66,17 +73,25 @@ export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean })
                   type='radio'
                   name='sport-type'
                   className={css.over}
-                  checked={sportType === sport.value}
+                  checked={picked === sport.value}
                   onChange={() => {
-                    if (!isDisabled && sport.value !== 'hit-a-thon') {
-                      setValue('sportType', sport.value as SportType, { shouldValidate: true });
+                    if (isDisabled) return;
+                    if (sport.value === 'hit-a-thon') {
+                      setValue('kind', 'hit_a_thon');
+                    } else {
+                      setValue('kind', 'squares');
+                      setValue('sportType', sport.value, { shouldValidate: true });
                     }
                   }}
                   disabled={isDisabled}
+                  // The description is read after the name, not as part of it
+                  aria-label={sport.description ? sport.label : undefined}
+                  aria-describedby={sport.description ? `${sport.value}-about` : undefined}
                 />
                 <span>
                   {sport.label}
                   {isDisabled && <small>Coming Soon</small>}
+                  {sport.description && <small id={`${sport.value}-about`}>{sport.description}</small>}
                 </span>
               </label>
             );
@@ -84,12 +99,19 @@ export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean })
         </div>
         {/* Hidden input for form registration */}
         <input type='hidden' {...register('sportType')} />
+        <input type='hidden' {...register('kind')} />
       </fieldset>
 
       <TextField
         id='name'
         label='Contest Name *'
-        placeholder={sportType === 'football' ? 'Super Bowl Squares 2025' : 'World Series Squares 2025'}
+        placeholder={
+          isHitAThon
+            ? 'Spring Hit-a-thon 2027'
+            : sportType === 'football'
+              ? 'Super Bowl Squares 2025'
+              : 'World Series Squares 2025'
+        }
         hint='This is what participants will see when they join your contest.'
         error={errors.name?.message}
         autoComplete='off'
@@ -106,31 +128,35 @@ export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean })
       />
 
       {/* Team Names */}
-      <div className={css.group}>
-        <h3>Team Names</h3>
-        <p>Enter the teams playing in your game. Row team scores will be matched against the row axis.</p>
-      </div>
+      {!isHitAThon && (
+        <>
+          <div className={css.group}>
+            <h3>Team Names</h3>
+            <p>Enter the teams playing in your game. Row team scores will be matched against the row axis.</p>
+          </div>
 
-      <div className={css.two}>
-        <TextField
-          id='rowTeamName'
-          label='Row Team (Home) *'
-          placeholder={currentSport.placeholder.row}
-          error={errors.rowTeamName?.message}
-          autoComplete='off'
-          {...register('rowTeamName')}
-        />
-        <TextField
-          id='colTeamName'
-          label='Column Team (Away) *'
-          placeholder={currentSport.placeholder.col}
-          error={errors.colTeamName?.message}
-          autoComplete='off'
-          {...register('colTeamName')}
-        />
-      </div>
+          <div className={css.two}>
+            <TextField
+              id='rowTeamName'
+              label='Row Team (Home) *'
+              placeholder={currentSport.placeholder.row}
+              error={errors.rowTeamName?.message}
+              autoComplete='off'
+              {...register('rowTeamName')}
+            />
+            <TextField
+              id='colTeamName'
+              label='Column Team (Away) *'
+              placeholder={currentSport.placeholder.col}
+              error={errors.colTeamName?.message}
+              autoComplete='off'
+              {...register('colTeamName')}
+            />
+          </div>
+        </>
+      )}
 
-      {sportType === 'football' && isSuperBowlOpen && (
+      {!isHitAThon && sportType === 'football' && isSuperBowlOpen && (
         <div className={css.checkRow}>
           <DashCheckbox id='isSuperBowl' aria-describedby='isSuperBowl-hint' {...register('isSuperBowl')} />
           <label htmlFor='isSuperBowl'>Super Bowl contest</label>
@@ -143,7 +169,7 @@ export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean })
       {/* Grid Preview Hint */}
       <p className={css.say}>
         <b>How it works</b>
-        {SPORT_DESCRIPTIONS[sportType as SportType]}
+        {isHitAThon ? HIT_A_THON_HOW_IT_WORKS : SPORT_DESCRIPTIONS[sportType as SportType]}
       </p>
     </>
   );

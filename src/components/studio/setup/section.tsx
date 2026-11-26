@@ -5,7 +5,7 @@ import css from './setup.module.css';
 interface SetupSectionProps {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   children: ReactNode;
 }
 
@@ -17,7 +17,7 @@ export function SetupSection({ id, title, description, children }: SetupSectionP
         <h2 id={`${id}-title`} tabIndex={-1}>
           {title}
         </h2>
-        <p>{description}</p>
+        {description && <p>{description}</p>}
       </header>
       <div>{children}</div>
     </section>
