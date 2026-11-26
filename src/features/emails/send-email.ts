@@ -43,3 +43,29 @@ export async function sendEmail({
     return { success: false, error, statusCode };
   }
 }
+
+/**
+ * Sends up to 100 emails in one request (Resend's batch). All or nothing: on success, the ids are in the same order
+ * as the emails. `statusCode` is set only when the API answered with an error.
+ */
+export async function sendEmailBatch(
+  emails: { to: string; subject: string; html: string }[]
+): Promise<{ success: true; ids: (string | null)[] } | { success: false; statusCode: number | undefined }> {
+  let statusCode: number | undefined;
+
+  try {
+    const from = process.env.RESEND_FROM_EMAIL || 'Fundwell <no-reply@fundwell.us>';
+    const { data, error } = await resendClient.batch.send(emails.map((email) => ({ from, ...email })));
+
+    if (error) {
+      statusCode = (error as { statusCode?: number }).statusCode;
+      // Some refusals quote an email address
+      throw new Error(error.message?.replace(/[^\s(<"'`]+@[^\s)>"'`]+/g, '[email]'));
+    }
+
+    return { success: true, ids: emails.map((_, i) => data?.data?.[i]?.id ?? null) };
+  } catch (error) {
+    logger.error('send-email-batch', error);
+    return { success: false, statusCode };
+  }
+}

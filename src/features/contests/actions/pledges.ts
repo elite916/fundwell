@@ -1,5 +1,8 @@
 'use server';
 
+import { after } from 'next/server';
+
+import { drainHitAThonEmails, enqueuePledgePaid } from '@/features/emails/hit-a-thon-emails';
 import type { Database } from '@/libs/supabase/types';
 import type { ActionResponse } from '@/types/action-response';
 
@@ -9,8 +12,8 @@ type PledgeStatus = Database['public']['Enums']['pledge_status'];
 
 /**
  * Marks a hit-a-thon pledge paid or pending, or cancels it, as the owner. The database allows only pending → paid,
- * paid → pending, and pledged or pending → cancelled, and sets paid_at and cancelled_at. Sends no email (pledge
- * emails come in a later release).
+ * paid → pending, and pledged or pending → cancelled, and sets paid_at and cancelled_at. Marking paid emails
+ * "payment confirmed", once per payment (marking a paid pledge paid again keeps its paid_at, so its key).
  */
 export async function updatePledgeStatus(
   contestId: string,
@@ -31,18 +34,27 @@ export async function updatePledgeStatus(
       .update({ status: newStatus })
       .eq('contest_id', contestId)
       .eq('id', pledgeId)
-      .select('id');
+      .select('id, status, paid_at');
 
     if (error) throw error;
     if (!data.length) {
       throw new Error('Pledge not found');
     }
 
-    return { id: data[0].id };
+    const [updated] = data;
+    if (newStatus === 'paid' && updated.status === 'paid' && updated.paid_at) {
+      await enqueuePledgePaid(contestId, updated.id, updated.paid_at);
+      after(() => drainHitAThonEmails(contestId));
+    }
+
+    return { id: updated.id };
   })();
 }
 
-/** Marks the selected pledges paid. Only pending ones change (a per-hit pledge isn't owed until the lock). */
+/**
+ * Marks the selected pledges paid. Only pending ones change (a per-hit pledge isn't owed until the lock). Sends no
+ * email, like the squares bulk "Mark as Paid".
+ */
 export async function bulkMarkPledgesPaid(
   contestId: string,
   pledgeIds: string[]

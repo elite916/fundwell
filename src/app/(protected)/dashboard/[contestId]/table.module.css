@@ -5,6 +5,10 @@
     color: var(--studio-soft);
     font-size: 13px;
   }
+  /* A hit-a-thon's "Email Unpaid Supporters" */
+  .remind {
+    margin: 8px 0 16px;
+  }
   .bulk {
     display: flex;
     align-items: center;

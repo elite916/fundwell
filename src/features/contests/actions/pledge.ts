@@ -1,11 +1,13 @@
 'use server';
 
+import { after } from 'next/server';
 import { z } from 'zod';
 
 import { ContestStatus } from '@/features/contests/constants';
 import { HitAThonErrors } from '@/features/contests/constants/error-messages';
 import { getContestPin } from '@/features/contests/queries/get-contest';
 import { pledgeSchema } from '@/features/contests/validation/schemas';
+import { drainHitAThonEmails, enqueuePledgeReceived } from '@/features/emails/hit-a-thon-emails';
 import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 import { ActionResponse } from '@/types/action-response';
 import { sanitizeEmail } from '@/utils/email-validator';
@@ -32,7 +34,7 @@ const notTaking = { data: null, error: { message: HitAThonErrors.NOT_TAKING_PLED
  * Pledges to one player of a hit-a-thon. Supporters aren't signed in, so the pledge is made on the server through the
  * `create_pledge` database function (service role only). It checks the hit-a-thon is open and the player is in it,
  * then saves the pledge and the supporter's contact details (owner-only `pledge_contacts`) in one transaction.
- * Sends no email (pledge emails come in a later release).
+ * Then emails "pledge received", after the response.
  */
 export async function pledge(input: PledgeInput): Promise<ActionResponse<{ pledge: { id: string } }>> {
   const { contestId, playerId } = input;
@@ -138,6 +140,9 @@ export async function pledge(input: PledgeInput): Promise<ActionResponse<{ pledg
     logger.error('pledge', pledgeError, { contestId, playerId });
     return { data: null, error: { message: 'An unexpected error occurred. Please try again.' } };
   }
+
+  await enqueuePledgeReceived(contestId, made.id, sanitizedEmail);
+  after(() => drainHitAThonEmails(contestId));
 
   return {
     data: { pledge: { id: made.id } },
