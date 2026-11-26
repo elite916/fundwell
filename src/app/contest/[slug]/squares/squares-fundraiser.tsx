@@ -88,8 +88,8 @@ export function SquaresFundraiser({
         <div className={css.side}>
           <ClaimBoard
             squares={squares}
-            rowTeamName={contest.row_team_name}
-            colTeamName={contest.col_team_name}
+            rowTeamName={contest.row_team_name ?? ''}
+            colTeamName={contest.col_team_name ?? ''}
             rowNumbers={contest.row_numbers}
             colNumbers={contest.col_numbers}
             scores={scores}
@@ -173,7 +173,7 @@ export function SquaresFundraiser({
           key={chosen.id}
           square={chosen}
           contestId={contest.id}
-          squarePrice={contest.square_price}
+          squarePrice={contest.square_price ?? 0}
           paymentOptions={paymentOptions}
           players={contest.enable_player_tracking ? players : null}
           referredBy={referredBy}

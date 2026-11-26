@@ -46,7 +46,7 @@ export type SeasonContest = Awaited<ReturnType<typeof getSeasonContests>>[number
 export function getRowTeam(contest: SeasonContest, game: SuperBowlGame): SuperBowlTeam | null {
   return (
     (contest.super_bowl_row_team as SuperBowlTeam | null) ??
-    matchRowTeam({ afc: game.afc_team, nfc: game.nfc_team }, contest.row_team_name, contest.col_team_name)
+    matchRowTeam({ afc: game.afc_team, nfc: game.nfc_team }, contest.row_team_name ?? '', contest.col_team_name ?? '')
   );
 }
 

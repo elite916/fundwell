@@ -91,7 +91,7 @@ export function axisNote(contest: SquaresContest): string {
   const { row_team_name: rows, col_team_name: cols, status } = contest;
   const isPlaying = status === 'in_progress' || status === 'completed';
   return isPlaying && hasNumbers(contest)
-    ? `${possessive(rows)} last digit down, ${possessive(cols)} across`
+    ? `${possessive(rows ?? '')} last digit down, ${possessive(cols ?? '')} across`
     : `${rows} down, ${cols} across`;
 }
 
