@@ -39,7 +39,7 @@ export function prizeFor(contest: SquaresContest, quarter: GameQuarter, squaresS
   if (text) return text;
 
   const percent = payoutPercent(contest, quarter);
-  return percent > 0 ? formatPrizeAmount(calculatePrizeAmount(squaresSold, contest.square_price, percent)) : null;
+  return percent > 0 ? formatPrizeAmount(calculatePrizeAmount(squaresSold, contest.square_price ?? 0, percent)) : null;
 }
 
 /** Who won a score: their name, or null when nobody claimed the square. */
@@ -64,7 +64,7 @@ function baseballGames(contest: SquaresContest) {
 function leftForTeam(contest: SquaresContest, percents: number[], squaresSold: number): string | null {
   const percent = 100 - percents.reduce((sum, p) => sum + p, 0);
   if (contest.prize_type === 'custom' || percent <= 0) return null;
-  return formatPrizeAmount(calculatePrizeAmount(squaresSold, contest.square_price, percent));
+  return formatPrizeAmount(calculatePrizeAmount(squaresSold, contest.square_price ?? 0, percent));
 }
 
 /** The payouts before the first winner, the winners after. Null when there is nothing to list. */
@@ -106,8 +106,8 @@ export function prizeList(
   const games = baseballGames(contest).filter(({ percent }) => percent > 0);
   const isCustom = contest.prize_type === 'custom';
   const ifAllSell = (percent: number) => ({
-    prize: formatPrizeAmount(calculatePrizeAmount(TOTAL_SQUARES, contest.square_price, percent)),
-    now: formatPrizeAmount(calculatePrizeAmount(squaresSold, contest.square_price, percent)),
+    prize: formatPrizeAmount(calculatePrizeAmount(TOTAL_SQUARES, contest.square_price ?? 0, percent)),
+    now: formatPrizeAmount(calculatePrizeAmount(squaresSold, contest.square_price ?? 0, percent)),
   });
   const payouts = isBaseball
     ? games

@@ -112,7 +112,7 @@ function FootballPayoutsForm({ contest }: { contest: Contest }) {
   } = useForm<FootballFormData>({
     resolver: zodResolver(footballPayoutSchema) as Resolver<FootballFormData>,
     defaultValues: {
-      square_price: contest.square_price,
+      square_price: contest.square_price ?? undefined,
       max_squares_per_person: contest.max_squares_per_person,
       prize_type: (contest.prize_type as 'percentage' | 'custom') ?? 'percentage',
       payout_q1_percent: contest.payout_q1_percent ?? 0,
@@ -324,7 +324,7 @@ function BaseballPayoutsForm({ contest }: { contest: Contest }) {
   } = useForm<BaseballFormData>({
     resolver: zodResolver(baseballPayoutSchema) as Resolver<BaseballFormData>,
     defaultValues: {
-      square_price: contest.square_price,
+      square_price: contest.square_price ?? undefined,
       max_squares_per_person: contest.max_squares_per_person,
       payout_game1_percent: contest.payout_game1_percent ?? 0,
       payout_game2_percent: contest.payout_game2_percent ?? 0,

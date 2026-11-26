@@ -262,8 +262,8 @@ async function buildWinnerEmail(email: QueuedEmail): Promise<EmailContent | null
     participantName: winningSquare?.claimant_first_name || 'Winner',
     contestName: contest.name,
     quarterName: QuarterDisplayNames[score.quarter] || score.quarter,
-    homeTeamName: contest.row_team_name,
-    awayTeamName: contest.col_team_name,
+    homeTeamName: contest.row_team_name ?? '',
+    awayTeamName: contest.col_team_name ?? '',
     homeScore: score.home_score,
     awayScore: score.away_score,
     ...getPrize(contestData, score.quarter),
@@ -366,7 +366,7 @@ function getPrize({ contest, squares }: ContestData, quarter: GameQuarter) {
   return {
     prizeAmount: calculatePrizeAmount(
       countSoldSquares(squares),
-      contest.square_price,
+      contest.square_price ?? 0,
       contest[`payout_${quarter}_percent`] || 0
     ),
     prizeText: getPrizeText(contest.prize_type, quarter, contest),
@@ -381,8 +381,8 @@ function getQuarterResult(contestData: ContestData, score: LoadedScore) {
 
   return {
     quarterName: QuarterDisplayNames[score.quarter] || score.quarter,
-    homeTeamName: contest.row_team_name,
-    awayTeamName: contest.col_team_name,
+    homeTeamName: contest.row_team_name ?? '',
+    awayTeamName: contest.col_team_name ?? '',
     homeScore: score.home_score,
     awayScore: score.away_score,
     winner: isClaimed

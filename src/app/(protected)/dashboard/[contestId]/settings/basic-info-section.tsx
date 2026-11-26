@@ -53,8 +53,8 @@ export function BasicInfoSection({ contest, season, canJoinSuperBowl }: BasicInf
     defaultValues: {
       name: contest.name,
       description: contest.description ?? '',
-      row_team_name: contest.row_team_name,
-      col_team_name: contest.col_team_name,
+      row_team_name: contest.row_team_name ?? '',
+      col_team_name: contest.col_team_name ?? '',
     },
   });
 

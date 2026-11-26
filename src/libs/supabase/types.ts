@@ -55,15 +55,17 @@ export type Database = {
         Row: {
           code: string;
           col_numbers: number[] | null;
-          col_team_name: string;
+          col_team_name: string | null;
           created_at: string;
           deleted_at: string | null;
           description: string | null;
           enable_player_tracking: boolean;
           hero_image_position: string;
           hero_image_url: string | null;
+          hits_locked_at: string | null;
           id: string;
           is_public: boolean;
+          kind: Database['public']['Enums']['contest_kind'];
           max_squares_per_person: number | null;
           name: string;
           numbers_auto_generated: boolean | null;
@@ -80,6 +82,8 @@ export type Database = {
           payout_q1_percent: number | null;
           payout_q2_percent: number | null;
           payout_q3_percent: number | null;
+          pitches_per_player: number | null;
+          player_goal: number | null;
           players: NonNullable<Json>;
           primary_color: string | null;
           prize_final_text: string | null;
@@ -88,11 +92,11 @@ export type Database = {
           prize_q3_text: string | null;
           prize_type: Database['public']['Enums']['prize_type'];
           row_numbers: number[] | null;
-          row_team_name: string;
+          row_team_name: string | null;
           secondary_color: string | null;
           slug: string;
           sport_type: Database['public']['Enums']['sport_type'];
-          square_price: number;
+          square_price: number | null;
           status: Database['public']['Enums']['contest_status'];
           super_bowl_row_team: string | null;
           super_bowl_season: number | null;
@@ -102,15 +106,17 @@ export type Database = {
         Insert: {
           code: string;
           col_numbers?: number[] | null;
-          col_team_name: string;
+          col_team_name?: string | null;
           created_at?: string;
           deleted_at?: string | null;
           description?: string | null;
           enable_player_tracking?: boolean;
           hero_image_position?: string;
           hero_image_url?: string | null;
+          hits_locked_at?: string | null;
           id?: string;
           is_public?: boolean;
+          kind?: Database['public']['Enums']['contest_kind'];
           max_squares_per_person?: number | null;
           name: string;
           numbers_auto_generated?: boolean | null;
@@ -127,6 +133,8 @@ export type Database = {
           payout_q1_percent?: number | null;
           payout_q2_percent?: number | null;
           payout_q3_percent?: number | null;
+          pitches_per_player?: number | null;
+          player_goal?: number | null;
           players?: NonNullable<Json>;
           primary_color?: string | null;
           prize_final_text?: string | null;
@@ -135,11 +143,11 @@ export type Database = {
           prize_q3_text?: string | null;
           prize_type?: Database['public']['Enums']['prize_type'];
           row_numbers?: number[] | null;
-          row_team_name: string;
+          row_team_name?: string | null;
           secondary_color?: string | null;
           slug: string;
           sport_type?: Database['public']['Enums']['sport_type'];
-          square_price: number;
+          square_price?: number | null;
           status?: Database['public']['Enums']['contest_status'];
           super_bowl_row_team?: string | null;
           super_bowl_season?: number | null;
@@ -148,15 +156,17 @@ export type Database = {
         Update: {
           code?: string;
           col_numbers?: number[] | null;
-          col_team_name?: string;
+          col_team_name?: string | null;
           created_at?: string;
           deleted_at?: string | null;
           description?: string | null;
           enable_player_tracking?: boolean;
           hero_image_position?: string;
           hero_image_url?: string | null;
+          hits_locked_at?: string | null;
           id?: string;
           is_public?: boolean;
+          kind?: Database['public']['Enums']['contest_kind'];
           max_squares_per_person?: number | null;
           name?: string;
           numbers_auto_generated?: boolean | null;
@@ -173,6 +183,8 @@ export type Database = {
           payout_q1_percent?: number | null;
           payout_q2_percent?: number | null;
           payout_q3_percent?: number | null;
+          pitches_per_player?: number | null;
+          player_goal?: number | null;
           players?: NonNullable<Json>;
           primary_color?: string | null;
           prize_final_text?: string | null;
@@ -181,11 +193,11 @@ export type Database = {
           prize_q3_text?: string | null;
           prize_type?: Database['public']['Enums']['prize_type'];
           row_numbers?: number[] | null;
-          row_team_name?: string;
+          row_team_name?: string | null;
           secondary_color?: string | null;
           slug?: string;
           sport_type?: Database['public']['Enums']['sport_type'];
-          square_price?: number;
+          square_price?: number | null;
           status?: Database['public']['Enums']['contest_status'];
           super_bowl_row_team?: string | null;
           super_bowl_season?: number | null;
@@ -261,6 +273,48 @@ export type Database = {
           },
         ];
       };
+      hit_players: {
+        Row: {
+          contest_id: string;
+          created_at: string;
+          first_name: string;
+          hits: number | null;
+          id: string;
+          number: number | null;
+          slug: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          contest_id: string;
+          created_at?: string;
+          first_name: string;
+          hits?: number | null;
+          id?: string;
+          number?: number | null;
+          slug: string;
+          updated_at?: string;
+        };
+        Update: {
+          contest_id?: string;
+          created_at?: string;
+          first_name?: string;
+          hits?: number | null;
+          id?: string;
+          number?: number | null;
+          slug?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'hit_players_contest_id_fkey';
+            columns: ['contest_id'];
+            isOneToOne: false;
+            referencedRelation: 'contests';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       numbers_email_locks: {
         Row: {
           contest_id: string;
@@ -330,6 +384,114 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'contests';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      pledge_contacts: {
+        Row: {
+          contest_id: string;
+          created_at: string;
+          email: string;
+          first_name: string;
+          last_name: string;
+          pledge_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          contest_id: string;
+          created_at?: string;
+          email: string;
+          first_name: string;
+          last_name: string;
+          pledge_id: string;
+        };
+        Update: {
+          contest_id?: string;
+          created_at?: string;
+          email?: string;
+          first_name?: string;
+          last_name?: string;
+          pledge_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pledge_contacts_contest_id_fkey';
+            columns: ['contest_id'];
+            isOneToOne: false;
+            referencedRelation: 'contests';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pledge_contacts_contest_id_pledge_id_fkey';
+            columns: ['contest_id', 'pledge_id'];
+            isOneToOne: false;
+            referencedRelation: 'pledges';
+            referencedColumns: ['contest_id', 'id'];
+          },
+          {
+            foreignKeyName: 'pledge_contacts_pledge_id_fkey';
+            columns: ['pledge_id'];
+            isOneToOne: true;
+            referencedRelation: 'pledges';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pledges: {
+        Row: {
+          amount: number;
+          amount_owed: number | null;
+          cancelled_at: string | null;
+          cap: number | null;
+          contest_id: string;
+          created_at: string;
+          id: string;
+          kind: Database['public']['Enums']['pledge_kind'];
+          paid_at: string | null;
+          player_id: string;
+          status: Database['public']['Enums']['pledge_status'];
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          amount_owed?: number | null;
+          cancelled_at?: string | null;
+          cap?: number | null;
+          contest_id: string;
+          created_at?: string;
+          id?: string;
+          kind: Database['public']['Enums']['pledge_kind'];
+          paid_at?: string | null;
+          player_id: string;
+          status: Database['public']['Enums']['pledge_status'];
+        };
+        Update: {
+          amount?: number;
+          amount_owed?: number | null;
+          cancelled_at?: string | null;
+          cap?: number | null;
+          contest_id?: string;
+          created_at?: string;
+          id?: string;
+          kind?: Database['public']['Enums']['pledge_kind'];
+          paid_at?: string | null;
+          player_id?: string;
+          status?: Database['public']['Enums']['pledge_status'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pledges_contest_id_fkey';
+            columns: ['contest_id'];
+            isOneToOne: false;
+            referencedRelation: 'contests';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pledges_contest_id_player_id_fkey';
+            columns: ['contest_id', 'player_id'];
+            isOneToOne: false;
+            referencedRelation: 'hit_players';
+            referencedColumns: ['contest_id', 'id'];
           },
         ];
       };
@@ -738,10 +900,13 @@ export type Database = {
       take_numbers_email_lock: { Args: { p_contest_id: string }; Returns: boolean };
     };
     Enums: {
+      contest_kind: 'squares' | 'hit_a_thon';
       contest_status: 'draft' | 'open' | 'locked' | 'in_progress' | 'completed';
       game_quarter: 'q1' | 'q2' | 'q3' | 'final';
       payment_option_type: 'venmo' | 'paypal' | 'zelle' | 'cashapp';
       payment_status: 'available' | 'pending' | 'paid';
+      pledge_kind: 'per_hit' | 'flat';
+      pledge_status: 'pledged' | 'pending' | 'paid' | 'nothing_owed' | 'cancelled';
       pricing_plan_interval: 'day' | 'week' | 'month' | 'year';
       pricing_type: 'one_time' | 'recurring';
       prize_type: 'percentage' | 'custom';
@@ -855,10 +1020,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      contest_kind: ['squares', 'hit_a_thon'],
       contest_status: ['draft', 'open', 'locked', 'in_progress', 'completed'],
       game_quarter: ['q1', 'q2', 'q3', 'final'],
       payment_option_type: ['venmo', 'paypal', 'zelle', 'cashapp'],
       payment_status: ['available', 'pending', 'paid'],
+      pledge_kind: ['per_hit', 'flat'],
+      pledge_status: ['pledged', 'pending', 'paid', 'nothing_owed', 'cancelled'],
       pricing_plan_interval: ['day', 'week', 'month', 'year'],
       pricing_type: ['one_time', 'recurring'],
       prize_type: ['percentage', 'custom'],

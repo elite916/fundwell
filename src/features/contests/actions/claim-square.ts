@@ -183,11 +183,11 @@ export async function claimSquare(
         template: squareClaimedEmail({
           participantName: firstName,
           contestName: contest.name,
-          rowTeamName: contest.row_team_name,
-          colTeamName: contest.col_team_name,
+          rowTeamName: contest.row_team_name ?? '',
+          colTeamName: contest.col_team_name ?? '',
           rowIndex: claimed.row_index,
           colIndex: claimed.col_index,
-          squarePrice: contest.square_price,
+          squarePrice: contest.square_price ?? 0,
           contestUrl,
           paymentOptions: paymentOptions.map((opt) => ({
             type: opt.type,
