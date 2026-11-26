@@ -730,6 +730,7 @@ export type Database = {
         }[];
       };
       close_super_bowl_contests: { Args: Record<PropertyKey, never>; Returns: undefined };
+      contest_is_readable: { Args: { p_contest_id: string }; Returns: boolean };
       owner_has_pro: { Args: { uid: string }; Returns: boolean };
       rate_limit_hit: { Args: { p_key: string; p_max: number; p_window_seconds: number }; Returns: boolean };
       rate_limit_undo_hit: { Args: { p_key: string; p_window_seconds: number }; Returns: undefined };
