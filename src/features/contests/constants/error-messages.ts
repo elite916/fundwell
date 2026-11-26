@@ -24,6 +24,10 @@ export const HitAThonErrors = {
   PITCHES_LOCKED: "Pitches per player can't change after hits are locked.",
   PLAYERS_REQUIRED: 'Add at least one player before opening.',
   DUPLICATE_PLAYER: 'A player with this name already exists.',
+  AMOUNT_RANGE: 'Enter an amount from $1 to $10,000.',
+  CAP_BELOW_AMOUNT: 'Your cap must be at least your amount per hit.',
+  CAP_MAX: 'Your cap can be up to $10,000.',
+  NOT_TAKING_PLEDGES: "This fundraiser isn't taking pledges right now.",
 } as const;
 
 export const PITCHES_BELOW_HITS = (name: string, hits: number): string =>
