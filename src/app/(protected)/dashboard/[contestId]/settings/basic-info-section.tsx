@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
+import { type Resolver, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { BusyButton } from '@/components/studio/setup/busy-button';
@@ -24,6 +24,9 @@ const basicInfoSchema = z.object({
   col_team_name: z.string().min(1, 'Column team name is required').max(50, 'Name is too long'),
 });
 
+// A hit-a-thon has no teams
+const hitAThonInfoSchema = basicInfoSchema.omit({ row_team_name: true, col_team_name: true });
+
 type BasicInfoFormData = z.infer<typeof basicInfoSchema>;
 
 interface BasicInfoSectionProps {
@@ -43,13 +46,16 @@ export function BasicInfoSection({ contest, season, canJoinSuperBowl }: BasicInf
   const [isSwitching, startSwitching] = useTransition();
   const [isSuperBowl, setIsSuperBowl] = useState(contest.super_bowl_season === season);
   const { toast } = useToast();
+  const isHitAThon = contest.kind === 'hit_a_thon';
 
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty },
   } = useForm<BasicInfoFormData>({
-    resolver: zodResolver(basicInfoSchema),
+    resolver: (isHitAThon
+      ? zodResolver(hitAThonInfoSchema)
+      : zodResolver(basicInfoSchema)) as unknown as Resolver<BasicInfoFormData>,
     defaultValues: {
       name: contest.name,
       description: contest.description ?? '',
@@ -63,8 +69,7 @@ export function BasicInfoSection({ contest, season, canJoinSuperBowl }: BasicInf
       const result = await updateContest(contest.id, {
         name: data.name,
         description: data.description || null,
-        row_team_name: data.row_team_name,
-        col_team_name: data.col_team_name,
+        ...(!isHitAThon && { row_team_name: data.row_team_name, col_team_name: data.col_team_name }),
       });
 
       if (result?.error) {
@@ -109,7 +114,11 @@ export function BasicInfoSection({ contest, season, canJoinSuperBowl }: BasicInf
     <SetupSection
       id='basic-information'
       title='Basic Information'
-      description='Update your contest name, description, and team names.'
+      description={
+        isHitAThon
+          ? 'Update your contest name and description.'
+          : 'Update your contest name, description, and team names.'
+      }
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
@@ -129,31 +138,35 @@ export function BasicInfoSection({ contest, season, canJoinSuperBowl }: BasicInf
           {...register('description')}
         />
 
-        {/* Sport Type (read-only) */}
-        <p className={css.label}>Sport Type</p>
-        <p className={css.gapBottom}>
-          {SPORT_TYPE_LABELS[contest.sport_type] || contest.sport_type}{' '}
-          <span className={css.soft}>(Cannot be changed after creation)</span>
-        </p>
+        {!isHitAThon && (
+          <>
+            {/* Sport Type (read-only) */}
+            <p className={css.label}>Sport Type</p>
+            <p className={css.gapBottom}>
+              {SPORT_TYPE_LABELS[contest.sport_type] || contest.sport_type}{' '}
+              <span className={css.soft}>(Cannot be changed after creation)</span>
+            </p>
 
-        <div className={css.two}>
-          <TextField
-            id='row_team_name'
-            label='Row Team Name'
-            placeholder='Kansas City Chiefs'
-            autoComplete='off'
-            error={errors.row_team_name?.message}
-            {...register('row_team_name')}
-          />
-          <TextField
-            id='col_team_name'
-            label='Column Team Name'
-            placeholder='San Francisco 49ers'
-            autoComplete='off'
-            error={errors.col_team_name?.message}
-            {...register('col_team_name')}
-          />
-        </div>
+            <div className={css.two}>
+              <TextField
+                id='row_team_name'
+                label='Row Team Name'
+                placeholder='Kansas City Chiefs'
+                autoComplete='off'
+                error={errors.row_team_name?.message}
+                {...register('row_team_name')}
+              />
+              <TextField
+                id='col_team_name'
+                label='Column Team Name'
+                placeholder='San Francisco 49ers'
+                autoComplete='off'
+                error={errors.col_team_name?.message}
+                {...register('col_team_name')}
+              />
+            </div>
+          </>
+        )}
 
         <div className={css.save}>
           <BusyButton busy={isPending} type='submit' disabled={!isDirty}>
@@ -162,7 +175,7 @@ export function BasicInfoSection({ contest, season, canJoinSuperBowl }: BasicInf
         </div>
       </form>
 
-      {contest.sport_type === 'football' && (
+      {!isHitAThon && contest.sport_type === 'football' && (
         <div className={css.gapTop}>
           <SwitchRow
             id='super_bowl'

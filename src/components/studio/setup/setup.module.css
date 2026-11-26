@@ -620,6 +620,10 @@
   .themes label {
     position: relative;
   }
+  /* A tile with a description is taller; the others match it */
+  .kinds label {
+    display: grid;
+  }
   .kinds span {
     display: grid;
     align-content: center;

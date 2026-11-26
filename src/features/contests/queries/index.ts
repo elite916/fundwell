@@ -1,5 +1,6 @@
 export * from './get-contest';
 export * from './get-contest-safe';
+export * from './get-hit-players';
 export * from './get-participants';
 export * from './get-payment-options';
 export * from './get-player-sales-counts';

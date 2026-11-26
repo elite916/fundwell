@@ -61,19 +61,27 @@ export function ContestCard({ contest, claimedCount = 0 }: ContestCardProps) {
       <Tag tone={contest.status === 'in_progress' ? 'now' : 'quiet'} className={css.tag}>
         {statusLabels[contest.status]}
       </Tag>
-      <p className={css.meta}>
-        <span>
-          {contest.row_team_name} <span className={css.soft}>vs</span> {contest.col_team_name}
-        </span>
-        <span>
-          <b>{formatPrizeAmount(Number(contest.square_price))}</b> <span className={css.soft}>/sq</span>
-        </span>
-        <span className={css.date}>{formattedDate}</span>
-        <span>
-          <b>{claimedCount}</b>
-          <span className={css.soft}>/100</span>
-        </span>
-      </p>
+      {contest.kind === 'hit_a_thon' ? (
+        // No teams, price or squares
+        <p className={css.meta}>
+          <span>Hit-a-thon</span>
+          <span className={css.date}>{formattedDate}</span>
+        </p>
+      ) : (
+        <p className={css.meta}>
+          <span>
+            {contest.row_team_name} <span className={css.soft}>vs</span> {contest.col_team_name}
+          </span>
+          <span>
+            <b>{formatPrizeAmount(Number(contest.square_price))}</b> <span className={css.soft}>/sq</span>
+          </span>
+          <span className={css.date}>{formattedDate}</span>
+          <span>
+            <b>{claimedCount}</b>
+            <span className={css.soft}>/100</span>
+          </span>
+        </p>
+      )}
     </Link>
   );
 }

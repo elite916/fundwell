@@ -1,10 +1,16 @@
 import { notFound, redirect } from 'next/navigation';
 
 import { BackLink, DashPage, PageHead, Panel } from '@/components/studio/dashboard/dash-page';
-import { getContestById, getPlayerSalesCounts } from '@/features/contests/queries';
+import {
+  getContestById,
+  getHitPlayerPledgeTotals,
+  getHitPlayers,
+  getPlayerSalesCounts,
+} from '@/features/contests/queries';
 import { Player } from '@/features/contests/types/player';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
+import { HitPlayersTableClient } from './hit-players-table-client';
 import { TeamMembersTableClient } from './team-members-table-client';
 
 import css from '../table.module.css';
@@ -31,6 +37,29 @@ export default async function TeamMembersPage({ params }: TeamMembersPageProps) 
 
   if (!contest) {
     notFound();
+  }
+
+  // A hit-a-thon always has players
+  if (contest.kind === 'hit_a_thon') {
+    const [players, totals] = await Promise.all([
+      getHitPlayers(contestId),
+      getHitPlayerPledgeTotals(contestId, contest.pitches_per_player ?? 0),
+    ]);
+
+    return (
+      <DashPage>
+        <BackLink href={`/dashboard/${contestId}`}>Back to Contest</BackLink>
+
+        <PageHead title='Manage Players' sub={[contest.name]} />
+
+        <Panel aria-labelledby='players'>
+          <h2 id='players'>Players</h2>
+          <p className={css.about}>View players and copy their links.</p>
+
+          <HitPlayersTableClient players={players} totals={totals} contestSlug={contest.slug} />
+        </Panel>
+      </DashPage>
+    );
   }
 
   // Check if player tracking is enabled

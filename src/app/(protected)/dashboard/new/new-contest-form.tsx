@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, type Resolver, useForm, useWatch } from 'react-hook-form';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { BackLink, DashPage, PageHead, Panel } from '@/components/studio/dashboard/dash-page';
@@ -10,8 +10,8 @@ import { BusyButton } from '@/components/studio/setup/busy-button';
 import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
 import { createContest } from '@/features/contests/actions/create-contest';
-import type { CreateContestInput } from '@/features/contests/models/contest';
-import { createContestSchema, defaultContestValues } from '@/features/contests/models/contest';
+import type { CreateContestFormValues } from '@/features/contests/models/contest';
+import { createContestSchema, createHitAThonSchema, defaultContestValues } from '@/features/contests/models/contest';
 import { cn } from '@/utils/cn';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -26,6 +26,8 @@ const STEPS = [
   { id: 2, name: 'Settings', description: 'Pricing and payouts' },
   { id: 3, name: 'Branding', description: 'Choose your colors' },
 ] as const;
+
+const HIT_A_THON_STEP_DESCRIPTIONS: Record<number, string> = { 1: 'Contest name', 2: 'Pitches and goal' };
 
 // Fields to validate per step
 const STEP_FIELDS: Record<number, string[]> = {
@@ -56,21 +58,40 @@ const STEP_FIELDS: Record<number, string[]> = {
   3: ['primaryColor', 'secondaryColor'],
 };
 
+// A hit-a-thon has no teams, squares price or payouts
+const HIT_A_THON_STEP_FIELDS: Record<number, string[]> = {
+  1: ['name', 'description'],
+  2: ['pitchesPerPlayer', 'playerGoal'],
+  3: ['primaryColor', 'secondaryColor'],
+};
+
+// Each kind is checked by its own schema
+const squaresResolver = zodResolver(createContestSchema) as unknown as Resolver<CreateContestFormValues>;
+const hitAThonResolver = zodResolver(createHitAThonSchema) as unknown as Resolver<CreateContestFormValues>;
+const resolver: Resolver<CreateContestFormValues> = (values, context, options) =>
+  (values.kind === 'hit_a_thon' ? hitAThonResolver : squaresResolver)(values, context, options);
+
 export function NewContestForm({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const methods = useForm({
-    resolver: zodResolver(createContestSchema),
+  const methods = useForm<CreateContestFormValues>({
+    resolver,
     defaultValues: defaultContestValues,
     mode: 'onTouched',
   });
 
-  const { handleSubmit, trigger, getFieldState, getValues, setValue } = methods;
+  const { handleSubmit, trigger, getFieldState, getValues, setValue, control } = methods;
+  const isHitAThon = useWatch({ control, name: 'kind' }) === 'hit_a_thon';
+  const steps = isHitAThon
+    ? STEPS.map((step) => ({ ...step, description: HIT_A_THON_STEP_DESCRIPTIONS[step.id] ?? step.description }))
+    : STEPS;
 
   async function validateCurrentStep(): Promise<boolean> {
-    const fields = STEP_FIELDS[currentStep] as (keyof CreateContestInput)[];
+    const fields = (isHitAThon ? HIT_A_THON_STEP_FIELDS : STEP_FIELDS)[
+      currentStep
+    ] as (keyof CreateContestFormValues)[];
     const isValid = await trigger(fields);
     // As if the person had been in the fields with an error: each one checks again while they type, so its message goes
     // away then. Going away on blur moved Next from under the pointer mid-click.
@@ -95,7 +116,7 @@ export function NewContestForm({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }
     }
   }
 
-  async function onSubmit(data: CreateContestInput) {
+  async function onSubmit(data: CreateContestFormValues) {
     setIsSubmitting(true);
     try {
       const response = await createContest(data);
@@ -129,12 +150,12 @@ export function NewContestForm({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }
     <DashPage className={css.scale}>
       <div className={css.narrow}>
         <BackLink href='/dashboard'>Back to Dashboard</BackLink>
-        <PageHead title='Create New Contest' sub={['Set up your game day squares fundraiser in a few easy steps.']} />
+        <PageHead title='Create New Contest' sub={['Set up your fundraiser in a few easy steps.']} />
 
         {/* Step Indicator */}
         <nav aria-label='Progress'>
           <ol className={css.steps}>
-            {STEPS.map((step) => (
+            {steps.map((step) => (
               <li key={step.id} aria-current={step.id === currentStep ? 'step' : undefined}>
                 <button
                   type='button'
@@ -162,8 +183,8 @@ export function NewContestForm({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }
           <form onSubmit={handleSubmit(onSubmit)}>
             <Panel>
               <div className={css.panelHead}>
-                <h2>{STEPS[currentStep - 1].name}</h2>
-                <p>{STEPS[currentStep - 1].description}</p>
+                <h2>{steps[currentStep - 1].name}</h2>
+                <p>{steps[currentStep - 1].description}</p>
               </div>
 
               {/* Step Content */}
