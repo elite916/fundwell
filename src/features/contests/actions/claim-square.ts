@@ -18,7 +18,7 @@ import { getURL } from '@/utils/get-url';
 import { logger } from '@/utils/logger';
 
 import { hasContestAccess } from '../access';
-import { isClaimWithinLimits, undoContestClaimHit } from '../claim-rate-limit';
+import { isClaimEmailWithinDailyLimit, isClaimWithinLimits, undoContestClaimHit } from '../claim-rate-limit';
 
 interface ClaimSquareInput {
   squareId: string;
@@ -170,34 +170,37 @@ export async function claimSquare(
     return { data: null, error: { message: ContestErrors.FAILED_TO_CLAIM } };
   }
 
-  // Send confirmation email after the response (don't block on failure)
-  // Service role: past the PIN check, and the database hides a PIN contest's payment options from visitors
-  const paymentOptions = await getPaymentOptionsForContest(contestId, supabaseAdminClient);
-  const contestUrl = `${getURL()}/contest/${contest.slug}`;
+  // Send confirmation email after the response (don't block on failure). Past the
+  // daily cap for this address the claim stands, but no email is sent.
+  if (await isClaimEmailWithinDailyLimit(sanitizedEmail)) {
+    // Service role: past the PIN check, and the database hides a PIN contest's payment options from visitors
+    const paymentOptions = await getPaymentOptionsForContest(contestId, supabaseAdminClient);
+    const contestUrl = `${getURL()}/contest/${contest.slug}`;
 
-  after(() =>
-    sendEmailSafe({
-      to: sanitizedEmail,
-      template: squareClaimedEmail({
-        participantName: firstName,
-        contestName: contest.name,
-        rowTeamName: contest.row_team_name,
-        colTeamName: contest.col_team_name,
-        rowIndex: claimed.row_index,
-        colIndex: claimed.col_index,
-        squarePrice: contest.square_price,
-        contestUrl,
-        paymentOptions: paymentOptions.map((opt) => ({
-          type: opt.type,
-          handle: opt.handle_or_link,
-          link: opt.handle_or_link.startsWith('http') ? opt.handle_or_link : undefined,
-        })),
-      }),
-      contestId,
-      squareId: claimed.id,
-      emailType: 'square_claimed',
-    })
-  );
+    after(() =>
+      sendEmailSafe({
+        to: sanitizedEmail,
+        template: squareClaimedEmail({
+          participantName: firstName,
+          contestName: contest.name,
+          rowTeamName: contest.row_team_name,
+          colTeamName: contest.col_team_name,
+          rowIndex: claimed.row_index,
+          colIndex: claimed.col_index,
+          squarePrice: contest.square_price,
+          contestUrl,
+          paymentOptions: paymentOptions.map((opt) => ({
+            type: opt.type,
+            handle: opt.handle_or_link,
+            link: opt.handle_or_link.startsWith('http') ? opt.handle_or_link : undefined,
+          })),
+        }),
+        contestId,
+        squareId: claimed.id,
+        emailType: 'square_claimed',
+      })
+    );
+  }
 
   return {
     data: {

@@ -23,6 +23,7 @@ export function PricingCard({
   createCheckoutAction,
   isLoggedIn,
   hasPro,
+  isOverdue,
   hasIntervals,
   heading,
 }: {
@@ -30,6 +31,7 @@ export function PricingCard({
   createCheckoutAction: ({ priceId }: { priceId: string }) => void;
   isLoggedIn: boolean;
   hasPro: boolean;
+  isOverdue: boolean;
   /** Offer monthly and yearly, where the plan has both. Otherwise monthly. */
   hasIntervals: boolean;
   heading: 'h2' | 'h3';
@@ -43,7 +45,7 @@ export function PricingCard({
       ? product.prices.find((price) => price.interval === interval)
       : (product.prices[0] ?? null);
   const metadata = productMetadataSchema.parse(product.metadata);
-  const button = planButton({ variant: metadata.priceCardVariant, price, isLoggedIn, hasPro });
+  const button = planButton({ variant: metadata.priceCardVariant, price, isLoggedIn, hasPro, isOverdue });
 
   const monthPrice = product.prices.find((price) => price.interval === 'month')?.unit_amount;
   const yearPrice = product.prices.find((price) => price.interval === 'year')?.unit_amount;
@@ -95,6 +97,11 @@ export function PricingCard({
           <TextLink look='button' href={button.href}>
             {button.label}
           </TextLink>
+        )}
+        {button?.kind === 'portal' && (
+          <Button asChild>
+            <a href={button.href}>{button.label}</a>
+          </Button>
         )}
         {button?.kind === 'current' && <Button disabled>{button.label}</Button>}
       </div>
