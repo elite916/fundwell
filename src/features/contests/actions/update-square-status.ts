@@ -132,8 +132,8 @@ export async function updateSquareStatus(
           template: paymentConfirmedEmail({
             participantName: square.claimant_first_name || 'there',
             contestName: contest.name,
-            rowTeamName: contest.row_team_name,
-            colTeamName: contest.col_team_name,
+            rowTeamName: contest.row_team_name ?? '',
+            colTeamName: contest.col_team_name ?? '',
             rowIndex: square.row_index,
             colIndex: square.col_index,
             contestUrl,

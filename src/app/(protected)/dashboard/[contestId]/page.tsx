@@ -179,8 +179,8 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
           <WinnersSection
             contest={{
               sport_type: contest.sport_type,
-              row_team_name: contest.row_team_name,
-              col_team_name: contest.col_team_name,
+              row_team_name: contest.row_team_name ?? '',
+              col_team_name: contest.col_team_name ?? '',
               square_price: Number(contest.square_price),
               payout_q1_percent: contest.payout_q1_percent,
               payout_q2_percent: contest.payout_q2_percent,
@@ -241,8 +241,8 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
                 contest={{
                   id: contest.id,
                   sport_type: contest.sport_type,
-                  row_team_name: contest.row_team_name,
-                  col_team_name: contest.col_team_name,
+                  row_team_name: contest.row_team_name ?? '',
+                  col_team_name: contest.col_team_name ?? '',
                   row_numbers: contest.row_numbers,
                   col_numbers: contest.col_numbers,
                   status: contest.status,
@@ -283,8 +283,8 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
 
           <DashboardGridClient
             squares={squaresList}
-            rowTeamName={contest.row_team_name}
-            colTeamName={contest.col_team_name}
+            rowTeamName={contest.row_team_name ?? ''}
+            colTeamName={contest.col_team_name ?? ''}
             contestId={contestId}
             contestStatus={contest.status}
             squarePrice={Number(contest.square_price)}
