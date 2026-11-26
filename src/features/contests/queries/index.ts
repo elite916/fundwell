@@ -4,6 +4,7 @@ export * from './get-hit-players';
 export * from './get-participants';
 export * from './get-payment-options';
 export * from './get-player-sales-counts';
+export * from './get-pledges';
 export * from './get-scores';
 export * from './get-squares';
 export * from './list-contests';

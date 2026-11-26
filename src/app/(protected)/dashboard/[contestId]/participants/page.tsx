@@ -1,10 +1,16 @@
 import { notFound } from 'next/navigation';
 
 import { BackLink, DashPage, PageHead, Panel } from '@/components/studio/dashboard/dash-page';
-import { getContestById, getParticipantsForContest } from '@/features/contests/queries';
+import {
+  getContestById,
+  getHitPlayersWithHits,
+  getParticipantsForContest,
+  getPledgesForOwner,
+} from '@/features/contests/queries';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
 
 import { ParticipantsTableClient } from './participants-table-client';
+import { PledgesTableClient } from './pledges-table-client';
 
 import css from '../table.module.css';
 
@@ -30,6 +36,30 @@ export default async function ParticipantsPage({ params }: ParticipantsPageProps
 
   if (!contest) {
     notFound();
+  }
+
+  // A hit-a-thon's participants are its pledges
+  if (contest.kind === 'hit_a_thon') {
+    const [players, pledges] = await Promise.all([getHitPlayersWithHits(contestId), getPledgesForOwner(contestId)]);
+
+    return (
+      <DashPage>
+        <BackLink href={`/dashboard/${contestId}`}>Back to Contest</BackLink>
+
+        <PageHead title='Pledges' sub={[contest.name]} />
+
+        <Panel aria-labelledby='pledges'>
+          <h2 id='pledges'>Pledges</h2>
+
+          <PledgesTableClient
+            contestId={contestId}
+            pitches={contest.pitches_per_player ?? 0}
+            players={players}
+            pledges={pledges}
+          />
+        </Panel>
+      </DashPage>
+    );
   }
 
   // Fetch participants (claimed squares)
