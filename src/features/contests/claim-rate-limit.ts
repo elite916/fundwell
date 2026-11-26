@@ -6,6 +6,9 @@ import { getClientIp, hashLimitKey, hitRateLimit, type RateLimit, undoRateLimitH
 
 // Claims per email address.
 const EMAIL_LIMIT = { max: 10, windowSeconds: 60 };
+// Claim emails per address a day, across all contests (Brent, 2026-11-25: 20). Past it the
+// claim still saves, but no email is sent.
+const EMAIL_DAILY_LIMIT = { max: 20, windowSeconds: 24 * 60 * 60 };
 // Claims per contest from one IP (Brent, 2026-11-24: 50): a watch party of 40
 // on shared Wi-Fi, one square each, with some room for retries. Below
 // CONTEST_LIMIT with the same window, so one visitor can't use up the whole
@@ -45,6 +48,14 @@ export async function isClaimWithinLimits(contestId: string, email: string): Pro
     return false;
   }
   return true;
+}
+
+/**
+ * Counts a claim email and returns whether it may be sent. Call it only after
+ * the claim saved. Days start at midnight UTC.
+ */
+export async function isClaimEmailWithinDailyLimit(email: string): Promise<boolean> {
+  return isWithinLimit(`claim:email-day:${hashLimitKey('email', email.toLowerCase())}`, EMAIL_DAILY_LIMIT);
 }
 
 /**
