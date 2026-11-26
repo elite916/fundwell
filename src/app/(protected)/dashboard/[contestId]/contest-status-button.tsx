@@ -50,19 +50,46 @@ function getButtonConfig(currentStatus: ContestStatus): ButtonConfig | null {
   }
 }
 
+// Same words as Contest Status in Settings. A hit-a-thon starts only through "Lock and Send Totals" (release 5)
+function getHitAThonButtonConfig(currentStatus: ContestStatus): ButtonConfig | null {
+  switch (currentStatus) {
+    case 'draft':
+      return {
+        label: 'Open Contest',
+        description: 'This makes your hit-a-thon visible so supporters can pledge.',
+        nextStatus: 'open',
+      };
+    case 'open':
+      return {
+        label: 'Close Pledges',
+        description: "Supporters can't pledge after this. You can reopen it later.",
+        nextStatus: 'locked',
+      };
+    case 'locked':
+      return {
+        label: 'Reopen Pledges',
+        description: 'Supporters can pledge again.',
+        nextStatus: 'open',
+      };
+    default:
+      return getButtonConfig(currentStatus);
+  }
+}
+
 interface ContestStatusButtonProps {
   contestId: string;
   currentStatus: ContestStatus;
+  isHitAThon?: boolean;
   className?: string;
 }
 
-export function ContestStatusButton({ contestId, currentStatus, className }: ContestStatusButtonProps) {
+export function ContestStatusButton({ contestId, currentStatus, isHitAThon, className }: ContestStatusButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const isDoneRef = useRef(false);
   const router = useRouter();
 
-  const config = getButtonConfig(currentStatus);
+  const config = isHitAThon ? getHitAThonButtonConfig(currentStatus) : getButtonConfig(currentStatus);
 
   if (!config) return null;
 

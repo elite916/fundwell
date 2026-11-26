@@ -21,6 +21,7 @@ import { ContestStatusButton } from './contest-status-button';
 import { CopyLinkButton } from './copy-link-button';
 import { DashboardGridClient } from './dashboard-grid-client';
 import { EnterScoresButton } from './enter-scores-button';
+import { HitAThonOverview } from './hit-a-thon-overview';
 import { ManageNumbersButton } from './manage-numbers-button';
 import { NextStepsCard } from './next-steps-card';
 import { WinnersSection } from './winners-section';
@@ -59,6 +60,11 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
 
   if (!contest) {
     notFound();
+  }
+
+  // No grid, scores or winners
+  if (contest.kind === 'hit_a_thon') {
+    return <HitAThonOverview contest={contest} statusLabel={STATUS_LABELS[contest.status]} />;
   }
 
   // Fetch squares, scores, and payment options count
