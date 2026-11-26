@@ -14,6 +14,7 @@ import {
 import { getPublicContestBySlug } from '@/features/contests/queries/get-contest-safe';
 import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 
+import { HitAThonPage } from './hit-a-thon/hit-a-thon-page';
 import { SquaresFundraiser } from './squares/squares-fundraiser';
 import { ContestMessage } from './contest-message';
 import { OrganizerPrint } from './organizer-print';
@@ -66,6 +67,18 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
   } catch {
     // User is not authenticated
     isOwner = false;
+  }
+
+  if (contest.kind === 'hit_a_thon') {
+    const { ref } = await searchParams;
+    return (
+      <HitAThonPage
+        contest={contest}
+        referral={(Array.isArray(ref) ? ref[0] : ref) || null}
+        sharePin={isOwner ? accessPin : null}
+        colors={colors}
+      />
+    );
   }
 
   // Past the PIN check, so read with the service role: the database hides these rows from
@@ -169,6 +182,9 @@ export async function generateMetadata({ params }: ContestPageProps) {
 
   return {
     title: `${contest.name} | Fundwell`,
-    description: contest.description || `Join ${contest.name} - ${contest.row_team_name} vs ${contest.col_team_name}`,
+    description:
+      contest.kind === 'hit_a_thon'
+        ? contest.description || undefined
+        : contest.description || `Join ${contest.name} - ${contest.row_team_name} vs ${contest.col_team_name}`,
   };
 }

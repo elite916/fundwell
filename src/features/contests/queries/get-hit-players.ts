@@ -1,10 +1,15 @@
 import { type HitPlayer, sortHitPlayers } from '@/features/contests/utils/hit-players';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import type { Database } from '@/libs/supabase/types';
 import { logger } from '@/utils/logger';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-/** A hit-a-thon's players, for the owner's settings and Team Members pages. */
-export async function getHitPlayers(contestId: string): Promise<HitPlayer[]> {
-  const supabase = await createSupabaseServerClient();
+/**
+ * A hit-a-thon's players, for the owner's settings and Team Members pages and the public page.
+ * Pass `client` to read with another client (the contest page passes the service role after its PIN check).
+ */
+export async function getHitPlayers(contestId: string, client?: SupabaseClient<Database>): Promise<HitPlayer[]> {
+  const supabase = client ?? (await createSupabaseServerClient());
 
   const { data, error } = await supabase
     .from('hit_players')
@@ -23,12 +28,14 @@ export async function getHitPlayers(contestId: string): Promise<HitPlayer[]> {
  * Supporters and amount pledged per player, cancelled pledges left out. The amount is what the supporter owes once
  * it's known (a flat gift, or a per-hit pledge after hits are locked); before that, the most a per-hit pledge could
  * come to: the amount times the pitches, or the cap if lower.
+ * Pass `client` to read with another client (the contest page passes the service role after its PIN check).
  */
 export async function getHitPlayerPledgeTotals(
   contestId: string,
-  pitchesPerPlayer: number
+  pitchesPerPlayer: number,
+  client?: SupabaseClient<Database>
 ): Promise<Record<string, { supporters: number; pledged: number }>> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = client ?? (await createSupabaseServerClient());
 
   const { data, error } = await supabase
     .from('pledges')

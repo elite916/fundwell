@@ -893,6 +893,23 @@ export type Database = {
       };
       close_super_bowl_contests: { Args: Record<PropertyKey, never>; Returns: undefined };
       contest_is_readable: { Args: { p_contest_id: string }; Returns: boolean };
+      create_pledge: {
+        Args: {
+          p_amount: number;
+          p_cap: number;
+          p_contest_id: string;
+          p_email: string;
+          p_first_name: string;
+          p_kind: Database['public']['Enums']['pledge_kind'];
+          p_last_name: string;
+          p_player_id: string;
+        };
+        Returns: {
+          amount_owed: number;
+          id: string;
+          status: Database['public']['Enums']['pledge_status'];
+        }[];
+      };
       owner_has_pro: { Args: { uid: string }; Returns: boolean };
       rate_limit_hit: { Args: { p_key: string; p_max: number; p_window_seconds: number }; Returns: boolean };
       rate_limit_undo_hit: { Args: { p_key: string; p_window_seconds: number }; Returns: undefined };
