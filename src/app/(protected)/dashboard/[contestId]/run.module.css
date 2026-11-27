@@ -4,9 +4,8 @@
   /* Today's two columns. Quick Actions and Winners share the right one; on narrow screens they join the single column. */
   .run {
     display: grid;
-    grid-template-columns: minmax(0, 720px) 304px;
-    justify-content: space-between;
-    column-gap: 48px;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    column-gap: var(--space-12);
   }
   .run > * {
     grid-column: 1;
@@ -20,136 +19,141 @@
     align-self: start;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 22px;
+    gap: var(--space-6);
+  }
+  /* "Back to Dashboard": 32px over the header, as Figma's Main spaces everything */
+  .back.back {
+    margin-bottom: var(--space-8);
   }
 
   .head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 24px;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
   }
   .head > :first-child {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
     min-width: 0;
   }
+  /* The name and its Status chip, side by side while they fit */
   .title {
-    font-size: 36px;
-    line-height: 1.08;
-  }
-  .title h1 {
-    display: inline;
-    margin-right: 10px;
-  }
-  .status {
-    vertical-align: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
   }
   .about {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     overflow-wrap: anywhere;
-  }
-  .about:first-of-type {
-    margin-top: 6px;
   }
   .row {
     display: flex;
     flex: none;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
   }
 
+  /* Figma's Dashboard stat, Stacked: label and note in Body S, the number in Display M */
   .stats {
-    display: grid;
-    grid-template-columns: 0.8fr 0.8fr 1.1fr 1fr 1.1fr;
-    gap: 16px;
-    margin: 0 0 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-12);
+    margin: 0 0 var(--space-8);
     font-variant-numeric: tabular-nums;
   }
-  /* A hit-a-thon's summary */
-  .stats.four {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .stats > div,
+  .stats dd {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
   }
-  .stats dt {
-    color: var(--studio-soft);
-    font-size: 13px;
-  }
+  .stats dt,
   .stats dd {
     margin: 0;
-    color: var(--studio-soft);
-    font-size: 13px;
+    color: var(--color-ink-muted);
+    font-size: 14px;
+    line-height: 1.43;
   }
   .stats b {
-    display: block;
-    color: var(--studio-ink);
-    font-size: 30px;
-    font-weight: 500;
-    letter-spacing: -0.035em;
-    line-height: 1.2;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    line-height: 0.96;
+    text-transform: uppercase;
   }
 
   .next {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 26px;
-    padding: 14px 14px 14px 20px;
-    border-radius: var(--dash-radius);
-    background: var(--dash-side);
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
   }
   .next > i {
     flex: none;
     width: 22px;
     height: 22px;
-    border-radius: 4px;
-    background: var(--studio-lime);
-    box-shadow:
-      0 4px 0 var(--studio-lime-side),
-      3px 7px 5px rgb(var(--studio-shade) / 0.4);
-    transform: translateY(-3px);
+    border-radius: var(--radius-sm);
+    background: var(--color-team-accent);
   }
   .next > div {
     flex: 1;
     min-width: 0;
   }
   .next p {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
 
+  /* Quick Actions and Winners: white cards, a Display S heading and a Body S line under it */
   .card {
-    padding: 20px 8px 10px;
-    border-radius: var(--dash-radius);
-    background: var(--dash-panel);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
   }
-  .card > h2,
   .card > p {
-    padding: 0 20px;
+    margin-top: calc(var(--space-3) * -1);
+    color: var(--color-ink-muted);
+    font-size: 14px;
+    line-height: 1.43;
   }
-  .card > p {
-    margin-bottom: 12px;
-    color: var(--studio-soft);
-    font-size: 13px;
+  .acts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
   }
   .acts > a {
     display: flex;
     align-items: center;
-    min-height: 44px;
-    padding: 0 20px;
-    border-radius: 10px;
-    font-weight: 500;
+    min-height: 48px;
+    color: var(--color-ink);
+    font-weight: 700;
+    line-height: 1.25;
   }
   .acts > a:hover {
-    background: var(--dash-field);
-  }
-  .acts > a:focus-visible {
-    outline-offset: -3px;
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-decoration-thickness: var(--border-thick);
+    text-underline-offset: 6px;
   }
   .acts > .go {
-    justify-content: flex-start;
     width: 100%;
-    margin-bottom: 6px;
   }
 
+  /* Figma's Quarter winner row */
   .wins {
     margin: 0;
     padding: 0;
@@ -157,72 +161,108 @@
   }
   .wins li {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0 12px;
-    margin: 0 20px;
-    padding: 11px 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: var(--border-thin) solid var(--color-rule);
     overflow-wrap: anywhere;
   }
-  .wins li + li {
-    border-top: 1px solid #dcdddd;
-  }
-  .wins b {
-    font-weight: 600;
+  /* Display XS */
+  .wins b,
+  .prize {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
   }
   .prize {
     text-align: right;
   }
-  .won {
-    grid-column: 1 / -1;
-    font-weight: 500;
+  .won,
+  .score {
+    grid-column: 1;
   }
   .score {
-    grid-column: 1 / -1;
-    color: var(--studio-soft);
-    font-size: 13px;
+    color: var(--color-ink-muted);
   }
 
   .gridHead {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+  .gridHead > :first-child {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
   }
   .gridHead p {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 14px;
-    color: var(--studio-soft);
-    font-size: 13px;
+    gap: 0 var(--space-4);
+    color: var(--color-ink-muted);
+    font-size: 14px;
+    line-height: 1.43;
+  }
+
+  /*
+    Figma's Squares board on the dashboard: 48px squares 4px apart, the numbers and both team names in Display XS.
+    Scoped here, so the contest page's board doesn't change.
+  */
+  .top,
+  .down {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
   }
   .top {
-    margin-bottom: 8px;
-    padding-left: 48px;
-    font-weight: 500;
+    max-width: 600px;
+    margin-bottom: var(--space-1);
+    padding-left: 76px;
     text-align: center;
     overflow-wrap: anywhere;
   }
   .board {
-    --studio-board: 100%;
+    --studio-board: 572px;
 
     position: relative;
+    max-width: 600px;
     padding-left: 28px;
+  }
+  .board.board thead td,
+  .board.board tbody th {
+    width: 48px;
+    padding: 0;
+  }
+  .board.board thead th {
+    height: 48px;
+    padding: 0;
+  }
+  .board.board tbody td {
+    padding: 2px;
   }
   .down {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
-    width: 22px;
-    font-weight: 500;
+    width: 20px;
     text-align: center;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
   }
   .legend.legend {
-    margin: 30px 0 0 30px;
-    gap: 8px 24px;
+    margin: var(--space-4) 0 0;
+    gap: var(--space-2) var(--space-4);
   }
 
   /* A hit-a-thon's hits */
@@ -291,16 +331,19 @@
       grid-template-columns: minmax(0, 720px);
       justify-content: start;
     }
-    /* Head, quick actions, numbers, next step, board, winners */
+    /* Back, head, quick actions, numbers, next step, board, winners */
     .run > .side {
       display: contents;
+    }
+    .back {
+      order: -1;
     }
     .head {
       order: 0;
     }
     .quick {
       order: 1;
-      margin-bottom: 22px;
+      margin-bottom: var(--space-8);
     }
     .stats {
       order: 2;
@@ -315,108 +358,90 @@
     }
     .winners {
       order: 5;
-      margin-top: 30px;
+      margin-top: var(--space-8);
     }
     .acts {
       display: grid;
       grid-template-columns: repeat(4, auto);
       align-items: center;
-      gap: 4px;
-    }
-    .acts > a {
-      padding: 0 14px;
+      gap: var(--space-1) var(--space-6);
     }
     .acts > .go {
       width: auto;
-      margin: 0;
     }
   }
 
   @media (max-width: 699px) {
+    /* Figma's phone: 24px between everything */
+    .back.back,
+    .head,
+    .quick,
+    .gridHead {
+      margin-bottom: var(--space-6);
+    }
     .head {
       flex-direction: column;
-      gap: 14px;
-      margin-bottom: 18px;
+      gap: var(--space-6);
     }
-    .title {
-      font-size: 29px;
-    }
-    .title h1 {
-      margin-right: 6px;
-    }
-    .status {
-      vertical-align: 4px;
-    }
-    .quick {
-      margin-bottom: 18px;
-    }
-    .card {
-      padding: 14px 8px 8px;
-    }
-    .card > h2,
-    .card > p {
-      padding: 0 12px;
+    /* Share and Settings, side by side at full width */
+    .head > .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
     }
     .quick > p {
       display: none;
     }
-    .quick > h2 {
-      margin-bottom: 8px;
-    }
     .acts {
-      grid-template-columns: 1fr 1fr;
-    }
-    .acts > a {
-      padding: 0 12px;
-      line-height: 1.2;
+      display: flex;
+      align-items: stretch;
     }
     .acts > .go {
-      padding: 0 16px;
-      white-space: normal;
-    }
-    .wins li {
-      margin: 0 12px;
+      width: 100%;
     }
 
+    /* Figma's Dashboard stat, Row: label, note and number on one line, in a card */
     .stats {
-      grid-template-columns: minmax(0, 1fr);
+      flex-direction: column;
       gap: 0;
-      padding: 8px 18px;
-      border-radius: var(--dash-radius);
-      background: var(--dash-panel);
-    }
-    .stats.four {
-      grid-template-columns: minmax(0, 1fr);
+      padding: var(--space-6);
+      border: var(--border-thin) solid var(--color-rule);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
     }
     .stats > div {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: baseline;
-      padding: 8px 0;
-    }
-    .stats > div + div {
-      border-top: 1px solid var(--dash-hair);
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: var(--border-thin) solid var(--color-rule);
     }
     .stats dt {
-      color: var(--studio-ink);
-      font-size: 15px;
+      flex: 1;
+      min-width: 0;
+      color: var(--color-ink);
+      font-size: 16px;
+      line-height: 1.5;
     }
     .stats dd {
-      display: flex;
       flex-direction: row-reverse;
-      align-items: baseline;
-      gap: 10px;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 16px;
+      line-height: 1.5;
+      text-align: right;
     }
     .stats b {
-      min-width: 72px;
-      font-size: 20px;
-      letter-spacing: -0.02em;
-      text-align: right;
+      font-size: 32px;
+      line-height: 1;
     }
     /* On game day the board and Enter Scores come first */
     .playing .stats {
       order: 6;
-      margin-top: 30px;
+      margin: var(--space-6) 0 0;
+    }
+    .winners {
+      margin-top: var(--space-6);
     }
 
     .next {
@@ -443,33 +468,28 @@
     .gridHead {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: var(--space-4);
     }
     .gridHead .row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
     }
     .gridHead .row > button {
       padding: 0 10px;
     }
+    /* 26px squares, 2px apart, as Figma's Phone board */
     .top {
-      margin-bottom: 4px;
-      padding-left: 32px;
-      font-size: 13px;
+      padding-left: 54px;
     }
-    .board {
-      margin: 0 -4px 0 -6px;
-      padding-left: 18px;
+    .board.board thead td,
+    .board.board tbody th {
+      width: 26px;
     }
-    .down {
-      width: 18px;
-      font-size: 13px;
+    .board.board thead th {
+      height: 32px;
     }
-    .legend.legend {
-      margin: 24px 0 0;
-      gap: 8px 18px;
+    .board.board tbody td {
+      padding: 1px;
     }
   }
 }

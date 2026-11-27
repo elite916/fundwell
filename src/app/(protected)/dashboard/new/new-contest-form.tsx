@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { Check } from 'lucide-react';
 import { FormProvider, type Resolver, useForm, useWatch } from 'react-hook-form';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
@@ -167,7 +168,9 @@ export function NewContestForm({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }
                     step.id === currentStep && css.stepNow
                   )}
                 >
-                  <i aria-hidden='true'>{step.id < currentStep ? '' : step.id}</i>
+                  <i aria-hidden='true'>
+                    {step.id < currentStep ? <Check width={24} height={24} strokeWidth={2} /> : step.id}
+                  </i>
                   <b>
                     {step.name}
                     {step.id < currentStep && <span className={srOnly}> done</span>}
@@ -181,7 +184,7 @@ export function NewContestForm({ isSuperBowlOpen }: { isSuperBowlOpen: boolean }
 
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Panel>
+            <Panel className={css.stepPanel}>
               <div className={css.panelHead}>
                 <h2>{steps[currentStep - 1].name}</h2>
                 <p>{steps[currentStep - 1].description}</p>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Check, Lock } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 
 import { cn } from '@/utils/cn';
@@ -58,12 +59,21 @@ export function Panel({ className, ...props }: ComponentProps<'section'>) {
 }
 
 interface TagProps extends ComponentProps<'span'> {
-  /** `now` is in the accent color, for what is happening now. `owes` is striped, for a payment still to come. */
-  tone?: 'quiet' | 'now' | 'owes';
+  /**
+   * `now` is in the accent color with a live dot, for what is happening now. `owes` is striped, for a payment still to
+   * come. `locked` has a lock, `paid` is ink with a check, `final` is in the team color.
+   */
+  tone?: 'quiet' | 'now' | 'owes' | 'locked' | 'paid' | 'final';
 }
 
-export function Tag({ tone = 'quiet', className, ...props }: TagProps) {
-  return <span className={cn(css.tag, tone !== 'quiet' && css[tone], className)} {...props} />;
+export function Tag({ tone = 'quiet', className, children, ...props }: TagProps) {
+  const Icon = tone === 'locked' ? Lock : tone === 'paid' ? Check : null;
+  return (
+    <span className={cn(css.tag, tone !== 'quiet' && css[tone], className)} {...props}>
+      {Icon && <Icon aria-hidden='true' width={16} height={16} strokeWidth={2} />}
+      {children}
+    </span>
+  );
 }
 
 /** A boxed line of text. `warn` has a darker outline. */

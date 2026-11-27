@@ -327,7 +327,11 @@ export function ParticipantsTableClient({
                     {participant.claimant_venmo || '—'}
                   </td>
                   <td role='cell' className={css.status}>
-                    {participant.payment_status === 'pending' ? <Tag tone='owes'>Pending</Tag> : <Tag>Paid</Tag>}
+                    {participant.payment_status === 'pending' ? (
+                      <Tag tone='owes'>Pending</Tag>
+                    ) : (
+                      <Tag tone='paid'>Paid</Tag>
+                    )}
                   </td>
                   <td role='cell' className={css.date}>
                     <span className={css.lead}>Claimed </span>

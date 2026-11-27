@@ -13,7 +13,6 @@ import { srOnly } from '@/components/studio/theme';
 import { useToast } from '@/components/ui/use-toast';
 import { updateContest } from '@/features/contests/actions/update-contest';
 import { deleteContestImage, uploadContestImage } from '@/features/contests/actions/upload-contest-image';
-import { type HeroImagePosition, HeroPositionPicker } from '@/features/contests/components';
 import { Database } from '@/libs/supabase/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -39,18 +38,10 @@ interface BrandingSectionProps {
 
 export function BrandingSection({ contest }: BrandingSectionProps) {
   const [isPending, startTransition] = useTransition();
-  const [heroUploading, setHeroUploading] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
-  const [heroDeleting, setHeroDeleting] = useState(false);
   const [logoDeleting, setLogoDeleting] = useState(false);
-  const [heroImageUrl, setHeroImageUrl] = useState(contest.hero_image_url);
-  const [heroImagePosition, setHeroImagePosition] = useState<HeroImagePosition>(
-    (contest.hero_image_position as HeroImagePosition) || 'center'
-  );
   const [logoImageUrl, setLogoImageUrl] = useState(contest.org_image_url);
-  const [heroModalOpen, setHeroModalOpen] = useState(false);
   const [logoModalOpen, setLogoModalOpen] = useState(false);
-  const [positionSaving, setPositionSaving] = useState(false);
 
   const { toast } = useToast();
 
@@ -69,44 +60,6 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
 
   const primaryColor = watch('primary_color');
   const secondaryColor = watch('secondary_color');
-
-  const handleHeroUpload = async (file: File) => {
-    setHeroUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('imageType', 'hero');
-
-      const result = await uploadContestImage(contest.id, formData);
-
-      if (result?.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Upload failed',
-          description: result.error.message,
-        });
-        return;
-      }
-
-      if (result?.data?.url) {
-        await updateContest(contest.id, { hero_image_url: result.data.url });
-        setHeroImageUrl(result.data.url);
-        setHeroModalOpen(false);
-        toast({
-          title: 'Image uploaded',
-          description: 'Hero image has been updated.',
-        });
-      }
-    } catch {
-      toast({
-        variant: 'destructive',
-        title: 'Upload failed',
-        description: 'An unexpected error occurred.',
-      });
-    } finally {
-      setHeroUploading(false);
-    }
-  };
 
   const handleLogoUpload = async (file: File) => {
     setLogoUploading(true);
@@ -143,69 +96,6 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
       });
     } finally {
       setLogoUploading(false);
-    }
-  };
-
-  const handleHeroDelete = async () => {
-    if (!heroImageUrl) return;
-
-    setHeroDeleting(true);
-    try {
-      const deleteResult = await deleteContestImage(heroImageUrl);
-
-      if (deleteResult?.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Delete failed',
-          description: deleteResult.error.message,
-        });
-        return;
-      }
-
-      await updateContest(contest.id, { hero_image_url: null });
-      setHeroImageUrl(null);
-      toast({
-        title: 'Image removed',
-        description: 'Hero image has been deleted.',
-      });
-    } catch {
-      toast({
-        variant: 'destructive',
-        title: 'Delete failed',
-        description: 'An unexpected error occurred.',
-      });
-    } finally {
-      setHeroDeleting(false);
-    }
-  };
-
-  const handlePositionChange = async (position: HeroImagePosition) => {
-    setPositionSaving(true);
-    try {
-      const result = await updateContest(contest.id, { hero_image_position: position });
-
-      if (result?.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: result.error.message,
-        });
-        return;
-      }
-
-      setHeroImagePosition(position);
-      toast({
-        title: 'Position updated',
-        description: 'Hero image position has been saved.',
-      });
-    } catch {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'An unexpected error occurred.',
-      });
-    } finally {
-      setPositionSaving(false);
     }
   };
 
@@ -267,44 +157,8 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
 
   return (
     <SetupSection id='branding' title='Branding' description='Customize the look of your contest page.'>
-      {/* Hero Image */}
-      <p className={css.label}>Hero Image</p>
-      <p className={css.hintUp}>Displayed at the top of your contest page.</p>
-
-      {heroImageUrl && (
-        <div className={css.heroPreview}>
-          <Image src={heroImageUrl} alt='Hero image' fill className='object-cover' />
-        </div>
-      )}
-
-      <div className={css.row}>
-        <DashButton look='quiet' onClick={() => setHeroModalOpen(true)}>
-          {heroImageUrl ? 'Replace' : 'Upload Image'}
-          <span className={srOnly}> Hero Image</span>
-        </DashButton>
-
-        {heroImageUrl && (
-          <BusyButton busy={heroDeleting} look='quiet' onClick={handleHeroDelete}>
-            Remove<span className={srOnly}> Hero Image</span>
-          </BusyButton>
-        )}
-      </div>
-
-      {/* Hero Image Position Picker */}
-      {heroImageUrl && (
-        <>
-          <p className={`${css.label} ${css.gapTop}`}>Image Focus Point</p>
-          <p className={css.hintUp}>
-            Choose which part of the image stays visible when cropped. Set the focal point of your hero image. When the
-            image is cropped on different screen sizes, this point will stay visible. For example, if your image has a
-            person on the left, select a left position to keep them in frame.
-          </p>
-          <HeroPositionPicker value={heroImagePosition} onChange={handlePositionChange} disabled={positionSaving} />
-        </>
-      )}
-
-      {/* Organization Logo */}
-      <p className={`${css.label} ${css.gapTop}`}>Organization Logo</p>
+      {/* Organization Logo. No hero photo: Game day pages don't show one (Brent, 2026-11-27). Stored photos stay. */}
+      <p className={css.label}>Organization Logo</p>
       <p className={css.hintUp}>Displayed alongside your contest name.</p>
 
       {logoImageUrl && (
@@ -363,15 +217,6 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
           </BusyButton>
         </div>
       </form>
-
-      {/* Hero Image Upload Modal */}
-      <ImageUploadModal
-        isOpen={heroModalOpen}
-        onClose={() => setHeroModalOpen(false)}
-        onUpload={handleHeroUpload}
-        imageType='hero'
-        isUploading={heroUploading}
-      />
 
       {/* Logo Upload Modal */}
       <ImageUploadModal

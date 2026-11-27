@@ -38,13 +38,19 @@ const STATUS_CONFIG: Record<
     description: 'Square claiming is paused',
   },
   in_progress: {
-    label: 'In Progress',
+    label: 'In progress',
     description: 'Game is being played, scores can be entered',
   },
   completed: {
     label: 'Completed',
     description: 'Contest has ended, winners determined',
   },
+};
+
+// Figma's Status chip for each status. The rest are Open's look.
+const STATUS_TONES: Partial<Record<ContestStatus, 'now' | 'locked'>> = {
+  locked: 'locked',
+  in_progress: 'now',
 };
 
 interface StatusTransition {
@@ -169,7 +175,7 @@ export function ContestStatusSection({ contest }: ContestStatusSectionProps) {
     <SetupSection id='contest-status' title='Contest Status' description='Manage your contest lifecycle.'>
       {/* Current Status */}
       <p className={`${css.row} ${css.statusRow}`}>
-        <Tag tone='now'>{statusConfig.label}</Tag>
+        <Tag tone={STATUS_TONES[currentStatus] ?? 'quiet'}>{statusConfig.label}</Tag>
         {/* The descriptions are about squares */}
         {!isHitAThon && <span>{statusConfig.description}</span>}
       </p>
