@@ -23,10 +23,18 @@ export function playerTitle({ first_name, number }: Pick<HitPlayer, 'first_name'
   return number ? `${first_name} #${number}` : first_name;
 }
 
-/** "$120 pledged · 3 supporters", "$10 pledged · 1 supporter" */
-export function pledgedLine(pledged: number, supporters: number): string {
-  return `${formatPrizeAmount(pledged)} pledged · ${supporters} ${supporters === 1 ? 'supporter' : 'supporters'}`;
+/** "$120 pledged" */
+export function pledgedText(pledged: number): string {
+  return `${formatPrizeAmount(pledged)} pledged`;
 }
+
+/** "3 supporters", "1 supporter" */
+export function supportersText(supporters: number): string {
+  return `${supporters} ${supporters === 1 ? 'supporter' : 'supporters'}`;
+}
+
+/** The element a player's page puts the share card in, beside the player on wide screens. */
+export const SHARE_CARD_SLOT = 'share-card';
 
 /** Shown when it isn't taking pledges. Open, and a draft (only its owner sees it), add nothing. */
 export function statusLine({ status, hitsLocked }: Pick<PublicHitAThon, 'status' | 'hitsLocked'>): string | null {
