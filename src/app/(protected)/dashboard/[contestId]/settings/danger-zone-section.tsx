@@ -68,7 +68,7 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
     <SetupSection id='danger-zone' title='Danger Zone' description='Irreversible and destructive actions.'>
       <h3>Delete Contest</h3>
       <p className={`${css.soft} ${css.gapBottom}`}>{deleteWarning}</p>
-      <DashButton className={css.outline} onClick={handleOpenDialog}>
+      <DashButton look='quiet' onClick={handleOpenDialog}>
         Delete Contest
       </DashButton>
 
@@ -99,7 +99,7 @@ export function DangerZoneSection({ contest }: DangerZoneSectionProps) {
           <DashButton look='quiet' onClick={() => setIsDialogOpen(false)} disabled={isPending}>
             Cancel
           </DashButton>
-          <BusyButton busy={isPending} onClick={handleDelete} disabled={!isConfirmationValid}>
+          <BusyButton busy={isPending} look='danger' onClick={handleDelete} disabled={!isConfirmationValid}>
             Delete Contest
           </BusyButton>
         </DashDialogFoot>

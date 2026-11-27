@@ -51,7 +51,7 @@ export function UpgradeBanner({ activeContestCount, isOverdue }: UpgradeBannerPr
           <a href='/manage-subscription'>Update payment</a>
         </DashButton>
         <IconButton label='Dismiss' onClick={handleDismiss}>
-          <X aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
+          <X aria-hidden='true' width={24} height={24} strokeWidth={1.8} />
         </IconButton>
       </div>
     );
@@ -69,7 +69,7 @@ export function UpgradeBanner({ activeContestCount, isOverdue }: UpgradeBannerPr
         <Link href='/pricing'>Upgrade to Pro</Link>
       </DashButton>
       <IconButton label='Dismiss' onClick={handleDismiss}>
-        <X aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
+        <X aria-hidden='true' width={24} height={24} strokeWidth={1.8} />
       </IconButton>
     </div>
   );

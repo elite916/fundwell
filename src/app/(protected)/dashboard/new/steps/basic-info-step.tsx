@@ -1,5 +1,6 @@
 'use client';
 
+import { Check } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { DashCheckbox } from '@/components/studio/dashboard/dash-button';
@@ -62,7 +63,7 @@ export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean })
   return (
     <>
       {/* Sport Type Selector */}
-      <fieldset className={`${css.plain} ${css.gapBottom}`}>
+      <fieldset className={css.plain}>
         <legend className={css.label}>Sport Type *</legend>
         <div className={css.kinds}>
           {SPORT_OPTIONS.map((sport) => {
@@ -89,7 +90,10 @@ export function BasicInfoStep({ isSuperBowlOpen }: { isSuperBowlOpen: boolean })
                   aria-describedby={sport.description ? `${sport.value}-about` : undefined}
                 />
                 <span>
-                  {sport.label}
+                  <b>
+                    {sport.label}
+                    {picked === sport.value && <Check aria-hidden='true' width={24} height={24} strokeWidth={2} />}
+                  </b>
                   {isDisabled && <small>Coming Soon</small>}
                   {sport.description && <small id={`${sport.value}-about`}>{sport.description}</small>}
                 </span>

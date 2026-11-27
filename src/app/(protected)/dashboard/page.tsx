@@ -16,7 +16,7 @@ function EmptyState() {
   return (
     <DashEmpty
       title="You haven't created any contests yet."
-      text='Create your first game day squares contest to get started!'
+      text='Create your first fundraiser to get started!'
     >
       <DashButton asChild look='quiet'>
         <Link href='/dashboard/new'>Create Your First Contest</Link>

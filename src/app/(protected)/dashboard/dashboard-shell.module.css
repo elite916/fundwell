@@ -3,12 +3,13 @@
 @layer components {
   .shell {
     display: grid;
-    grid-template-columns: 224px minmax(0, 1fr);
+    grid-template-columns: 240px minmax(0, 1fr);
     min-height: 100vh;
-    background: #e4e5e5;
+    /* --color-bg: the shell is outside the theme */
+    background: #f6f2e9;
   }
   body:has(.shell) {
-    background: #e4e5e5;
+    background: #f6f2e9;
   }
   html:has(.shell) {
     scroll-padding-top: 84px;
@@ -28,60 +29,72 @@
     top: 12px;
   }
 
+  /* Figma's Dashboard nav, Desktop: a white sidebar with a rule on its right */
   .rail {
     grid-column: 1;
-    background: var(--dash-side);
+    border-right: var(--border-thin) solid var(--color-rule);
+    background: var(--color-surface);
   }
   .railInner {
     position: sticky;
     top: 0;
     display: flex;
     flex-direction: column;
+    gap: var(--space-6);
     height: 100vh;
-    padding: 0 12px 16px;
+    padding: var(--space-6) var(--space-3);
     overflow-y: auto;
   }
+  /* The wordmark: Display S in brand */
   .name {
     display: flex;
     align-items: center;
     width: fit-content;
-    min-height: 64px;
-    padding: 0 14px;
-    font-size: 19px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    padding: 0 var(--space-6);
+    color: var(--color-brand);
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
   }
   .nav {
+    display: flex;
     flex: 1;
-    padding-top: 12px;
+    flex-direction: column;
+    gap: var(--space-1);
   }
+  /* Ghost buttons */
   .item {
     display: flex;
     align-items: center;
     width: 100%;
     min-height: 44px;
-    padding: 0 14px;
+    padding: var(--space-3) var(--space-6);
     border: 0;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     background: none;
-    color: var(--studio-soft);
+    color: var(--color-ink);
     font: inherit;
-    font-weight: 500;
+    font-weight: 700;
+    line-height: 1.25;
     text-align: left;
     cursor: pointer;
   }
   .item:hover {
-    background: var(--studio-bg);
-    color: var(--studio-ink);
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-decoration-thickness: var(--border-thick);
+    text-underline-offset: 6px;
   }
+  /* The current page (not drawn in Figma; Brent kept today's highlight, 2026-11-27) */
   .item[aria-current] {
-    background: var(--dash-panel);
-    color: var(--studio-ink);
-    font-weight: 600;
+    background: var(--color-bg);
+    color: var(--color-brand);
   }
   .item:focus-visible {
-    outline-offset: -3px;
-    border-radius: 10px;
+    outline-offset: calc(var(--border-heavy) * -1);
   }
 
   .column {
@@ -90,6 +103,7 @@
     flex-direction: column;
     min-width: 0;
   }
+  /* On wide screens only the account, on the page's background. The page starts 24px under it. */
   .bar {
     position: sticky;
     top: 0;
@@ -99,8 +113,8 @@
     align-items: center;
     justify-content: flex-end;
     height: 64px;
-    padding: 0 40px;
-    background: var(--studio-bg);
+    padding: var(--space-6) var(--space-12) 0;
+    background: var(--color-bg);
   }
   .small {
     display: none;
@@ -109,35 +123,38 @@
   .who {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
     min-height: 44px;
-    padding: 0 12px 0 6px;
+    padding: 0;
     border: 0;
-    border-radius: var(--studio-radius-pill);
     background: none;
-    font-size: 14px;
+    color: var(--color-ink);
+    font-size: 16px;
+    line-height: 1.5;
     cursor: pointer;
   }
-  .who:hover {
-    background: var(--dash-quiet);
+  .who:hover .email {
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
   .who:focus-visible {
-    border-radius: var(--studio-radius-pill);
-    outline-offset: 0;
+    border-radius: var(--radius-full);
+    outline-offset: var(--space-half);
   }
   .avatar {
     position: relative;
     display: grid;
     flex: none;
     place-items: center;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     overflow: hidden;
-    border-radius: 50%;
-    background: var(--studio-ink);
-    color: var(--studio-on-ink);
-    font-size: 14px;
-    font-weight: 600;
+    border-radius: var(--radius-full);
+    background: var(--color-ink);
+    color: var(--color-surface);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
     text-transform: uppercase;
   }
   .avatar[data-letter]::before {
@@ -148,7 +165,7 @@
   }
   .email {
     overflow: hidden;
-    max-width: 260px;
+    max-width: 360px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -156,18 +173,18 @@
   .menu {
     z-index: 30;
     width: 232px;
-    padding: 8px;
-    border-radius: 12px;
-    background: #fafaf9;
-    box-shadow: 0 14px 34px rgb(var(--studio-shade) / 0.3);
+    padding: var(--space-2);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
   }
   .menuEmail {
     overflow: hidden;
-    margin-bottom: 6px;
-    padding: 8px 12px 10px;
-    border-bottom: 1px solid var(--dash-rule);
-    color: var(--studio-soft);
-    font-size: 13px;
+    margin-bottom: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    border-bottom: var(--border-thin) solid var(--color-rule);
+    color: var(--color-ink-muted);
+    font-size: 14px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -176,25 +193,26 @@
     align-items: center;
     width: 100%;
     min-height: 44px;
-    padding: 0 12px;
-    border-radius: 8px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
     cursor: pointer;
     outline: 0;
   }
   .menuItem[data-highlighted] {
-    background: var(--studio-bg);
+    background: var(--color-bg);
   }
   .menuItem:focus-visible {
-    outline: 3px solid var(--studio-ink);
-    outline-offset: -3px;
-    border-radius: 8px;
+    outline: var(--border-heavy) solid var(--color-focus);
+    outline-offset: calc(var(--border-heavy) * -1);
   }
 
   .shade {
     position: fixed;
     inset: 0;
     z-index: 50;
-    background: rgb(60 62 63 / 0.5);
+    /* --color-ink at half: the shade is outside the theme */
+    background: rgb(28 27 24 / 0.5);
   }
   .drawer {
     position: fixed;
@@ -204,11 +222,12 @@
     flex-direction: column;
     width: 280px;
     max-width: 100vw;
+    gap: var(--space-6);
     height: 100dvh;
-    padding: 0 12px 16px;
+    padding: var(--space-6) var(--space-3);
     overflow: auto;
-    background: var(--dash-side);
-    box-shadow: 0 30px 90px rgb(var(--studio-shade) / 0.42);
+    border-right: var(--border-thin) solid var(--color-rule);
+    background: var(--color-surface);
   }
   .drawer:focus-visible {
     outline: 0;
@@ -224,8 +243,8 @@
   }
   .close {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: var(--space-3);
+    right: var(--space-3);
   }
 
   /* The studio look is per page: see DashPage. Any other page keeps today's dark background behind it. */
@@ -251,15 +270,18 @@
     .column {
       grid-column: 1;
     }
+    /* Figma's Dashboard nav, Phone: Menu, the wordmark and the account, over a rule */
     .bar {
+      align-items: center;
       justify-content: space-between;
-      height: 60px;
-      padding: 0 20px;
+      height: 68px;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: var(--border-thin) solid var(--color-rule);
     }
     .small {
       display: flex;
       align-items: center;
-      margin-left: -10px;
+      gap: var(--space-2);
     }
     .small .name {
       min-height: 44px;
@@ -270,13 +292,13 @@
     }
   }
   @media (max-width: 699px) {
-    .bar {
-      padding: 0 16px;
-    }
     .who {
       justify-content: center;
       min-width: 44px;
-      padding: 0;
+    }
+    .avatar {
+      width: 44px;
+      height: 44px;
     }
     .email {
       display: none;

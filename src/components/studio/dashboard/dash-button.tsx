@@ -6,8 +6,11 @@ import { Slot } from '@radix-ui/react-slot';
 import css from './dash.module.css';
 
 interface DashButtonProps extends ComponentProps<'button'> {
-  /** `main` is the main action, one per view. `quiet` and `light` are outlined, `link` is underlined text. */
-  look?: 'main' | 'quiet' | 'light' | 'link';
+  /**
+   * `main` is the main action, one per view. `quiet` and `light` are outlined, `link` is underlined text. `danger` is
+   * red, for the final confirm of something that can't be undone.
+   */
+  look?: 'main' | 'quiet' | 'light' | 'link' | 'danger';
   /** Put the look on the child instead, for example a next/link. */
   asChild?: boolean;
 }
