@@ -10,7 +10,7 @@ import css from './shell.module.css';
 
 interface StudioPageProps {
   children: ReactNode;
-  /** Laid over the top of the page: leave about 96px clear. */
+  /** Above the page, in its flow. */
   header?: ReactNode;
   /** Defaults to the site footer. Pass null for none. */
   footer?: ReactNode;

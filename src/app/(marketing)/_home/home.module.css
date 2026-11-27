@@ -1,300 +1,350 @@
-/* One to three: the film */
-.film {
-  position: relative;
-  --one: 1;
-  --two: 1;
-  --two-say: 1;
-  --three: 1;
+/* Figma's Home. Desktop 1440 and Phone 390; the phone layout starts under 700px. */
+
+.start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
 }
-.stageBox {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+
+/* Hero: the words beside the example fundraiser */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-20) var(--space-16) var(--space-24);
 }
-.stage {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 100lvh;
-  visibility: hidden;
+.heroText {
+  display: flex;
+  flex: 1 1 400px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  min-width: 0;
 }
-.film[data-live='true'] .stage {
-  visibility: visible;
+.heroTitle {
+  max-width: 720px;
 }
-.film[data-settled='true'] .stage {
-  mask: linear-gradient(#000 96%, transparent);
-}
-.film[data-live='true'] .still {
-  display: none;
-}
-.still img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 30%;
-}
-.two .still img {
-  object-position: 100%;
-}
-.screen {
-  position: relative;
-  height: 100svh;
-  min-height: 620px;
+
+/* Figma's Fundraiser preview */
+.example {
+  flex: 0 1 528px;
+  min-width: 0;
   overflow: hidden;
+  border: var(--border-thick) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
-/*
-  Live, there is room to scroll between screens, and the words of two and three are pinned before they are due and after
-  they are done, so they never ride across the board. The holds overlap, so two must not catch clicks meant for one.
-*/
-.film[data-live='true'] .gap {
-  height: 70vh;
+.band {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-team);
+  color: var(--color-on-team);
 }
-.film[data-live='true'] .twoHold {
-  height: calc(100svh + 210vh);
-  margin-top: -120vh;
-  pointer-events: none;
+.team {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
 }
-.film[data-live='true'] .two > * {
-  pointer-events: auto;
+/* Display M */
+.teamName {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-variation-settings: 'opsz' 72;
+  font-weight: 800;
+  line-height: 0.96;
+  text-transform: uppercase;
 }
-.film[data-live='true'] .hold {
-  height: calc(300svh + 130vh);
-  margin-top: -150vh;
+/* Figma's Status chip, In progress: the team accent with a live dot */
+.chip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-team-accent);
+  color: var(--color-on-team-accent);
 }
-.film[data-live='true'] :is(.twoHold, .hold) .screen {
-  position: sticky;
-  top: 0;
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: currentColor;
 }
-.oneTitle,
-.twoTitle {
-  position: absolute;
-  top: 15vh;
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6);
 }
-.oneTitle {
-  left: var(--studio-edge);
-  width: 7.2em;
-  opacity: var(--one);
+.score {
+  width: 100%;
+  min-width: 0;
 }
-.oneSay,
-.twoSay {
-  position: absolute;
-  bottom: 9vh;
-  width: 250px;
-  text-wrap: balance;
+/* Figtree and Big Shoulders set a little wider than in Figma: 12px sides keep both team names whole in 476px */
+.score p {
+  padding-inline: var(--space-3);
 }
-.oneSay {
-  left: var(--studio-edge);
-  opacity: var(--one);
+/* The board with its teams: the away team over the columns, the home team up the side */
+.board {
+  display: grid;
+  grid-template: auto 1fr / 20px minmax(0, 1fr);
+  column-gap: var(--space-2);
+  padding-inline: var(--space-4);
 }
-.oneButton {
-  margin-top: 26px;
+/* Display XS */
+.awayTeam,
+.homeTeam {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-variation-settings: 'opsz' 72;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
 }
-.twoTitle {
-  left: calc(62.6vw + 0.05em);
-  white-space: nowrap;
-  opacity: var(--two);
+.awayTeam {
+  grid-area: 1 / 2;
+  margin-bottom: var(--space-half);
+  padding-left: calc(10% + 3px);
+  text-align: center;
 }
-.twoSay {
-  left: 63vw;
-  opacity: var(--two-say);
+.homeTeam {
+  grid-area: 2 / 1;
+  align-self: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
-.three {
-  opacity: var(--three);
+.squares {
+  grid-area: 2 / 2;
+  max-width: none;
 }
-.threeTitle {
-  position: absolute;
-  top: 15vh;
-  left: var(--studio-edge);
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+  font-size: 14px;
+  line-height: 1.43;
 }
-.lines {
-  position: absolute;
-  top: calc(15vh + 76px);
-  left: calc(var(--studio-edge) - 0.05em);
-  width: 7em;
-  font-size: min(4.2vw, 8.4vh);
-  font-weight: 500;
-  letter-spacing: -0.05em;
-  line-height: 0.98;
-}
-.lines li {
-  text-wrap: balance;
-}
-.lines li + li {
-  margin-top: 0.62em;
-}
-.film[data-live='true'] .lines li {
-  color: var(--studio-line);
-  transition: color 0.3s;
-}
-.film[data-live='true'][data-step='1'] .lines li:nth-child(1),
-.film[data-live='true'][data-step='2'] .lines li:nth-child(2),
-.film[data-live='true'][data-step='3'] .lines li:nth-child(3) {
-  color: var(--studio-ink);
-}
-.threeSay {
-  position: absolute;
-  bottom: 9vh;
-  left: var(--studio-edge);
-  width: 270px;
-  text-wrap: balance;
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-@media (min-width: 700px) and (max-width: 899px) {
-  .twoTitle {
-    left: calc(47vw + 0.05em);
-  }
-  .twoSay {
-    left: 47.4vw;
-  }
+/* Figma's Fundraiser type cards */
+.types {
+  display: flex;
+  gap: var(--space-8);
+  padding: 0 var(--space-16) var(--space-24);
+}
+.type {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+  min-width: 0;
+  padding: var(--space-8);
+  border: var(--border-thick) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.typeText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+/* Below about 560px the player card drops under the words */
+.hitAThon {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.hitAThon .typeText {
+  flex: 1 0 240px;
+}
+.strip {
+  display: flex;
+  gap: var(--space-half);
+}
+.strip > * {
+  width: 36px;
+}
+/* Figma's Player card, with "Example player" */
+.player {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 200px;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--color-team);
+  color: var(--color-on-team);
+  text-transform: uppercase;
 }
 
-/* Four and six: type and space */
+/* How squares works */
+.how {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-24) var(--space-16);
+  border-block: var(--border-heavy) solid var(--color-ink);
+  background: var(--color-surface);
+}
+.steps {
+  display: flex;
+  gap: var(--space-12);
+}
+/* Figma's How-it-works step: the number in brand, a 3px rule, the step */
+.steps li {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.number {
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-heavy) solid var(--color-ink);
+  color: var(--color-brand);
+}
+
+/* The money line, on brand green */
 .money {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 64px;
-  min-height: 100svh;
-  padding: 20vh var(--studio-edge) 9vh;
+  align-items: flex-end;
+  gap: var(--space-16);
+  padding: var(--space-32) var(--space-16) var(--space-24);
+  background: var(--color-brand);
+  color: var(--color-on-brand);
 }
 .moneyTitle {
-  max-width: 9.4em;
-  line-height: 0.96;
-}
-.moneyTitle span {
-  display: block;
-}
-.moneyTitle span + span {
-  margin-top: 0.34em;
+  flex: 0 1 760px;
 }
 .moneySay {
-  width: 330px;
-  margin-left: 50%;
-  text-wrap: pretty;
-}
-.closing {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100svh;
-  min-height: 620px;
-  padding: 15vh var(--studio-edge) 9vh;
-  overflow: hidden;
-}
-.closingStill {
-  position: absolute;
-  inset: 0;
-  mask: linear-gradient(transparent, #000 34%, #000 90%, transparent);
-}
-.closingStill img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.closingTitle {
-  position: relative;
-  max-width: 6.6em;
-  line-height: 0.98;
-}
-.closingButton {
-  position: relative;
-  align-self: flex-start;
+  flex: 1 1 0;
+  min-width: 240px;
 }
 
-/* Tall windows would crop the wide stills: show the whole board between the words, and keep the lime square in view. */
-@media (min-width: 700px) and (max-aspect-ratio: 1/1) {
-  .still img {
-    inset: auto 0 19vh;
-    height: auto;
-    mask: linear-gradient(transparent, #000 22%, #000 90%, transparent);
+.closing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-10);
+  padding: var(--space-32) var(--space-16);
+  border-top: var(--border-heavy) solid var(--color-ink);
+  background: var(--color-surface);
+}
+.closingTitle {
+  max-width: 1000px;
+}
+
+@media (max-width: 999px) {
+  .types {
+    flex-direction: column;
   }
-  .closingStill img {
-    object-position: 80%;
+  .type {
+    flex: none;
   }
 }
+
 @media (max-width: 699px) {
-  .screen {
-    min-height: 560px;
+  .start {
+    align-self: stretch;
   }
-  .oneTitle {
-    top: 84px;
-    width: 4.6em;
+  .hero {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-6);
+    padding: var(--space-10) var(--space-4) var(--space-12);
   }
-  .twoTitle {
-    top: 84px;
-    left: calc(24vw + 0.05em);
+  .heroText {
+    flex: none;
+    gap: var(--space-6);
   }
-  .oneSay,
-  .twoSay {
-    bottom: 36px;
-    width: 210px;
+  /* Display L */
+  .heroTitle {
+    font-size: 80px;
+    line-height: 0.92;
   }
-  .twoSay {
-    left: 25vw;
+  .example {
+    flex: none;
   }
-  .oneButton {
-    margin-top: 20px;
+  .band {
+    padding: var(--space-4) var(--space-3);
   }
-  .threeTitle {
-    top: 72px;
+  /* Display S */
+  .teamName {
+    font-size: 32px;
+    line-height: 1;
   }
-  .lines {
-    top: 116px;
-    right: 24px;
-    width: auto;
-    font-size: min(9vw, 4.9vh);
+  .body {
+    gap: var(--space-4);
+    padding: var(--space-3);
   }
-  .lines li + li {
-    margin-top: 0.34em;
+  .board {
+    padding-inline: 0;
   }
-  .threeSay {
-    bottom: 36px;
-    width: 250px;
+
+  .types {
+    gap: var(--space-4);
+    padding: 0 var(--space-4) var(--space-16);
   }
+  .type {
+    padding: var(--space-6);
+  }
+
+  .how {
+    gap: var(--space-10);
+    padding: var(--space-16) var(--space-4);
+  }
+  /* Display M */
+  .howTitle {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 0.96;
+  }
+  .steps {
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+  .howSay {
+    font-size: 16px;
+  }
+
   .money {
-    padding-top: 18vh;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-6);
+    padding: var(--space-20) var(--space-4) var(--space-16);
   }
   .moneyTitle,
   .closingTitle {
-    font-size: min(13.4vw, 8vh);
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 0.96;
   }
-  .moneyTitle br {
-    display: none;
+  .moneyTitle {
+    flex: none;
   }
   .moneySay {
-    width: auto;
-    margin-left: 16vw;
+    flex: none;
+    min-width: 0;
+    font-size: 16px;
   }
-}
-@media (max-width: 699px) and (max-height: 720px) {
-  .oneTitle,
-  .twoTitle {
-    top: 64px;
-  }
-  .oneSay,
-  .twoSay {
-    bottom: 22px;
-  }
-  .oneButton {
-    margin-top: 14px;
-  }
-}
-@media (min-width: 700px) and (max-height: 619px) {
-  .screen {
-    min-height: 340px;
-  }
-  .oneTitle,
-  .twoTitle {
-    top: 20vh;
-  }
-  .oneSay {
-    bottom: 6vh;
-  }
-  .oneButton {
-    padding-block: 12px;
-    margin-top: 14px;
+
+  .closing {
+    gap: var(--space-8);
+    padding: var(--space-20) var(--space-4) var(--space-24);
   }
 }

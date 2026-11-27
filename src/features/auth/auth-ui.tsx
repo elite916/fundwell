@@ -23,7 +23,7 @@ const titleMap = {
 } as const;
 
 const emailFormSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Please enter a valid email'),
+  email: z.string().min(1, 'Email is required').email('Enter a valid email address.'),
 });
 
 type EmailFormData = z.infer<typeof emailFormSchema>;
@@ -105,13 +105,13 @@ export function AuthUI({
 
       <div className={css.stack}>
         <Button onClick={() => handleOAuthClick('google')} disabled={pending}>
-          <IoLogoGoogle size={20} aria-hidden='true' />
+          <IoLogoGoogle size={24} aria-hidden='true' />
           Continue with Google
         </Button>
 
         <Collapsible open={emailFormOpen} onOpenChange={handleEmailFormOpenChange} className={css.stack}>
           <CollapsibleTrigger asChild>
-            <Button className={css.second} disabled={pending}>
+            <Button look='secondary' disabled={pending}>
               Continue with Email
             </Button>
           </CollapsibleTrigger>
@@ -128,7 +128,7 @@ export function AuthUI({
               />
               {captcha.widget}
               <div className={css.formButtons}>
-                <Button look='link' onClick={() => handleEmailFormOpenChange(false)} disabled={pending}>
+                <Button look='ghost' onClick={() => handleEmailFormOpenChange(false)} disabled={pending}>
                   Cancel
                 </Button>
                 <Button type='submit' disabled={pending || captcha.waiting}>
@@ -153,7 +153,7 @@ export function AuthUI({
       )}
       {mode === 'login' && (
         <p className={css.small}>
-          Don&apos;t have an account? <Link href='/signup'>Sign up</Link>
+          Don’t have an account? <Link href='/signup'>Sign up</Link>
         </p>
       )}
     </div>

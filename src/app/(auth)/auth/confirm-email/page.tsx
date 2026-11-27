@@ -65,7 +65,7 @@ export default function ConfirmEmailPage() {
 
         <ul className={css.list}>
           <li>The link expires in 1 hour</li>
-          <li>Check your spam folder if you don&apos;t see it</li>
+          <li>Check your spam folder if you don’t see it</li>
           <li>You can close this page after clicking the link</li>
         </ul>
 
