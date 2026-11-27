@@ -106,3 +106,8 @@ export function Sheet({
     </Dialog.Root>
   );
 }
+
+/** Figma's grabber bar at the top of a sheet on phones, for the `top` slot. Hidden on wide screens. */
+export function SheetGrabber() {
+  return <div aria-hidden='true' className={css.grabber} />;
+}

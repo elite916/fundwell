@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/studio/button';
-import { Segmented, UnitField } from '@/components/studio/setup/fields';
-import { Sheet } from '@/components/studio/sheet';
+import { Segmented } from '@/components/studio/setup/fields';
+import { Sheet, SheetGrabber } from '@/components/studio/sheet';
+import { SideCard } from '@/components/studio/side-card';
 import { StatusText } from '@/components/studio/status-text';
 import { TextField } from '@/components/studio/text-field';
 import { Soft } from '@/components/studio/type';
@@ -27,6 +28,8 @@ interface PledgeSheetProps {
   player: PublicHitPlayer;
   pitchesPerPlayer: number;
   paymentOptions: PaymentOption[];
+  /** A card beside the player (a player's page on wide screens), or a sheet. */
+  beside: boolean;
   colors: CSSProperties;
   onClose: () => void;
 }
@@ -46,12 +49,13 @@ const asAmount = (value: unknown) =>
 const isAmount = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value) && value >= 1 && value <= 10000;
 
-/** Pledge to one player, per hit or a flat gift, then what happens next. */
+/** Pledge to one player, per hit or a flat gift, then what happens next. Figma's Pledge form. */
 export function PledgeSheet({
   contestId,
   player,
   pitchesPerPlayer,
   paymentOptions,
+  beside,
   colors,
   onClose,
 }: PledgeSheetProps) {
@@ -120,116 +124,133 @@ export function PledgeSheet({
     });
   };
 
-  if (made?.kind === 'per_hit') {
-    const most = formatPrizeAmount(mostOwed(made.amount, pitchesPerPlayer, made.cap));
-    return (
-      <Sheet
-        open
-        onOpenChange={onClose}
-        step='made'
-        style={colors}
-        title='Pledge made. Thank you!'
-        description={`${formatPrizeAmount(made.amount)} a hit for ${name}, up to ${most}. After the event, we'll email your total and how to pay.`}
-        footer={<Button onClick={onClose}>Done</Button>}
-      />
-    );
-  }
+  const doneButton = (
+    <Button look='team' className={css.wide} onClick={onClose}>
+      Done
+    </Button>
+  );
 
-  if (made) {
+  const sheet = made
+    ? made.kind === 'per_hit'
+      ? {
+          step: 'made',
+          title: 'Pledge made. Thank you!',
+          description: `${formatPrizeAmount(made.amount)} a hit for ${name}, up to ${formatPrizeAmount(mostOwed(made.amount, pitchesPerPlayer, made.cap))}. After the event, we'll email your total and how to pay.`,
+          body: doneButton,
+        }
+      : {
+          step: 'made',
+          title: 'Pledge made. Complete your payment',
+          description: `${formatPrizeAmount(made.amount)} for ${name}. Pending until the organizer marks it paid.`,
+          body: (
+            <>
+              {paymentOptions.length > 0 ? (
+                <ul className={css.payments}>
+                  {paymentOptions.map((option) => (
+                    <PaymentOptionItem key={option.id} option={option} />
+                  ))}
+                </ul>
+              ) : (
+                <p className={css.payments}>Contact the contest organizer for payment instructions.</p>
+              )}
+              <Soft className={css.later}>Not now? We&apos;ll email you after the event.</Soft>
+              {doneButton}
+            </>
+          ),
+        }
+    : {
+        step: 'pledge',
+        title,
+        description: undefined,
+        body: (
+          <form noValidate onSubmit={handleSubmit(onSubmit)} className={css.form}>
+            <div className={css.kind}>
+              <Segmented<Kind> legend={title} name='kind' value={kind} onChange={chooseKind} options={KINDS} />
+            </div>
+            <TextField
+              label={kind === 'per_hit' ? 'Amount per hit' : 'Amount'}
+              type='number'
+              min='1'
+              step='0.01'
+              inputMode='decimal'
+              placeholder={kind === 'per_hit' ? '5' : undefined}
+              error={errors.amount?.message}
+              {...register('amount', { setValueAs: asAmount })}
+            />
+            {kind === 'per_hit' && (
+              <>
+                <TextField
+                  label='Cap'
+                  note='(optional)'
+                  type='number'
+                  min='1'
+                  step='0.01'
+                  inputMode='decimal'
+                  hint="The most you'll pay, whatever the hits."
+                  error={errors.cap?.message}
+                  {...register('cap', { setValueAs: asAmount })}
+                />
+                <StatusText live tone='soft' className={css.most}>
+                  {isAmount(amount)
+                    ? mostLine(amount, pitchesPerPlayer, isAmount(cap) && cap >= amount ? cap : undefined)
+                    : null}
+                </StatusText>
+              </>
+            )}
+            <TextField
+              label='First name'
+              autoComplete='given-name'
+              error={errors.firstName?.message}
+              {...register('firstName')}
+            />
+            <TextField
+              label='Last name'
+              autoComplete='family-name'
+              error={errors.lastName?.message}
+              {...register('lastName')}
+            />
+            <TextField
+              label='Email'
+              type='email'
+              autoComplete='email'
+              error={errors.email?.message}
+              {...register('email')}
+            />
+            <p role='alert' className={css.alert}>
+              {serverError}
+            </p>
+            <Button type='submit' look='team' pending={isPending} className={css.wide}>
+              {isPending ? 'Pledging...' : 'Pledge'}
+            </Button>
+            <Soft className={css.note}>
+              {kind === 'per_hit'
+                ? 'You pay the organizer directly after the event. Fundwell never charges your card.'
+                : 'Pay the organizer now or after the event. Fundwell never charges your card.'}
+            </Soft>
+          </form>
+        ),
+      };
+
+  if (beside) {
     return (
-      <Sheet
-        open
-        onOpenChange={onClose}
-        step='made'
-        style={colors}
-        title='Pledge made. Complete your payment'
-        description={`${formatPrizeAmount(made.amount)} for ${name}. Pending until the organizer marks it paid.`}
-        footer={<Button onClick={onClose}>Done</Button>}
-      >
-        {paymentOptions.length > 0 ? (
-          <ul>
-            {paymentOptions.map((option) => (
-              <PaymentOptionItem key={option.id} option={option} />
-            ))}
-          </ul>
-        ) : (
-          <p>Contact the contest organizer for payment instructions.</p>
-        )}
-        <Soft className={css.later}>Not now? We&apos;ll email you after the event.</Soft>
-      </Sheet>
+      <SideCard step={sheet.step} title={sheet.title} onClose={onClose} className={css.pledgeCard}>
+        {sheet.description && <p>{sheet.description}</p>}
+        {sheet.body}
+      </SideCard>
     );
   }
 
   return (
-    <Sheet open onOpenChange={onClose} step='pledge' style={colors} title={title}>
-      <form noValidate onSubmit={handleSubmit(onSubmit)} className={css.form}>
-        <Segmented<Kind> legend={title} name='kind' value={kind} onChange={chooseKind} options={KINDS} />
-        <UnitField
-          label={kind === 'per_hit' ? 'Amount per hit' : 'Amount'}
-          unit='$'
-          min='1'
-          step='0.01'
-          inputMode='decimal'
-          placeholder={kind === 'per_hit' ? '5' : undefined}
-          error={errors.amount?.message}
-          {...register('amount', { setValueAs: asAmount })}
-        />
-        {kind === 'per_hit' && (
-          <>
-            <UnitField
-              label={
-                <>
-                  Cap <span>(optional)</span>
-                </>
-              }
-              unit='$'
-              min='1'
-              step='0.01'
-              inputMode='decimal'
-              hint="The most you'll pay, whatever the hits."
-              error={errors.cap?.message}
-              {...register('cap', { setValueAs: asAmount })}
-            />
-            <StatusText live tone='soft' className={css.most}>
-              {isAmount(amount)
-                ? mostLine(amount, pitchesPerPlayer, isAmount(cap) && cap >= amount ? cap : undefined)
-                : null}
-            </StatusText>
-          </>
-        )}
-        <TextField
-          label='First name'
-          autoComplete='given-name'
-          error={errors.firstName?.message}
-          {...register('firstName')}
-        />
-        <TextField
-          label='Last name'
-          autoComplete='family-name'
-          error={errors.lastName?.message}
-          {...register('lastName')}
-        />
-        <TextField
-          label='Email'
-          type='email'
-          autoComplete='email'
-          error={errors.email?.message}
-          {...register('email')}
-        />
-        <p role='alert' className={css.alert}>
-          {serverError}
-        </p>
-        <div className={css.submit}>
-          <Button type='submit' pending={isPending}>
-            {isPending ? 'Pledging...' : 'Pledge'}
-          </Button>
-          <Soft small className={css.note}>
-            {kind === 'per_hit'
-              ? 'You pay the organizer directly after the event. Fundwell never charges your card.'
-              : 'Pay the organizer now or after the event. Fundwell never charges your card.'}
-          </Soft>
-        </div>
-      </form>
+    <Sheet
+      open
+      onOpenChange={onClose}
+      step={sheet.step}
+      style={colors}
+      title={sheet.title}
+      description={sheet.description}
+      top={<SheetGrabber />}
+    >
+      {sheet.body}
     </Sheet>
   );
 }

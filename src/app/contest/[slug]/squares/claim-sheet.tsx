@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  type CSSProperties,
-  type KeyboardEvent,
-  type ReactNode,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  useTransition,
-} from 'react';
+import { type CSSProperties, type ReactNode, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
@@ -18,8 +9,8 @@ import { type BoardData, buildGrid, type GridSquare } from '@/components/studio/
 import { pressableClass, Tile, TileChip, tileClass } from '@/components/studio/grid/tile';
 import { Select } from '@/components/studio/select';
 import { Sheet } from '@/components/studio/sheet';
+import { SideCard } from '@/components/studio/side-card';
 import { TextField } from '@/components/studio/text-field';
-import { Mid } from '@/components/studio/type';
 import { claimSquare } from '@/features/contests/actions/claim-square';
 import type { PaymentOption, Player } from '@/features/contests/types';
 import { formatPrizeAmount } from '@/features/contests/utils';
@@ -242,47 +233,16 @@ interface ClaimCardProps {
   children: ReactNode;
 }
 
-/**
- * Figma's Claim form as a card beside the board. Not a dialog: the board stays usable. Focus starts on the title and
- * goes back to the square on Close or Escape.
- */
+/** Figma's Claim form as a card beside the board. The board stays usable. */
 function ClaimCard({ step, title, mark, description, onClose, children }: ClaimCardProps) {
-  const titleId = useId();
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const openerRef = useRef<Element | null>(null);
-
-  // Back to the square once the card goes, unless focus has already moved on (another square was pressed)
-  useEffect(() => {
-    openerRef.current ??= document.activeElement;
-    const opener = openerRef.current;
-    return () => {
-      const isLost = !document.activeElement || document.activeElement === document.body;
-      if (isLost && opener instanceof HTMLElement) opener.focus();
-    };
-  }, []);
-
-  useEffect(() => {
-    titleRef.current?.focus();
-  }, [step]);
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') onClose();
-  };
-
   return (
-    <section aria-labelledby={titleId} className={css.card} onKeyDown={handleKeyDown}>
-      <div className={css.cardHeading}>
-        <Mid as='h2' id={titleId} ref={titleRef} tabIndex={-1} className={css.cardTitle}>
-          {title}
-        </Mid>
-        <button type='button' className={css.cardClose} aria-label='Close' onClick={onClose} />
-      </div>
+    <SideCard step={step} title={title} onClose={onClose} className={css.card}>
       <p className={css.cardSpot}>
         {mark}
         {description}
       </p>
       {children}
-    </section>
+    </SideCard>
   );
 }
 

@@ -65,7 +65,52 @@
     flex: none;
   }
 
-  .close {
+  /* With something above the title and no description, the title's own row keeps the 16px gap */
+  .withTop .alone {
+    margin-bottom: 0;
+  }
+  .withTop .heading:has(> .alone) {
+    margin-bottom: var(--space-4);
+  }
+
+  /* Figma's sheet grabber, on phones */
+  .grabber {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  .grabber::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-rule-strong);
+  }
+
+  /* `SideCard`: Figma's sheets as a card beside the page */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+  .cardHeading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .cardTitle {
+    flex: 1;
+    min-width: 0;
+    outline: 0;
+  }
+
+  .close,
+  .cardClose {
     position: absolute;
     top: 28px;
     right: 30px;
@@ -79,8 +124,16 @@
     color: inherit;
     cursor: pointer;
   }
+  .cardClose {
+    position: relative;
+    top: auto;
+    right: auto;
+    flex: none;
+  }
   .close::before,
-  .close::after {
+  .close::after,
+  .cardClose::before,
+  .cardClose::after {
     content: '';
     position: absolute;
     width: 18px;
@@ -88,11 +141,15 @@
     background: var(--color-ink);
     transform: rotate(45deg);
   }
-  .close::after {
+  .close::after,
+  .cardClose::after {
     transform: rotate(-45deg);
   }
 
   @media (min-width: 1000px) {
+    .grabber {
+      display: none;
+    }
     .side {
       inset: 0 auto 0 0;
       width: min(480px, 92vw);
