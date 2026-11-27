@@ -29,7 +29,7 @@ export function tileClass({ payment, won, found, chosen }: TileState, className?
   );
 }
 
-/** For tiles that can be pressed. `claimable` ones turn lime under a mouse. */
+/** For tiles that can be pressed. `claimable` ones show the Mine ring under a mouse. */
 export function pressableClass(claimable: boolean): string {
   return cn(css.pressable, claimable && css.claimable);
 }

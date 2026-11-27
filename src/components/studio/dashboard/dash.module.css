@@ -5,18 +5,16 @@
 @layer theme, base, components, utilities;
 
 @layer components {
-  /* Doubled so these win over the theme's own sizes whichever file loads first */
+  /* Doubled so these win over the theme whichever file loads first */
   .dash.dash {
-    --studio-body: 15px;
-    --studio-small: 13px;
-
-    --dash-side: #d9dbdb;
-    --dash-panel: #f1f1f0;
-    --dash-field: #e2e3e2;
-    --dash-quiet: #d3d5d5;
-    --dash-rule: #c9cbcb;
-    --dash-hair: #dfe0df;
-    --dash-radius: 14px;
+    /* Old names, still used by page CSS. Each points at the token in theme.module.css that replaces it. */
+    --dash-side: var(--color-surface);
+    --dash-panel: var(--color-surface);
+    --dash-field: var(--color-surface);
+    --dash-quiet: var(--color-bg);
+    --dash-rule: var(--color-rule);
+    --dash-hair: var(--color-rule);
+    --dash-radius: var(--radius-lg);
 
     -webkit-font-smoothing: antialiased;
   }
@@ -26,30 +24,35 @@
     max-width: 1280px;
     padding: 8px 40px 72px;
   }
+  /* Display M and Display S */
+  .page h1,
+  .page h2 {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
   .page h1 {
-    font-size: 36px;
-    font-weight: 500;
-    letter-spacing: -0.04em;
-    line-height: 1.08;
+    font-size: 52px;
+    line-height: 0.96;
     text-wrap: balance;
     overflow-wrap: anywhere;
   }
   .page h2 {
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.3;
+    font-size: 32px;
+    line-height: 1;
   }
   .page h3 {
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .back {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    color: var(--studio-soft);
-    font-size: 14px;
+    color: var(--color-ink);
+    font-weight: 700;
   }
   .back::before {
     content: '';
@@ -61,7 +64,8 @@
     transform: rotate(45deg);
   }
   .back:hover {
-    color: var(--studio-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
 
   .head {
@@ -78,8 +82,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0 14px;
-    margin-top: 6px;
-    color: var(--studio-soft);
+    margin-top: var(--space-2);
+    color: var(--color-ink-muted);
     overflow-wrap: anywhere;
   }
   .sub > * {
@@ -88,52 +92,51 @@
 
   .panel {
     padding: 24px 28px;
-    border-radius: var(--dash-radius);
-    background: var(--dash-panel);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
   }
 
+  /* Figma's Button: `main` is Primary, `quiet` and `light` are Secondary */
   .button {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
     min-height: 44px;
-    padding: 0 20px;
+    padding: 0 var(--space-6);
     border: 0;
-    border-radius: var(--studio-radius-pill);
-    background: var(--studio-ink);
-    color: var(--studio-on-ink);
-    font: inherit;
-    font-weight: 500;
-    line-height: 1.2;
+    border-radius: var(--radius-sm);
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
     white-space: nowrap;
     cursor: pointer;
   }
   .button:hover {
-    background: #2b2d2e;
+    background: var(--color-ink);
+    color: var(--color-surface);
   }
-  .button:focus-visible {
-    outline-offset: 3px;
-    border-radius: var(--studio-radius-pill);
-  }
-  .quiet {
-    background: var(--dash-quiet);
-    color: var(--studio-ink);
-  }
-  .quiet:hover {
-    background: #c6c9c9;
-  }
+  .quiet,
   .light {
-    background: var(--dash-panel);
-    color: var(--studio-ink);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 var(--border-thick) var(--color-ink);
   }
+  .quiet:hover,
   .light:hover {
-    background: #fff;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 var(--border-heavy) var(--color-ink);
   }
   .button:disabled,
   .button[aria-disabled='true'] {
-    background: var(--dash-quiet);
-    color: #55585c;
+    background: var(--color-bg);
+    color: var(--color-ink-muted);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-rule-strong);
     cursor: not-allowed;
   }
 
@@ -145,13 +148,12 @@
     padding: 0;
     border: 0;
     background: none;
-    color: inherit;
+    color: var(--color-brand);
     font: inherit;
-    font-weight: 500;
     text-align: left;
     text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 5px;
+    text-decoration-thickness: var(--border-thin);
+    text-underline-offset: 4px;
     cursor: pointer;
   }
   .link:hover {
@@ -165,80 +167,91 @@
     width: 44px;
     height: 44px;
     border: 0;
-    border-radius: 50%;
+    border-radius: var(--radius-sm);
     background: none;
     color: inherit;
     cursor: pointer;
   }
   .icon:hover {
-    background: var(--dash-quiet);
+    background: var(--color-bg);
   }
   .icon:focus-visible {
-    border-radius: 50%;
     outline-offset: 0;
   }
 
+  /* Figma's Status chip: `quiet` is Open, `now` is In progress, `owes` is Pending */
   .tag {
     display: inline-block;
-    padding: 3px 11px;
-    border-radius: var(--studio-radius-pill);
-    background: var(--dash-quiet);
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-thin) solid var(--color-ink);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-ink);
     font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0;
-    line-height: 1.45;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.23;
+    text-transform: uppercase;
     white-space: nowrap;
   }
   .now {
-    background: var(--studio-lime);
+    border-color: transparent;
+    background: var(--color-team-accent);
+    color: var(--color-on-team-accent);
   }
   .owes {
-    background: none;
-    box-shadow: inset 0 0 0 1.5px var(--studio-ink);
+    background: repeating-linear-gradient(
+      135deg,
+      var(--color-square-pending-stripe) 0 3px,
+      var(--color-square-pending) 3px 6.36px
+    );
+    color: var(--color-square-pending-text);
   }
 
   .note {
     margin: 0 0 16px;
     padding: 12px 16px;
-    border-radius: 10px;
-    background: var(--dash-field);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
   }
   .warn {
-    box-shadow: inset 0 0 0 1.5px var(--studio-ink);
-    font-weight: 500;
+    border-color: var(--color-ink);
+    font-weight: 700;
   }
 
+  /* Figma's Plain input */
   .input {
     display: block;
     width: 100%;
-    height: 46px;
-    padding: 0 14px;
-    border: 0;
-    border-bottom: 2px solid var(--studio-line);
-    border-radius: var(--studio-radius-field) var(--studio-radius-field) 0 0;
-    background-color: var(--dash-field);
-    color: var(--studio-ink);
+    height: 50px;
+    padding: 0 var(--space-4);
+    border: var(--border-thin) solid var(--color-rule-strong);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
     font: inherit;
+    font-size: 16px;
     appearance: none;
   }
   .input::placeholder {
-    color: #55585c;
+    color: var(--color-ink-muted);
     opacity: 1;
   }
   .input:focus-visible {
-    outline-offset: 1px;
+    outline-offset: calc(var(--border-heavy) * -1);
   }
   .input[readonly] {
-    border-bottom-color: transparent;
-    color: var(--studio-soft);
+    background-color: var(--color-bg);
+    color: var(--color-ink-muted);
   }
   .input[aria-invalid='true'] {
-    border-bottom: 4px solid var(--studio-ink);
+    border-color: var(--color-danger);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-danger);
   }
   .error {
-    margin-top: 5px;
-    font-size: 14px;
-    font-weight: 600;
+    margin-top: var(--space-2);
+    color: var(--color-danger);
   }
 
   .box {
@@ -248,21 +261,21 @@
     width: 20px;
     height: 20px;
     margin: 0;
-    border: 2px solid #55585c;
-    border-radius: 5px;
-    background: var(--studio-tile);
+    border: var(--border-thick) solid var(--color-rule-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
     cursor: pointer;
     appearance: none;
   }
   .box:checked {
-    border-color: var(--studio-ink);
-    background: var(--studio-ink);
+    border-color: var(--color-ink);
+    background: var(--color-ink);
   }
   .box:checked::after {
     content: '';
     width: 10px;
     height: 5px;
-    border: solid #fff;
+    border: solid var(--color-surface);
     border-width: 0 0 2px 2px;
     transform: translateY(-1px) rotate(-45deg);
   }
@@ -272,15 +285,16 @@
   }
 
   .soft {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .empty {
     display: grid;
     justify-items: start;
     gap: 6px;
     padding: 56px 28px;
-    border-radius: var(--dash-radius);
-    background: var(--dash-panel);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
   }
   .buttons {
     display: flex;
@@ -290,8 +304,8 @@
   }
   .fine {
     margin-top: 12px;
-    color: var(--studio-soft);
-    font-size: 13px;
+    color: var(--color-ink-muted);
+    font-size: var(--studio-small);
   }
 
   .wait {
@@ -300,7 +314,7 @@
     justify-items: center;
     gap: 18px;
     min-height: 50vh;
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .blocks {
     display: grid;
@@ -310,9 +324,8 @@
   .blocks i {
     width: 14px;
     height: 14px;
-    border-radius: 3px;
-    background: var(--studio-tile);
-    box-shadow: 0 2px 0 var(--studio-tile-side);
+    border-radius: var(--radius-sm);
+    background: var(--color-square-claimed);
     animation: dash-press 1.2s infinite;
   }
   .blocks i:nth-child(3n + 2) {
@@ -323,9 +336,7 @@
   }
   @keyframes dash-press {
     50% {
-      background: var(--studio-tile-open);
-      box-shadow: none;
-      transform: translateY(3px);
+      background: var(--color-square-open);
     }
   }
 
@@ -340,7 +351,8 @@
       padding: 0 16px 48px;
     }
     .page h1 {
-      font-size: 29px;
+      font-size: 32px;
+      line-height: 1;
     }
     .head {
       flex-direction: column;

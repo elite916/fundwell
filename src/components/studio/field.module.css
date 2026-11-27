@@ -1,60 +1,62 @@
 @layer theme, base, components, utilities;
 
 @layer components {
+  /* Figma's Text input and Select field */
   .field {
-    margin-bottom: 18px;
+    margin-bottom: var(--space-4);
   }
   .label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-2);
   }
   .label span {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .input {
     display: block;
     width: 100%;
-    height: var(--studio-field-height, 52px);
-    padding: 0 14px;
-    border: 0;
-    border-bottom: 2px solid var(--studio-line);
-    border-radius: var(--studio-radius-field) var(--studio-radius-field) 0 0;
-    background-color: var(--studio-field);
-    color: var(--studio-ink);
+    height: var(--studio-field-height, 50px);
+    padding: 0 var(--space-4);
+    border: var(--border-thin) solid var(--color-rule-strong);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
     font: inherit;
+    font-size: 16px;
     appearance: none;
   }
   .input::placeholder {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     opacity: 1;
   }
+  /* Drawn over the border, so the field doesn't move: 3px focus, 2px danger */
   .input:focus-visible {
-    outline-offset: 1px;
+    outline-offset: calc(var(--border-heavy) * -1);
   }
   .input[aria-invalid='true'] {
-    border-bottom: 4px solid var(--studio-ink);
+    border-color: var(--color-danger);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-danger);
   }
   .input:disabled,
   .input:read-only:not(select) {
-    color: var(--studio-soft);
+    background-color: var(--color-bg);
+    color: var(--color-ink-muted);
     opacity: 1;
   }
   .error {
-    margin-top: 4px;
-    font-size: var(--studio-small);
-    font-weight: 600;
+    margin-top: var(--space-2);
+    color: var(--color-danger);
   }
   .hint {
-    margin-top: 6px;
-    color: var(--studio-soft);
-    font-size: var(--studio-small);
+    margin-top: var(--space-2);
+    color: var(--color-ink-muted);
   }
 
   .select {
-    padding-right: 38px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E");
+    padding-right: 48px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231c1b18' stroke-width='1.5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 14px center;
+    background-position: right var(--space-4) center;
     background-size: 10px 6px;
     cursor: pointer;
   }
@@ -75,11 +77,11 @@
     border: 0;
     border-radius: 0;
     background-color: transparent;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231c1b18' stroke-width='1.5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 4px center;
     background-size: 10px 6px;
-    color: var(--studio-ink);
+    color: var(--color-ink);
     font: inherit;
     font-weight: 500;
     text-decoration: underline;
@@ -87,14 +89,5 @@
     text-underline-offset: 6px;
     cursor: pointer;
     appearance: none;
-  }
-
-  @media (max-width: 999px) {
-    .field {
-      margin-bottom: 14px;
-    }
-    .input {
-      height: var(--studio-field-height, 48px);
-    }
   }
 }

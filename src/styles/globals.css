@@ -95,9 +95,9 @@
   --radius-sm: calc(var(--radius) - 4px);
 
   --font-sans:
-    var(--font-montserrat), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    var(--font-figtree), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-alt: var(--font-montserrat-alternates);
+  --font-alt: var(--font-figtree);
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
