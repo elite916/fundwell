@@ -58,7 +58,7 @@ export function Panel({ className, ...props }: ComponentProps<'section'>) {
 }
 
 interface TagProps extends ComponentProps<'span'> {
-  /** `now` is the lime one, for what is happening now. `owes` is outlined, for a payment still to come. */
+  /** `now` is in the accent color, for what is happening now. `owes` is striped, for a payment still to come. */
   tone?: 'quiet' | 'now' | 'owes';
 }
 
@@ -66,7 +66,7 @@ export function Tag({ tone = 'quiet', className, ...props }: TagProps) {
   return <span className={cn(css.tag, tone !== 'quiet' && css[tone], className)} {...props} />;
 }
 
-/** A shaded line of text. `warn` is outlined. */
+/** A boxed line of text. `warn` has a darker outline. */
 export function Note({ tone, className, ...props }: ComponentProps<'p'> & { tone?: 'warn' }) {
   return <p className={cn(css.note, tone && css.warn, className)} {...props} />;
 }

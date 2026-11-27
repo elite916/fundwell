@@ -12,7 +12,7 @@
     font-weight: 500;
   }
   .scale ::placeholder {
-    color: #55585c;
+    color: var(--color-ink-muted);
   }
 
   .scale input[readonly] {
@@ -199,13 +199,13 @@
     color: var(--studio-on-ink);
   }
   .outline.outline:disabled {
-    background: var(--dash-quiet);
-    color: #55585c;
-    box-shadow: none;
+    background: var(--color-bg);
+    color: var(--color-ink-muted);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-rule-strong);
   }
   .scale button[aria-label]:not([role]):disabled {
     background: none;
-    color: #8a8d90;
+    color: var(--color-rule-strong);
     cursor: not-allowed;
   }
   .tagDark.tagDark {
@@ -265,7 +265,7 @@
     padding: 0;
     border: 0;
     border-radius: 99px;
-    background: #787b7e;
+    background: var(--color-rule-strong);
     cursor: pointer;
     transition: background 0.16s;
   }
@@ -282,7 +282,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--color-surface);
     transition: transform 0.16s;
   }
   .switch[data-state='checked'] {
@@ -353,11 +353,11 @@
     text-align: center;
   }
   .segmented input:checked + span {
-    background: var(--studio-tile);
-    box-shadow: 0 1px 4px rgb(var(--studio-shade) / 0.25);
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 var(--border-thick) var(--color-ink);
   }
   .segmented input:disabled + span {
-    color: #55585c;
+    color: var(--color-ink-muted);
   }
   .over:focus-visible + span {
     outline: 3px solid var(--studio-ink);
@@ -449,8 +449,7 @@
     width: 64px;
     height: 64px;
     border-radius: 6px;
-    background: var(--studio-field);
-    box-shadow: inset 0 2px 5px rgb(var(--studio-shade) / 0.2);
+    background: var(--color-bg);
   }
 
   /* Team members */
@@ -504,11 +503,11 @@
     padding: 0;
     border: 0;
     border-radius: 5px;
-    background: var(--studio-tile-open);
+    background: var(--color-surface);
     cursor: pointer;
   }
   .focus button:hover {
-    background: var(--studio-tile);
+    background: var(--color-bg);
   }
   .focus button[aria-checked='true'] {
     background: var(--studio-ink);
@@ -562,9 +561,9 @@
     place-items: center;
     width: 36px;
     height: 36px;
-    border-radius: 6px;
-    background: var(--studio-tile-open);
-    box-shadow: inset 0 0 0 2px var(--studio-bed);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-rule-strong);
     font-style: normal;
     font-weight: 600;
   }
@@ -578,20 +577,18 @@
     font-size: 13px;
     line-height: 1.2;
   }
+  /* Figma's Step item: Done is the accent with a check, Current is brand, Upcoming is outlined */
   .stepDone i {
-    background: var(--studio-tile);
-    color: var(--studio-ink);
-    box-shadow:
-      0 4px 0 var(--studio-tile-side),
-      3px 6px 5px rgb(var(--studio-shade) / 0.35);
-    transform: translateY(-3px);
+    background: var(--color-team-accent);
+    color: var(--color-on-team-accent);
+    box-shadow: none;
   }
   .stepDone i::before {
     content: '';
     box-sizing: content-box;
     width: 12px;
     height: 6px;
-    border: solid var(--studio-ink);
+    border: solid currentcolor;
     border-width: 0 0 2.5px 2.5px;
     transform: translateY(-2px) rotate(-45deg);
   }
@@ -599,11 +596,9 @@
     color: var(--studio-ink);
   }
   .stepNow i {
-    background: var(--studio-lime);
-    box-shadow:
-      0 5px 0 var(--studio-lime-side),
-      4px 8px 6px rgb(var(--studio-shade) / 0.4);
-    transform: translateY(-4px);
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    box-shadow: none;
   }
   .panelHead {
     margin-bottom: 20px;
@@ -644,7 +639,7 @@
     box-shadow: inset 0 0 0 2px var(--studio-ink);
   }
   .kinds input:disabled + span {
-    color: #55585c;
+    color: var(--color-ink-muted);
   }
   .groupFirst {
     margin-bottom: 12px;
@@ -822,7 +817,7 @@
     cursor: pointer;
   }
   .avatar:hover {
-    background-color: #2b2d2e;
+    background-color: var(--color-brand);
   }
   .avatar:focus-visible {
     border-radius: 50%;

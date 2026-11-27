@@ -1,122 +1,136 @@
 /*
-  The light studio look. Everything hangs off `.studio`, so a page only changes when it opts in.
+  The Game day look. Everything hangs off `.studio`, so a page only changes when it opts in.
   Same layer order as Tailwind, declared again in case this file loads first: utilities still win over these rules.
 */
 @layer theme, base, components, utilities;
 
 @layer components {
   .studio {
-    /* Surfaces */
-    --studio-bg: #e4e5e5;
-    --studio-sheet: #f1f1f0;
-    --studio-field: #e2e3e2;
-    --studio-slab: linear-gradient(160deg, #f6f6f5, #ececeb 70%);
-    --studio-slab-side: #bfc1c1;
-    --studio-bed: #b3b6b6;
+    /*
+      Color: Figma's "Color" collection, Fundwell mode. `organizerColors()` sets the team ones (and the squares that
+      follow them) on the page and on sheets, from the organizer's two colors.
+    */
+    --color-bg: #f6f2e9;
+    --color-surface: #fff;
+    --color-ink: #1c1b18;
+    --color-ink-muted: #57534a;
+    --color-rule: #ddd6c6;
+    --color-rule-strong: #8a8274;
+    --color-brand: #17603f;
+    --color-on-brand: #fff;
+    --color-focus: #1f5bd6;
+    --color-danger: #b3261e;
+    --color-team: #17603f;
+    --color-on-team: #fff;
+    --color-team-accent: #f2b233;
+    --color-on-team-accent: #1c1b18;
 
-    /* Ink */
-    --studio-ink: #000;
-    --studio-on-ink: #fff;
-    --studio-soft: #44474b;
-    --studio-line: #6a6d70;
+    /* Squares. These follow the team tokens on the element that sets them. */
+    --color-square-open: var(--color-surface);
+    --color-square-open-border: var(--color-rule-strong);
+    --color-square-claimed: var(--color-team);
+    --color-square-claimed-text: var(--color-on-team);
+    --color-square-pending: #f4ead0;
+    --color-square-pending-stripe: #e3cf95;
+    --color-square-pending-text: var(--color-ink);
+    --color-square-winning: var(--color-team-accent);
+    --color-square-winning-text: var(--color-on-team-accent);
+    --color-square-winning-border: var(--color-ink);
+    --color-square-mine: var(--color-surface);
+    --color-square-mine-text: var(--color-team);
+    --color-square-mine-ring: var(--color-square-mine-text);
+    --color-square-past-winner: var(--color-ink);
+    --color-square-past-winner-text: var(--color-team-accent);
+    --color-square-past-winner-ring: var(--color-square-past-winner-text);
 
-    /* The accent: once per screen */
-    --studio-lime: #8fe52f;
-    --studio-lime-side: #579310;
+    /* Dimension: Figma's "Dimension" collection */
+    --space-0: 0;
+    --space-half: 2px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    --space-24: 96px;
+    --space-32: 128px;
+    --radius-none: 0;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 999px;
+    --border-thin: 1px;
+    --border-thick: 2px;
+    --border-heavy: 3px;
 
-    /* Tiles */
-    --studio-tile-open: #e2e3e2;
-    --studio-tile: #fbfbfa;
-    --studio-tile-side: #a9acac;
-    --studio-tile-past-side: #8d9090;
+    /* Type: the families, and sizes pages lay out with. The text styles are in type.module.css. */
+    --font-body: var(--font-figtree), Arial, sans-serif;
+    --font-display: var(--font-big-shoulders), 'Arial Narrow', Arial, sans-serif;
+    --studio-big: min(7.6vw, 15vh);
+    --studio-mid: clamp(21px, 1.75vw, 27px);
+    --studio-body: 16px;
+    --studio-small: 14px;
 
-    /* Organizer colors. `organizerColors()` sets these on the page. */
-    --org: var(--studio-ink);
-    --org-ink: var(--studio-on-ink);
-    --org-2: var(--studio-soft);
-    --org-mark: var(--studio-ink);
-    --org-mark-ink: var(--studio-on-ink);
-    --org-mark-side: #000;
-
-    /* Light: one shadow color, strength set where it is used */
-    --studio-shade: 44 43 42;
-    --studio-shadow-sheet: 30px 0 90px rgb(var(--studio-shade) / 0.34);
-    --studio-shadow-sheet-up: 0 -16px 60px rgb(var(--studio-shade) / 0.26);
-    --studio-shadow-board:
-      0 9px 0 var(--studio-slab-side), 0 12px 14px -2px rgb(var(--studio-shade) / 0.4),
-      26px 44px 56px -6px rgb(var(--studio-shade) / 0.34);
-    --studio-shadow-tile: 0 3px 0 var(--studio-tile-side), 4px 6px 5px rgb(var(--studio-shade) / 0.42);
-    --studio-shadow-tile-mark: 0 3px 0 var(--org-mark-side), 4px 6px 5px rgb(var(--studio-shade) / 0.42);
-    --studio-shadow-tile-past:
-      inset 0 0 0 2px var(--studio-ink), 0 7px 0 var(--studio-tile-past-side),
-      7px 12px 8px rgb(var(--studio-shade) / 0.5);
-    --studio-shadow-tile-win: 0 9px 0 var(--studio-lime-side), 9px 15px 10px rgb(var(--studio-shade) / 0.5);
-    --studio-lift-tile: -3px;
-    --studio-lift-past: -7px;
-    --studio-lift-win: -9px;
-
-    /* Radii */
-    --studio-radius-pill: 999px;
-    --studio-radius-board: 22px;
-    --studio-radius-bed: 9px;
-    --studio-radius-sheet: 22px;
-    --studio-radius-field: 6px;
-    --studio-radius-tile: 5px;
-
-    /* Spacing */
+    /* Layout */
     --studio-edge: clamp(24px, 5vw, 88px);
     --studio-board: max(min(46vw, 100svh - 304px, 680px), 530px);
-
-    /* Type scale: one size for display, one in the middle, body, and small */
-    --studio-big: min(7.6vw, 15vh);
-    --studio-big-leading: 0.92;
-    --studio-mid: clamp(21px, 1.75vw, 27px);
-    --studio-body: 17px;
-    --studio-small: 15px;
 
     /* Motion */
     --studio-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-    color: var(--studio-ink);
-    font-family: var(--font-studio-ext), var(--font-studio), Arial, sans-serif;
+    /* Old names, still used by page CSS. Each points at the token above that replaces it. */
+    --studio-bg: var(--color-bg);
+    --studio-sheet: var(--color-surface);
+    --studio-field: var(--color-surface);
+    --studio-tile: var(--color-surface);
+    --studio-bed: var(--color-rule);
+    --studio-ink: var(--color-ink);
+    --studio-on-ink: var(--color-surface);
+    --studio-soft: var(--color-ink-muted);
+    --studio-line: var(--color-rule-strong);
+    --studio-lime: var(--color-team-accent);
+    --studio-lime-side: var(--color-team-accent);
+    --studio-radius-pill: var(--radius-full);
+    --studio-radius-field: var(--radius-sm);
+    /* Ink as r g b, for the shadows page CSS still has */
+    --studio-shade: 28 27 24;
+    --org: var(--color-team);
+    --org-ink: var(--color-on-team);
+    --org-2: var(--color-team-accent);
+
+    color: var(--color-ink);
+    font-family: var(--font-body);
     font-size: var(--studio-body);
     font-weight: 400;
     font-feature-settings: normal;
-    /* Host Grotesk turns an X between digits into a times sign: wrong in a PIN, a link or a handle */
-    font-variant-ligatures: no-contextual;
-    line-height: 1.45;
+    line-height: 1.5;
     -webkit-text-size-adjust: 100%;
   }
 
   @media (max-width: 999px) {
     .studio {
-      --studio-radius-board: 14px;
-      --studio-radius-tile: 4px;
-      --studio-shadow-board:
-        0 6px 0 var(--studio-slab-side), 0 9px 10px -2px rgb(var(--studio-shade) / 0.4),
-        12px 24px 30px -4px rgb(var(--studio-shade) / 0.34);
-      --studio-shadow-tile: 0 2px 0 var(--studio-tile-side), 2px 4px 3px rgb(var(--studio-shade) / 0.42);
-      --studio-shadow-tile-mark: 0 2px 0 var(--org-mark-side), 2px 4px 3px rgb(var(--studio-shade) / 0.42);
-      --studio-shadow-tile-past:
-        inset 0 0 0 1.5px var(--studio-ink), 0 4px 0 var(--studio-tile-past-side),
-        4px 7px 5px rgb(var(--studio-shade) / 0.5);
-      --studio-shadow-tile-win: 0 6px 0 var(--studio-lime-side), 5px 10px 7px rgb(var(--studio-shade) / 0.5);
-      --studio-lift-tile: -2px;
-      --studio-lift-past: -4px;
-      --studio-lift-win: -6px;
       --studio-board: 560px;
     }
   }
   @media (max-width: 899px) {
     .studio {
       --studio-big: min(16.2vw, 8vh);
-      --studio-big-leading: 0.95;
-      --studio-body: 16px;
     }
   }
   @media (min-width: 700px) and (max-width: 899px) {
     .studio {
       --studio-big: min(11vw, 12vh);
+    }
+  }
+  /* Phones: no text under 16px but labels */
+  @media (max-width: 699px) {
+    .studio {
+      --studio-small: 16px;
     }
   }
 
@@ -134,9 +148,9 @@
   }
   :where(.studio) :where(:focus-visible),
   :where(.studio):where(:focus-visible) {
-    outline: 3px solid var(--studio-ink);
-    outline-offset: 4px;
-    border-radius: 4px;
+    outline: var(--border-heavy) solid var(--color-focus);
+    outline-offset: var(--space-half);
+    border-radius: var(--radius-sm);
   }
   :where(.studio) :where([tabindex='-1']:not(button, a, input, select):focus-visible) {
     outline: 0;
@@ -146,10 +160,11 @@
   .page {
     position: relative;
     min-height: 100svh;
-    background: var(--studio-bg);
+    background: var(--color-bg);
   }
   body:has(.page) {
-    background: #e4e5e5;
+    /* --color-bg: the body is outside the theme */
+    background: #f6f2e9;
   }
 
   /* Fades while a side sheet covers it (sheets open over the left of the page on wide screens) */
@@ -194,23 +209,21 @@ body:has(.studio) .toast {
   width: max-content;
   max-width: min(560px, calc(100vw - 32px));
   margin: 0 auto;
-  padding: 13px 50px 13px 22px;
+  padding: 12px 52px 12px 16px;
   border: 0;
-  border-radius: 26px;
-  background: #000;
+  border-radius: 4px;
+  /* --color-ink and --color-surface: messages sit outside the theme */
+  background: #1c1b18;
   color: #fff;
-  font-family: var(--font-studio-ext), var(--font-studio), Arial, sans-serif;
-  font-size: 15px;
+  font-family: var(--font-figtree), Arial, sans-serif;
+  font-size: 16px;
   font-feature-settings: normal;
-  font-variant-ligatures: no-contextual;
-  line-height: 1.45;
-  box-shadow: 0 14px 34px rgb(44 43 42 / 0.3);
+  line-height: 1.5;
+  box-shadow: none;
 }
+/* --color-danger, white text at 6.5:1 */
 body:has(.studio) .toastBad {
-  border-radius: 14px;
-  box-shadow:
-    inset 0 0 0 2px #fff,
-    0 0 0 2px #000;
+  background: #b3261e;
 }
 body:has(.studio) .toastText {
   font-size: inherit;
@@ -235,7 +248,7 @@ body:has(.studio) .toastClose {
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: 4px;
   color: #fff;
   opacity: 1;
   transform: translateY(-50%);
@@ -249,7 +262,8 @@ body:has(.studio) .progress {
   height: 3px;
 }
 body:has(.studio) .progress > div {
-  background: #000;
+  /* --color-brand */
+  background: #17603f;
 }
 
 /* The message sits at the bottom middle on wide screens, at the top on phones */

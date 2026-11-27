@@ -23,8 +23,8 @@ import css from '@/components/studio/setup/setup.module.css';
 
 type Contest = Database['public']['Tables']['contests']['Row'];
 
-const DEFAULT_PRIMARY_COLOR = '#F97316';
-const DEFAULT_SECONDARY_COLOR = '#D97706';
+const DEFAULT_PRIMARY_COLOR = '#17603F';
+const DEFAULT_SECONDARY_COLOR = '#F2B233';
 
 const colorSchema = z.object({
   primary_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format'),
@@ -340,7 +340,7 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
             value={primaryColor}
             onChange={(e) => setValue('primary_color', e.target.value.toUpperCase(), { shouldDirty: true })}
             maxLength={7}
-            placeholder='#F97316'
+            placeholder='#17603F'
             error={errors.primary_color?.message}
           />
           <ColorField
@@ -351,7 +351,7 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
             value={secondaryColor}
             onChange={(e) => setValue('secondary_color', e.target.value.toUpperCase(), { shouldDirty: true })}
             maxLength={7}
-            placeholder='#D97706'
+            placeholder='#F2B233'
             error={errors.secondary_color?.message}
           />
         </div>

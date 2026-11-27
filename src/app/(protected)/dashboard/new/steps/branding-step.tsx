@@ -65,18 +65,18 @@ export function BrandingStep() {
         <ColorField
           id='primaryColor'
           label='Primary Color'
-          color={primaryColor || '#F97316'}
+          color={primaryColor || '#17603F'}
           onPick={(color) => setValue('primaryColor', color, { shouldValidate: true })}
-          placeholder='#F97316'
+          placeholder='#17603F'
           error={errors.primaryColor?.message}
           {...register('primaryColor')}
         />
         <ColorField
           id='secondaryColor'
           label='Secondary Color'
-          color={secondaryColor || '#D97706'}
+          color={secondaryColor || '#F2B233'}
           onPick={(color) => setValue('secondaryColor', color, { shouldValidate: true })}
-          placeholder='#D97706'
+          placeholder='#F2B233'
           error={errors.secondaryColor?.message}
           {...register('secondaryColor')}
         />
@@ -86,7 +86,7 @@ export function BrandingStep() {
       <div
         className={css.swatch}
         style={{
-          background: `linear-gradient(135deg, ${primaryColor || '#F97316'}, ${secondaryColor || '#D97706'})`,
+          background: `linear-gradient(135deg, ${primaryColor || '#17603F'}, ${secondaryColor || '#F2B233'})`,
         }}
       >
         <span>Preview</span>

@@ -1,32 +1,46 @@
 @layer theme, base, components, utilities;
 
+/* Figma's Button: Primary (`button`), Team and Danger, and the Text link (`link`) */
 @layer components {
-  .button {
+  .button,
+  .team,
+  .danger {
     display: inline-block;
-    padding: 17px 28px;
+    min-height: 44px;
+    padding: var(--space-3) var(--space-6);
     border: 0;
-    border-radius: var(--studio-radius-pill);
-    background: var(--studio-ink);
-    color: var(--studio-on-ink);
-    font: inherit;
-    font-weight: 500;
-    line-height: 1.2;
+    border-radius: var(--radius-sm);
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    font-family: inherit;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition: transform 0.2s;
   }
-  .button:hover {
-    transform: translateY(-2px);
+  .team {
+    background: var(--color-team);
+    color: var(--color-on-team);
   }
-  .button:focus-visible {
-    border-radius: var(--studio-radius-pill);
+  .danger {
+    background: var(--color-danger);
+    color: var(--color-on-brand);
+  }
+  .button:hover,
+  .team:hover,
+  .danger:hover {
+    background: var(--color-ink);
+    color: var(--color-surface);
   }
   .button:disabled,
-  .button[aria-disabled='true'] {
-    background: var(--studio-line);
+  .button[aria-disabled='true'],
+  .team:disabled,
+  .team[aria-disabled='true'],
+  .danger:disabled,
+  .danger[aria-disabled='true'] {
+    background: var(--color-bg);
+    color: var(--color-ink-muted);
+    box-shadow: inset 0 0 0 var(--border-thin) var(--color-rule-strong);
     cursor: default;
-    transform: none;
   }
 
   .link {
@@ -38,21 +52,20 @@
     border: 0;
     border-radius: 0;
     background: none;
-    color: inherit;
+    color: var(--color-brand);
     font: inherit;
-    font-weight: 500;
     text-align: left;
     text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 6px;
+    text-decoration-thickness: var(--border-thin);
+    text-underline-offset: 4px;
     cursor: pointer;
   }
   .link:hover {
-    text-decoration-thickness: 2px;
+    text-decoration-thickness: var(--border-thick);
   }
   .link:disabled,
   .link[aria-disabled='true'] {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     text-decoration: none;
     cursor: default;
   }

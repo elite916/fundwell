@@ -45,7 +45,7 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
     );
   }
 
-  const colors = organizerColors(contest.primary_color ?? '#F97316', contest.secondary_color ?? '#D97706');
+  const colors = organizerColors(contest.primary_color ?? '#17603F', contest.secondary_color ?? '#F2B233');
 
   // Fetch access PIN separately (not included in PublicContest for security)
   const accessPin = await getContestPin(contest.slug);
