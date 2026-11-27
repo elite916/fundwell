@@ -1,148 +1,316 @@
 @layer theme, base, components, utilities;
 
+/* Figma's Contest page: status and board on the left; the claim card and payouts or winners on the right */
 @layer components {
-  /* First screen: where it stands, and the board */
-  .first {
+  .main {
     display: grid;
-    grid-template: auto 1fr / minmax(0, 1fr) auto;
-    column-gap: 40px;
+    grid-template-columns: minmax(0, 1fr) 400px;
+    gap: var(--space-16);
     align-items: start;
-    min-height: 100svh;
-    padding: 15vh var(--studio-edge) 9vh;
+    padding: var(--space-12) var(--space-16) var(--space-16);
+  }
+  .left,
+  .right {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .left {
+    gap: var(--space-10);
+  }
+  .right {
+    gap: var(--space-12);
+  }
+
+  /* Status: the headline or the score bar, and the news under it */
+  .status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
   }
   .lead {
-    grid-area: 1 / 1;
+    --studio-big: 120px;
+    align-self: stretch;
     container-type: inline-size;
   }
-  /* Shrinks for long team names: a character is about half an em wide */
+  /* Display XL. Shrinks for long team names: a character is about half an em wide. */
   .headline {
     font-size: min(var(--studio-big), calc(100cqw / (var(--fit) * 0.52)));
     overflow-wrap: anywhere;
   }
-  .act {
-    grid-area: 2 / 1;
-    align-self: end;
-    max-width: 330px;
-    margin-top: 40px;
+  .news {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
     overflow-wrap: anywhere;
+  }
+  /* Body L */
+  .newsText {
+    font-size: 20px;
+    line-height: 1.5;
     text-wrap: pretty;
   }
-  .side {
-    grid-area: 1 / 2 / 3 / 3;
-    align-self: start;
-    width: var(--studio-board);
-    margin-bottom: -110px;
+
+  /* Squares: which way the teams run, the board, the legend and Find your squares */
+  .squares {
+    --cell: 48px;
+    --gap: var(--space-1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
   }
-  .board {
-    min-width: 0;
+  .squares .board {
+    width: 100%;
+    max-width: none;
+  }
+  /* Display XS */
+  .squares .board > p {
+    margin: 0 0 var(--space-4);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  /* Numbers take a square's room. The gap is padding, so the edges are pulled back by half of it. */
+  .squares .board table {
+    width: calc(11 * (var(--cell) + var(--gap)));
+    max-width: calc(100% + var(--gap));
+    margin: calc(var(--gap) / -2);
+  }
+  .squares .board table td {
+    padding: calc(var(--gap) / 2);
+  }
+  .squares .board table th {
+    height: auto;
+    padding: 0;
+  }
+  .squares .board table thead th {
+    height: calc(var(--cell) + var(--gap));
+  }
+  .squares .board table tbody th,
+  .squares .board table thead td {
+    width: calc(var(--cell) + var(--gap));
+    padding: 0;
+  }
+  /* No numbers yet: no room for them either (they're still there for screen readers) */
+  .squares .board table:has(tbody th > span) {
+    width: calc(10 * (var(--cell) + var(--gap)));
+  }
+  .squares .board table:has(tbody th > span) :is(tbody th, thead td) {
+    width: 0;
+  }
+  .squares .board table:has(tbody th > span) thead th {
+    height: 0;
+  }
+  .squares .legend {
+    margin: 0;
   }
   .find {
-    margin-top: 34px;
+    width: 400px;
+    max-width: 100%;
     overflow-wrap: anywhere;
+  }
+  .findSelect {
+    margin: 0;
   }
   .findSelect select {
-    max-width: 100%;
-    field-sizing: content;
+    height: 48px;
+    border-radius: var(--radius-md);
     text-overflow: ellipsis;
   }
-  .legend {
-    margin-top: 26px;
-  }
-  .board + .legend {
-    margin-top: 34px;
+  .found p {
+    margin-top: var(--space-2);
   }
 
-  /* Payouts or winners, and the organizer */
-  .more {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12vh 40px;
-    align-items: start;
-    padding: 18vh var(--studio-edge) 12vh;
-  }
-  .prizes {
-    display: grid;
-    grid-template-columns: minmax(0, max-content) auto;
-    gap: 14px 0;
-    align-items: baseline;
-    justify-content: start;
-    margin-top: 30px;
+  /* Payouts or winners: Figma's Payout row and Quarter winner row */
+  .right h2 {
+    margin-bottom: var(--space-2);
   }
   .prizes > div {
-    display: contents;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: var(--border-thin) solid var(--color-rule);
   }
-  .prizes dt,
-  .prizes dd {
+  .prizes dt {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-1);
     min-width: 0;
     overflow-wrap: anywhere;
   }
-  .prizes dt {
-    grid-column: 1;
-  }
   .prizes dd {
-    grid-column: 2;
-    padding-left: 48px;
-    text-align: right;
+    flex: none;
     font-variant-numeric: tabular-nums;
   }
-  .prizes small {
-    display: block;
-    color: var(--studio-soft);
-    font-size: var(--studio-small);
+  /* Display XS */
+  .prizes .amount,
+  .winners .prizeLabel {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
   }
+  .prizes small,
   .prizes .now {
-    grid-column: 3;
-    padding-left: 12px;
-    color: var(--studio-soft);
-    font-size: var(--studio-small);
+    color: var(--color-ink-muted);
+    font-size: 16px;
   }
-  .prizes .sum > * {
-    margin-top: 18px;
+  .winners > div {
+    align-items: flex-start;
   }
-  .organizer {
-    min-width: 0;
+  .prizes .sum {
+    border-top: var(--border-thick) solid var(--color-ink);
+    border-bottom: 0;
+  }
+  /* Button text */
+  .sum dt,
+  .teamShare dt {
+    font-weight: 700;
+    line-height: 1.25;
   }
 
-  /* Claim sheet */
+  /* Claim: Figma's Claim form as a card beside the board */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+  .cardHeading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .cardTitle {
+    flex: 1;
+    min-width: 0;
+    outline: 0;
+  }
+  /* The sheet's close button */
+  .cardClose {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    cursor: pointer;
+  }
+  .cardClose::before,
+  .cardClose::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    background: var(--color-ink);
+    transform: rotate(45deg);
+  }
+  .cardClose::after {
+    transform: rotate(-45deg);
+  }
+  .cardSpot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .card .cardSpot > span {
+    vertical-align: 0;
+  }
+  /* The hint under the Venmo field: a field's gap from it, as in Figma */
+  .claimForm p[id$='-hint'] {
+    margin-top: var(--space-4);
+  }
+  .wide {
+    width: 100%;
+  }
   .alert {
+    margin-bottom: var(--space-4);
     font-weight: 600;
   }
   .alert:empty {
     display: none;
   }
-  .submit {
-    padding-top: 24px;
+
+  /* Claim on phones: the sheet's grabber and the squares around the chosen one, at 56px */
+  .sheetTop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-inline: calc(var(--space-4) * -1);
+    padding: var(--space-2) var(--space-4) var(--space-2);
+  }
+  .grabber {
+    width: 40px;
+    height: 4px;
+    margin-bottom: var(--space-1);
+    border-radius: var(--radius-full);
+    background: var(--color-rule-strong);
+  }
+  .nearby {
+    display: grid;
+    grid-template-columns: repeat(5, 56px);
+    gap: var(--space-1);
+    padding-top: var(--space-4);
+  }
+  .nearbyTile {
+    width: 56px;
+  }
+
+  /* Claimed: Figma's Payment option rows */
+  .payments {
+    margin-bottom: var(--space-4);
+  }
+  .card .payments {
+    margin-bottom: 0;
   }
   .payment {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 12px 24px;
-    padding-bottom: 18px;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-1) 0;
+    border-bottom: var(--border-thin) solid var(--color-rule);
   }
   .paymentText {
-    flex: 1 1 220px;
+    flex: 1 1 180px;
     min-width: 0;
   }
-  .paymentLine {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    column-gap: 14px;
-  }
+  /* Button text */
   .paymentName {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    font-weight: 500;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .paymentName a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: var(--border-thin);
+    text-underline-offset: 4px;
   }
   .handle {
     min-width: 0;
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     overflow-wrap: anywhere;
   }
   .paymentNote {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     font-size: var(--studio-small);
     overflow-wrap: anywhere;
   }
@@ -152,51 +320,51 @@
   }
 
   @media (min-width: 1000px) and (max-width: 1199px) {
-    .first {
-      --studio-big: min(6.3vw, 15vh);
-      column-gap: 24px;
+    .main {
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: var(--space-10);
+      padding-inline: var(--space-10);
     }
   }
   @media (max-width: 999px) {
-    .first {
+    .main {
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      min-height: 0;
-      padding: 36px var(--studio-edge) 32px;
+      gap: var(--space-10);
+      padding: var(--space-6) var(--space-8) var(--space-12);
     }
-    .act {
-      align-self: stretch;
-      max-width: none;
-      margin-top: 18px;
-    }
-    .side {
-      align-self: stretch;
-      width: auto;
-      margin: 26px 0 0;
-    }
-    .find {
-      margin-top: 30px;
-    }
-    .more {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 72px;
-      padding: 48px var(--studio-edge) 72px;
-    }
-    .prizes {
-      grid-template-columns: minmax(0, 1fr) auto;
-      justify-content: stretch;
-      margin-top: 22px;
-    }
-    .prizes dd {
-      padding-left: 24px;
+    .right {
+      gap: var(--space-10);
     }
   }
-  @media (max-width: 379px) {
-    /* No room beside the amount: under it */
-    .prizes .now {
-      grid-column: 2;
-      margin-top: -14px;
+  /* Phones: Figma's Phone 390 */
+  @media (max-width: 699px) {
+    .main {
+      padding-inline: var(--space-4);
+    }
+    .lead {
+      --studio-big: 52px;
+    }
+    /* Display M */
+    .lead .headline {
+      font-weight: 800;
+      line-height: 0.96;
+    }
+    .newsText {
+      font-size: 16px;
+    }
+    /* Display S */
+    .news .winner {
+      font-size: 32px;
+      line-height: 1;
+    }
+    .squares {
+      --cell: 26px;
+      --gap: var(--space-half);
+    }
+    .find {
+      width: 100%;
     }
   }
 }

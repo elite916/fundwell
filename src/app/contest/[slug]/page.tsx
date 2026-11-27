@@ -17,7 +17,6 @@ import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 import { HitAThonPage } from './hit-a-thon/hit-a-thon-page';
 import { SquaresFundraiser } from './squares/squares-fundraiser';
 import { ContestMessage } from './contest-message';
-import { OrganizerPrint } from './organizer-print';
 import { PinGate } from './pin-gate';
 import { ShareButton } from './share-button';
 
@@ -132,6 +131,7 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
       header={
         <OrganizerHeader
           contestName={contest.name}
+          description={contest.description}
           logoUrl={contest.org_image_url}
           action={
             <ShareButton
@@ -155,15 +155,6 @@ export default async function ContestPage({ params, searchParams }: ContestPageP
         colors={colors}
         // Live updates only for contests without a PIN; a PIN contest refreshes when its tab comes back
         realtime={!accessPin}
-        organizer={
-          <OrganizerPrint
-            contestName={contest.name}
-            imageUrl={contest.hero_image_url}
-            imagePosition={contest.hero_image_position}
-            logoUrl={contest.org_image_url}
-            description={contest.description}
-          />
-        }
       />
     </StudioPage>
   );

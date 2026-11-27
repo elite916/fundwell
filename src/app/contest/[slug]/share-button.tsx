@@ -73,7 +73,7 @@ export function ShareButton({
 
   return (
     <>
-      <Button look='link' aria-haspopup='dialog' onClick={() => handleOpenChange(true)}>
+      <Button look='secondary' aria-haspopup='dialog' onClick={() => handleOpenChange(true)}>
         Share
       </Button>
       <Sheet

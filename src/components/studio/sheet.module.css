@@ -46,6 +46,25 @@
     padding-top: 24px;
   }
 
+  /* The title's row. With something above the title (`top`), the close button sits in it. */
+  .heading {
+    display: contents;
+  }
+  .withTop .heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .withTop .title {
+    flex: 1;
+    margin-right: 0;
+  }
+  .withTop .close {
+    position: relative;
+    inset: auto;
+    flex: none;
+  }
+
   .close {
     position: absolute;
     top: 28px;
@@ -127,6 +146,21 @@
     .mark {
       display: inline;
       margin-right: 12px;
+    }
+    /* Figma's Claim sheet: the page dimmed behind it, 16px sides, the square's line in ink */
+    .overlay:has(+ .withTop) {
+      background: rgb(28 27 24 / 0.35);
+    }
+    /* Figma's Claim sheet: 16px sides, the square's line in ink */
+    .withTop .inner {
+      padding: 0 var(--space-4) var(--space-6);
+    }
+    .withTop .description {
+      margin: var(--space-4) 0;
+      color: var(--color-ink);
+    }
+    .withTop .mark {
+      margin-right: var(--space-2);
     }
   }
 

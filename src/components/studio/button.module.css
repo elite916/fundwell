@@ -1,10 +1,12 @@
 @layer theme, base, components, utilities;
 
-/* Figma's Button: Primary (`button`), Team and Danger, and the Text link (`link`) */
+/* Figma's Button: Primary (`button`), Team, Danger, Secondary and Ghost, and the Text link (`link`) */
 @layer components {
   .button,
   .team,
-  .danger {
+  .danger,
+  .secondary,
+  .ghost {
     display: inline-block;
     min-height: 44px;
     padding: var(--space-3) var(--space-6);
@@ -25,21 +27,50 @@
     background: var(--color-danger);
     color: var(--color-on-brand);
   }
+  /* Secondary: a 2px ink outline, 3px under the mouse. Drawn inside, so the button doesn't move. */
+  .secondary {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 var(--border-thick) var(--color-ink);
+  }
+  .ghost {
+    background: none;
+    color: var(--color-ink);
+  }
   .button:hover,
   .team:hover,
   .danger:hover {
     background: var(--color-ink);
     color: var(--color-surface);
   }
+  .secondary:hover {
+    background: var(--color-bg);
+    box-shadow: inset 0 0 0 var(--border-heavy) var(--color-ink);
+  }
+  /* A 2px brand underline, so hover doesn't depend on color alone */
+  .ghost:hover {
+    color: var(--color-brand);
+    box-shadow: inset 0 calc(var(--border-thick) * -1) 0 var(--color-brand);
+    border-radius: 0;
+  }
   .button:disabled,
   .button[aria-disabled='true'],
   .team:disabled,
   .team[aria-disabled='true'],
   .danger:disabled,
-  .danger[aria-disabled='true'] {
+  .danger[aria-disabled='true'],
+  .secondary:disabled,
+  .secondary[aria-disabled='true'] {
     background: var(--color-bg);
     color: var(--color-ink-muted);
     box-shadow: inset 0 0 0 var(--border-thin) var(--color-rule-strong);
+    cursor: default;
+  }
+  .ghost:disabled,
+  .ghost[aria-disabled='true'] {
+    background: none;
+    color: var(--color-ink-muted);
+    box-shadow: none;
     cursor: default;
   }
 

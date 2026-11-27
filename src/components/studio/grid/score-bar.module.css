@@ -1,0 +1,122 @@
+@layer theme, base, components, utilities;
+
+/* Figma's Score bar: one row on wide screens, the winning square under the teams on phones */
+@layer components {
+  .bar {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    min-width: min(480px, 100%);
+    overflow: hidden;
+    border: var(--border-thick) solid var(--color-ink);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .teams {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .period,
+  .home,
+  .away {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    white-space: nowrap;
+  }
+  .period {
+    flex: none;
+    gap: var(--space-2);
+    background: var(--color-ink);
+    color: var(--color-on-brand);
+    font-size: 32px;
+  }
+  /* "Halftime": Display XS */
+  .longPeriod {
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-team-accent);
+  }
+  .home,
+  .away {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .home {
+    background: var(--color-team);
+    color: var(--color-on-team);
+  }
+  .away {
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  /* Display XS */
+  .team {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    text-overflow: ellipsis;
+  }
+  /* Display S */
+  .score {
+    font-size: 32px;
+  }
+  .winning {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-half);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-team-accent);
+    color: var(--color-on-team-accent);
+    white-space: nowrap;
+  }
+  /* Label */
+  .label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-variation-settings: normal;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.23;
+  }
+
+  @media (max-width: 699px) {
+    .bar {
+      flex-direction: column;
+      width: 100%;
+      min-width: 0;
+    }
+    .longPeriod {
+      padding-inline: var(--space-3);
+    }
+    .longPeriod ~ .home,
+    .longPeriod ~ .away {
+      padding-inline: var(--space-2);
+    }
+    .winning {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    /* Label/Phone */
+    .label {
+      font-size: 15px;
+    }
+  }
+}

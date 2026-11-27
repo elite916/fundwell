@@ -10,9 +10,10 @@ import css from './button.module.css';
 interface ButtonProps extends ComponentProps<'button'> {
   /**
    * `button` is the main action, one per view. `team` is the same in the organizer's color. `danger` is red, for the
-   * final confirm of something that can't be undone. `link` is underlined text.
+   * final confirm of something that can't be undone. `secondary` is the alternative, outlined in ink. `ghost` is a
+   * quiet button with no box. `link` is underlined text.
    */
-  look?: 'button' | 'team' | 'danger' | 'link';
+  look?: 'button' | 'team' | 'danger' | 'secondary' | 'ghost' | 'link';
   /** Waiting on the server: can't be pressed, and says so to screen readers. */
   pending?: boolean;
   /** Put the look on the child instead, for example a next/link. */

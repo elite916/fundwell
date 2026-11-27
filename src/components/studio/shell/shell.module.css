@@ -53,46 +53,68 @@
   .nav a:last-child {
     justify-content: flex-end;
   }
-  .action {
-    flex: none;
-  }
-  .action > * {
-    justify-content: flex-end;
-  }
-
-  .organizer {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .avatar {
+  /* Figma's Contest header: a bar in the team color, in the page's flow */
+  .organizerBar {
     position: relative;
     display: grid;
-    flex: none;
+    grid-template: auto auto / 56px minmax(0, 1fr) auto;
+    column-gap: var(--space-4);
+    row-gap: var(--space-1);
+    align-items: center;
+    padding: var(--space-5) var(--space-16);
+    background: var(--color-team);
+    color: var(--color-on-team);
+  }
+  .avatar {
+    display: grid;
+    grid-row: 1 / 3;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    height: 56px;
     overflow: hidden;
-    border-radius: 50%;
-    background: var(--org);
-    color: var(--org-ink);
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: var(--radius-md);
+    background: var(--color-team-accent);
+    color: var(--color-on-team-accent);
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
   }
   .avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+  /* Display M */
   .contest {
-    font-weight: 600;
-    line-height: 1.3;
+    grid-row: 1 / 3;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    line-height: 0.96;
+    text-transform: uppercase;
     text-wrap: balance;
     overflow-wrap: anywhere;
   }
-  .host {
-    color: var(--studio-soft);
-    line-height: 1.3;
+  .contest:has(+ .description) {
+    grid-row: 1;
+    align-self: end;
+  }
+  /* The organizer's own words, quiet: on-team at 85% */
+  .description {
+    grid-area: 2 / 2;
+    align-self: start;
+    min-width: 0;
+    color: color-mix(in srgb, var(--color-on-team) 85%, transparent);
+    overflow-wrap: anywhere;
+  }
+  .action {
+    grid-area: 1 / 3 / 3;
+    justify-self: end;
   }
 
   .footer {
@@ -115,9 +137,32 @@
     min-height: 44px;
   }
 
-  @media (max-width: 999px) {
-    .host {
-      display: none;
+  @media (max-width: 699px) {
+    .organizerBar {
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      column-gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+    }
+    .avatar {
+      grid-row: 1;
+      width: 44px;
+      height: 44px;
+      font-size: 20px;
+      letter-spacing: 0.02em;
+    }
+    /* Display S */
+    .contest,
+    .contest:has(+ .description) {
+      grid-row: 1;
+      align-self: center;
+      font-size: 32px;
+      line-height: 1;
+    }
+    .description {
+      grid-area: 2 / 1 / 3 / 4;
+    }
+    .action {
+      grid-area: 1 / 3;
     }
   }
   @media (max-width: 899px) {
