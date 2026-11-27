@@ -127,12 +127,6 @@
   }
 
   @media (max-width: 999px) {
-    /* The header takes its own room, so a long contest name pushes the page down instead of covering it */
-    .page > header {
-      position: relative;
-      inset: auto;
-      margin-inline: var(--studio-edge);
-    }
     .message,
     .gate {
       min-height: 74svh;

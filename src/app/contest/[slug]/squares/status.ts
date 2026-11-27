@@ -7,8 +7,10 @@ import { prizeFor, winnerName } from './prizes';
 import type { SquaresContest } from './types';
 
 export interface Status {
-  /** The huge lines. */
-  headline: [string, string?];
+  /** The huge lines, while there's no score. */
+  headline?: [string, string?];
+  /** The latest score, for the score bar that replaces the headline. */
+  score?: Score;
   news: string | null;
   detail?: string | null;
   tone: 'strong' | 'soft';
@@ -39,8 +41,7 @@ export function statusOf(contest: SquaresContest, squares: readonly GridSquare[]
   if (latest && (contest.status === 'in_progress' || contest.status === 'completed')) {
     const name = winnerName(latest, squares);
     return {
-      // Scores are saved as home and away: the rows' team is home
-      headline: [`${contest.row_team_name} ${latest.home_score}`, `${contest.col_team_name} ${latest.away_score}`],
+      score: latest,
       news: name ? `${name} ${WON[latest.quarter]}` : 'Nobody claimed that square.',
       detail: name
         ? prizeFor(contest, latest.quarter, countSoldSquares([...squares]))

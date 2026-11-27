@@ -144,7 +144,7 @@ export default async function Page() {
           <div className={css.headerBox} style={organizerColors('#1d4f91', '#e2b53c')}>
             <OrganizerHeader
               contestName={CONTEST_NAME}
-              host='Hosted by Pretend Team Boosters'
+              description='Hosted by Pretend Team Boosters'
               action={<Button look='link'>Share</Button>}
             />
           </div>

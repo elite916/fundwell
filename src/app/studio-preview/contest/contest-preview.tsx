@@ -58,7 +58,7 @@ export function ContestPreview({ state, primary, secondary }: { state: State; pr
       header={
         <OrganizerHeader
           contestName={CONTEST_NAME}
-          host='Hosted by Pretend Team Boosters'
+          description='Hosted by Pretend Team Boosters'
           action={
             <Button look='link' onClick={() => setIsSharing(true)}>
               Share

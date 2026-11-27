@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn';
 
-import { PAYMENT_LABELS, WINNER_LABEL } from './model';
+import { PAST_WINNER_LABEL, PAYMENT_LABELS, WINNER_LABEL } from './model';
 import { TileChip } from './tile';
 
 import css from './board.module.css';
@@ -28,8 +28,12 @@ export function BoardLegend({ hasWinner, hasEarlierWinner, className }: BoardLeg
       </li>
       {hasWinner && (
         <li>
-          <TileChip payment='paid' won='winner' />
-          {hasEarlierWinner && <TileChip payment='paid' won='past' />} {WINNER_LABEL}
+          <TileChip payment='paid' won='winner' /> {WINNER_LABEL}
+        </li>
+      )}
+      {hasWinner && hasEarlierWinner && (
+        <li>
+          <TileChip payment='paid' won='past' /> {PAST_WINNER_LABEL}
         </li>
       )}
     </ul>
