@@ -1,120 +1,108 @@
+/* Figma's Pricing section: the heading beside the plans, the plans under it on narrow screens */
 .section {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 48px;
-  min-height: 96svh;
-  padding: 18vh var(--studio-edge) 9vh;
-}
-.page {
-  min-height: 0;
-  padding-top: 15vh;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-12);
+  padding: var(--space-24) var(--space-16) var(--space-32);
 }
 .heading {
-  text-wrap: balance;
+  flex: 1 1 300px;
+  text-wrap: pretty;
+}
+.side {
+  display: flex;
+  flex: 0 1 864px;
+  flex-direction: column;
+  gap: var(--space-8);
+  min-width: 0;
 }
 .plans {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: end;
+  display: flex;
+  gap: var(--space-6);
 }
+/* Figma's Pricing card: Free in a rule-strong border, Pro in a heavy ink one */
 .plan {
   display: flex;
+  flex: 1 1 0;
   flex-direction: column;
   align-items: flex-start;
-  padding-right: 40px;
+  gap: var(--space-6);
+  min-width: 0;
+  padding: var(--space-8);
+  border: var(--border-thin) solid var(--color-rule-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
-.free {
-  margin-top: 20px;
-  font-size: min(25vw, 40vh);
-  line-height: 0.84;
+.pro {
+  border: var(--border-heavy) solid var(--color-ink);
+}
+/* Display L, then "a month" in Body L */
+.price {
+  font-size: 20px;
+  line-height: 1.5;
+}
+.price span {
+  margin-right: 3px;
 }
 .includes {
-  margin-top: 22px;
+  display: grid;
+  gap: var(--space-2);
   text-wrap: pretty;
 }
-.action {
-  min-height: 54px;
-  margin-top: 26px;
-}
-.intervals {
+/* Figma's Segmented: square corners, the chosen one in ink */
+.billing fieldset {
   display: flex;
-  gap: 22px;
-  margin-top: 8px;
-}
-.legend {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-.interval {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--studio-soft);
-  cursor: pointer;
-}
-.interval input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  gap: var(--space-half);
   margin: 0;
-  opacity: 0;
-  cursor: pointer;
+  padding: var(--space-half);
+  border: var(--border-thin) solid var(--color-rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
 }
-.interval input:hover + span {
-  text-decoration: underline;
-  text-underline-offset: 6px;
+.billing fieldset span {
+  min-height: 44px;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  line-height: 1.25;
 }
-.interval input:checked + span {
-  color: var(--studio-ink);
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 6px;
+.billing fieldset input:checked + span {
+  background: var(--color-ink);
+  color: var(--color-surface);
+  box-shadow: none;
 }
-.interval input:focus-visible + span {
-  outline: 3px solid var(--studio-ink);
-  outline-offset: 4px;
-  border-radius: 4px;
-}
+/* Body L */
 .why {
-  max-width: 420px;
-  margin-left: 50%;
+  font-size: 20px;
   text-wrap: pretty;
-}
-@media (max-aspect-ratio: 1/1) {
-  .section {
-    min-height: 0;
-  }
 }
 @media (max-width: 699px) {
   .section {
-    gap: 40px;
-    padding-top: 15vh;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-8);
+    padding: var(--space-16) var(--space-4) var(--space-20);
   }
-  .page {
-    padding-top: 112px;
+  /* Display M */
+  .heading {
+    flex: none;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 0.96;
+  }
+  .side {
+    flex: none;
   }
   .plans {
-    grid-template-columns: 1fr;
-    gap: 64px;
-  }
-  .free {
-    font-size: 52vw;
+    flex-direction: column;
+    gap: var(--space-4);
   }
   .plan {
-    padding-right: 0;
-  }
-  .none {
-    display: none;
+    flex: none;
+    padding: var(--space-8) var(--space-6);
   }
   .why {
-    margin-left: 0;
+    font-size: 16px;
   }
 }

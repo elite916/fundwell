@@ -1,36 +1,41 @@
-/* The min-height less the footer, so a short page's footer sits at the bottom of the window. */
+/* Figma's Support page. The min-height less the header and footer, so a short page's footer sits at the bottom. */
 .page {
-  min-height: calc(100svh - 144px);
-  padding: 15vh var(--studio-edge) 6vh;
+  min-height: calc(100svh - 208px);
+  padding: var(--space-24) var(--space-16);
 }
+/* Display XL */
 .title {
+  --studio-big: 120px;
   text-wrap: balance;
 }
+/* Body L, in the right column */
 .intro {
   display: grid;
-  gap: 10px;
-  max-width: 620px;
-  margin: 9vh 0 0 50%;
+  gap: var(--space-3);
+  margin: var(--space-16) 0 0 calc(50% + var(--space-4));
+  font-size: 20px;
   text-wrap: pretty;
 }
+/* Figma's Text section: a thin ink rule, the heading in Display S, the text in Body L beside it */
 .section {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
   align-items: start;
-  margin-top: 72px;
+  margin-top: var(--space-12);
+  padding-top: var(--space-8);
+  border-top: var(--border-thin) solid var(--color-ink);
 }
 .intro + .section {
-  margin-top: 14vh;
+  margin-top: var(--space-16);
 }
 .heading {
-  max-width: 16em;
-  padding-right: 32px;
   text-wrap: balance;
 }
 .text {
   display: grid;
-  gap: 18px;
-  max-width: 620px;
+  gap: var(--space-3);
+  font-size: 20px;
   text-wrap: pretty;
 }
 .text > * {
@@ -38,18 +43,32 @@
 }
 @media (max-width: 699px) {
   .page {
-    min-height: calc(100svh - 176px);
-    padding-top: 104px;
+    min-height: calc(100svh - 236px);
+    padding: var(--space-16) var(--space-4) var(--space-20);
+  }
+  /* Display L */
+  .title {
+    --studio-big: 80px;
+    line-height: 0.92;
   }
   .intro {
-    margin: 32px 0 0;
+    margin: var(--space-10) 0 0;
   }
   .intro + .section {
-    margin-top: 72px;
+    margin-top: var(--space-10);
   }
   .section {
     grid-template-columns: 1fr;
-    gap: 14px;
-    margin-top: 56px;
+    gap: var(--space-3);
+    margin-top: var(--space-10);
+    padding-top: var(--space-6);
+  }
+  /* Display XS over Body M */
+  .heading {
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .text {
+    font-size: 16px;
   }
 }

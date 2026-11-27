@@ -48,7 +48,11 @@ export function Tile({ children, className, ...state }: TileProps) {
   );
 }
 
-/** A tile the size of a line of text, for legends and sheet headings. */
-export function TileChip(state: TileState) {
-  return <span aria-hidden='true' className={tileClass(state, css.chip)} />;
+/** A tile the size of a line of text, for legends and sheet headings. Home's legend puts example initials in it. */
+export function TileChip({ children, ...state }: TileState & { children?: ReactNode }) {
+  return (
+    <span aria-hidden='true' className={tileClass(state, css.chip)}>
+      {children}
+    </span>
+  );
 }

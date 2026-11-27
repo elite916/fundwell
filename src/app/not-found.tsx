@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 
 import { MarketingHeader } from '@/components/layout/marketing-header';
-import { StillPicture } from '@/components/studio/scene/scene-still';
-import { STILLS } from '@/components/studio/scene/stills';
 import { StudioPage } from '@/components/studio/shell/studio-page';
 import { TextLink } from '@/components/studio/text-link';
 import { Display } from '@/components/studio/type';
@@ -15,7 +13,6 @@ export default function NotFound() {
   return (
     <StudioPage header={<MarketingHeader />}>
       <div className={css.screen}>
-        <StillPicture still={STILLS.closing} eager className={css.still} />
         <Display as='h1' className={css.title}>
           Page not found
         </Display>
