@@ -10,30 +10,24 @@ import { cn } from '@/utils/cn';
 
 import css from '@/components/studio/setup/setup.module.css';
 
-type ImageType = 'hero' | 'logo';
-
 interface ImageUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpload: (file: File) => Promise<void>;
-  imageType: ImageType;
   isUploading: boolean;
 }
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-export function ImageUploadModal({ isOpen, onClose, onUpload, imageType, isUploading }: ImageUploadModalProps) {
+export function ImageUploadModal({ isOpen, onClose, onUpload, isUploading }: ImageUploadModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const title = imageType === 'hero' ? 'Upload Hero Image' : 'Upload Logo';
-  const description =
-    imageType === 'hero'
-      ? 'This image will be displayed at the top of your contest page.'
-      : 'This image will be displayed alongside your contest name.';
+  const title = 'Upload Logo';
+  const description = 'This image will be displayed alongside your contest name.';
 
   const validateFile = useCallback((file: File): string | null => {
     if (!ACCEPTED_TYPES.includes(file.type)) {

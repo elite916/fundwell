@@ -7,9 +7,9 @@
     left: 24px;
     z-index: 9;
     padding: 12px 18px;
-    border-radius: var(--studio-radius-pill);
-    background: var(--studio-ink);
-    color: var(--studio-on-ink);
+    border-radius: var(--radius-full);
+    background: var(--color-ink);
+    color: var(--color-surface);
   }
   .skip:focus {
     top: 14px;

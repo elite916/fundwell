@@ -83,26 +83,6 @@
     /* Motion */
     --studio-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-    /* Old names, still used by page CSS. Each points at the token above that replaces it. */
-    --studio-bg: var(--color-bg);
-    --studio-sheet: var(--color-surface);
-    --studio-field: var(--color-surface);
-    --studio-tile: var(--color-surface);
-    --studio-bed: var(--color-rule);
-    --studio-ink: var(--color-ink);
-    --studio-on-ink: var(--color-surface);
-    --studio-soft: var(--color-ink-muted);
-    --studio-line: var(--color-rule-strong);
-    --studio-lime: var(--color-team-accent);
-    --studio-lime-side: var(--color-team-accent);
-    --studio-radius-pill: var(--radius-full);
-    --studio-radius-field: var(--radius-sm);
-    /* Ink as r g b, for the shadows page CSS still has */
-    --studio-shade: 28 27 24;
-    --org: var(--color-team);
-    --org-ink: var(--color-on-team);
-    --org-2: var(--color-team-accent);
-
     color: var(--color-ink);
     font-family: var(--font-body);
     font-size: var(--studio-body);
@@ -261,7 +241,8 @@ body:has(.studio) .toastClose:focus-visible {
 body:has(.studio) .progress {
   height: 3px;
 }
-body:has(.studio) .progress > div {
+/* Green on every page, not only Game day ones (Brent, 2026-11-27) */
+.progress > div {
   /* --color-brand */
   background: #17603f;
 }

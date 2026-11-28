@@ -63,7 +63,7 @@
   .table th {
     padding: 8px 12px 8px 0;
     border-bottom: 1px solid var(--dash-rule);
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     font-size: 13px;
     font-weight: 500;
     text-align: left;
@@ -89,10 +89,10 @@
   }
   .table .blank td {
     padding: 20px 0;
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .soft {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
 
   /* Participants */
@@ -250,7 +250,7 @@
     overflow-wrap: anywhere;
   }
   .url {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     overflow-wrap: anywhere;
   }
   .team td {
@@ -305,7 +305,7 @@
   */
   .empty {
     margin-top: 14px;
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .pledges th {
     padding: var(--space-1) var(--space-1) var(--space-1) 0;
@@ -652,7 +652,7 @@
       box-shadow: none;
     }
     .bulk > button:focus-visible {
-      outline-color: var(--studio-on-ink);
+      outline-color: var(--color-surface);
     }
     /* The bar must not cover the last rows */
     .bulk ~ .people,
