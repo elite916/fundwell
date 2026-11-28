@@ -72,7 +72,6 @@
     --font-body: var(--font-figtree), Arial, sans-serif;
     --font-display: var(--font-big-shoulders), 'Arial Narrow', Arial, sans-serif;
     --studio-big: min(7.6vw, 15vh);
-    --studio-mid: clamp(21px, 1.75vw, 27px);
     --studio-body: 16px;
     --studio-small: 14px;
 
