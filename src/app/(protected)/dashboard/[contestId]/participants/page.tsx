@@ -46,12 +46,12 @@ export default async function ParticipantsPage({ params }: ParticipantsPageProps
     const [players, pledges] = await Promise.all([getHitPlayersWithHits(contestId), getPledgesForOwner(contestId)]);
 
     return (
-      <DashPage>
+      <DashPage className={css.manage}>
         <BackLink href={`/dashboard/${contestId}`}>Back to Contest</BackLink>
 
         <PageHead title='Pledges' sub={[contest.name]} />
 
-        <Panel aria-labelledby='pledges'>
+        <Panel aria-labelledby='pledges' className={css.panel}>
           <h2 id='pledges'>Pledges</h2>
 
           <PledgesTableClient

@@ -32,7 +32,7 @@ export function HitPlayersTableClient({ players, totals, contestSlug }: HitPlaye
   };
 
   return (
-    <table role='table' className={cn(css.table, css.team)}>
+    <table role='table' className={cn(css.table, css.team, css.players)}>
       <caption className={srOnly}>Players</caption>
       <thead role='rowgroup'>
         <tr role='row'>
