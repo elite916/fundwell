@@ -223,7 +223,6 @@ export function BrandingSection({ contest }: BrandingSectionProps) {
         isOpen={logoModalOpen}
         onClose={() => setLogoModalOpen(false)}
         onUpload={handleLogoUpload}
-        imageType='logo'
         isUploading={logoUploading}
       />
     </SetupSection>

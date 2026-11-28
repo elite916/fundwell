@@ -15,14 +15,14 @@
     gap: 4px;
     margin-bottom: 18px;
     padding: 4px;
-    border-radius: var(--studio-radius-pill);
+    border-radius: var(--radius-full);
     background: var(--dash-quiet);
   }
   .tabs button {
     min-height: 44px;
     padding: 0 10px;
     border: 0;
-    border-radius: var(--studio-radius-pill);
+    border-radius: var(--radius-full);
     background: none;
     color: inherit;
     font: inherit;
@@ -30,11 +30,11 @@
     cursor: pointer;
   }
   .tabs button[aria-selected='true'] {
-    background: var(--studio-tile);
-    box-shadow: 0 1px 4px rgb(var(--studio-shade) / 0.25);
+    background: var(--color-surface);
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--color-ink) 25%, transparent);
   }
   .tabs button:focus-visible {
-    border-radius: var(--studio-radius-pill);
+    border-radius: var(--radius-full);
     outline-offset: 2px;
   }
   .panel:focus-visible {
@@ -42,7 +42,7 @@
   }
   .how {
     margin-bottom: 14px;
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .label {
     margin-bottom: 6px;
@@ -114,7 +114,7 @@
     place-items: center;
     aspect-ratio: 1;
     border-radius: 8px;
-    background: var(--studio-bed);
+    background: var(--color-rule);
   }
   .grid > i {
     grid-column: 2;
