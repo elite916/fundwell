@@ -265,65 +265,105 @@
     gap: var(--space-2) var(--space-4);
   }
 
-  /* A hit-a-thon's hits */
-  .intro {
-    margin: 2px 0 14px;
-    color: var(--studio-soft);
-    font-size: 13px;
+  /* A hit-a-thon's name, with its Status chip under it */
+  .title.under {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
   }
+
+  /* A hit-a-thon's hits: Figma's Hits section, 16px between its parts, the words in Body M */
+  .hits,
+  .hits > form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .intro,
+  .lockedOn {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .intro {
+    color: var(--color-ink-muted);
+  }
+  /* Figma's Hits row: Label headings over an ink rule, Body M cells, 12px between the columns */
   .hitTable {
     width: 100%;
     border-collapse: collapse;
     font-variant-numeric: tabular-nums;
   }
   .hitTable th {
-    padding: 8px 12px 8px 0;
-    border-bottom: 1px solid var(--dash-rule);
-    color: var(--studio-soft);
+    padding: var(--space-2) var(--space-3) var(--space-2) 0;
+    border-bottom: var(--border-thin) solid var(--color-ink);
+    color: var(--color-ink-muted);
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.23;
     text-align: left;
+    text-transform: uppercase;
     white-space: nowrap;
   }
+  .hitTable th:nth-child(2) {
+    width: 212px;
+  }
+  /* 152 and 120 at 1440, narrower in the 1240 layout */
+  .hitTable th:nth-child(3) {
+    width: 21%;
+  }
+  .hitTable th:nth-child(4) {
+    width: 17%;
+  }
   .hitTable td {
-    height: 60px;
-    padding: 6px 12px 6px 0;
-    border-bottom: 1px solid var(--dash-hair);
+    padding: var(--space-2) var(--space-3) var(--space-2) 0;
+    border-bottom: var(--border-thin) solid var(--color-rule);
+    font-size: 16px;
+    line-height: 1.5;
   }
   .hitTable th:last-child,
   .hitTable td:last-child {
     padding-right: 0;
-    text-align: right;
   }
   .hitTable .blank {
-    height: auto;
-    padding: 20px 0;
-    color: var(--studio-soft);
-    text-align: left;
+    padding: var(--space-5) 0;
+    color: var(--color-ink-muted);
   }
   .player {
-    font-weight: 500;
     overflow-wrap: anywhere;
   }
   .soft {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .hitField {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px 10px;
+    gap: var(--space-1) var(--space-2);
   }
-  .hitField > input {
+  /* Figma's Field: 72 by 44, 8px corners. Doubled so it wins over the kit's input. */
+  .hitField.hitField > input {
     width: 72px;
+    height: 44px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-md);
+  }
+  /* "No hits yet": a paper tag with a light rule, not the Status chip */
+  .noHits.noHits {
+    padding: var(--space-half) var(--space-2);
+    border-color: var(--color-rule);
+    background: var(--color-bg);
+    color: var(--color-ink-muted);
   }
   .error {
-    margin-top: 10px;
     font-size: 14px;
     font-weight: 600;
   }
+  /* Save Hits and Lock and Send Totals, side by side */
   .save {
-    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
   }
 
   @media (max-width: 1239px) {
@@ -458,11 +498,76 @@
       margin-left: 38px;
     }
 
-    .hitTable td {
-      padding-right: 8px;
+    /*
+      Figma's Hits row, Phone: the columns narrower, and "No hits yet" on its own line under the row. The hits cell
+      spans the row on a subgrid, so the tag can.
+    */
+    .hitTable,
+    .hitTable thead,
+    .hitTable tbody {
+      display: block;
     }
-    .hitField > input {
-      width: 60px;
+    .hitTable tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 72px 104px 72px;
+      column-gap: var(--space-3);
+      align-items: center;
+      padding: var(--space-2) 0;
+      border-bottom: var(--border-thin) solid var(--color-rule);
+    }
+    .hitTable thead tr {
+      border-bottom-color: var(--color-ink);
+    }
+    .hitTable th,
+    .hitTable td {
+      padding: 0;
+      border: 0;
+    }
+    .hitTable th:nth-child(n) {
+      width: auto;
+    }
+    /* Label/Phone */
+    .hitTable th {
+      font-size: 15px;
+    }
+    .hitTable td:nth-child(1) {
+      grid-area: 1 / 1;
+    }
+    .hitTable td:nth-child(2) {
+      grid-area: 1 / 2;
+    }
+    .hitTable td:nth-child(3) {
+      grid-area: 1 / 3;
+    }
+    .hitTable td:nth-child(4) {
+      grid-area: 1 / 4;
+    }
+    .hitTable td.hitCell {
+      display: grid;
+      grid-area: 1 / 1 / 3 / -1;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      pointer-events: none;
+    }
+    .hitTable td.blank {
+      grid-column: 1 / -1;
+      padding: var(--space-5) 0;
+    }
+    .hitCell .hitField {
+      display: contents;
+    }
+    .hitField.hitField > input {
+      grid-area: 1 / 2;
+      width: 64px;
+      pointer-events: auto;
+    }
+    .noHits.noHits {
+      grid-area: 2 / 1 / 3 / -1;
+      justify-self: start;
+      margin-top: var(--space-1);
+    }
+    .save {
+      flex-direction: column;
     }
 
     .gridHead {

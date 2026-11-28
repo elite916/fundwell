@@ -75,7 +75,13 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
 
   // No grid, scores or winners
   if (contest.kind === 'hit_a_thon') {
-    return <HitAThonOverview contest={contest} statusLabel={STATUS_LABELS[contest.status]} />;
+    return (
+      <HitAThonOverview
+        contest={contest}
+        statusLabel={STATUS_LABELS[contest.status]}
+        statusTone={STATUS_TONES[contest.status] ?? 'quiet'}
+      />
+    );
   }
 
   // Fetch squares, scores, and payment options count

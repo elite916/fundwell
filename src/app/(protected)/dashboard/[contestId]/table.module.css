@@ -152,6 +152,14 @@
   .panel > .filters {
     margin: 0;
   }
+  /* Pledges: "Email Unpaid Supporters" at its own width */
+  .panel > .remind,
+  .panel > .empty {
+    margin: 0;
+  }
+  .panel > .remind {
+    align-self: flex-start;
+  }
 
   /* Figma's Participant row: Label headings over an ink rule, Body S cells */
   .people th {
@@ -273,24 +281,150 @@
     text-align: right;
   }
 
-  /* Pledges (a hit-a-thon's participants). Rows don't open anything. */
+  /* A hit-a-thon's players: Figma's Member row, a bold name and a muted number, Body M */
+  .players td {
+    height: 57px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .players .member {
+    font-weight: 700;
+  }
+  .players .member .soft {
+    font-weight: 400;
+  }
+  .players .url {
+    color: var(--color-ink-muted);
+    font-size: 14px;
+    line-height: 1.43;
+  }
+
+  /*
+    Pledges (a hit-a-thon's participants): Figma's Pledge row, the same Label headings, Body S cells and paper hover as
+    Participants. Rows don't open anything.
+  */
   .empty {
     margin-top: 14px;
     color: var(--studio-soft);
   }
+  .pledges th {
+    padding: var(--space-1) var(--space-1) var(--space-1) 0;
+    border-bottom-color: var(--color-ink);
+    color: var(--color-ink-muted);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.23;
+    text-transform: uppercase;
+  }
+  /* Figma's widths from 1440px wide (below). Narrower, the columns fit their content and the buttons can wrap. */
+  .pledges th:nth-child(1) {
+    width: 48px;
+  }
+  .pledges td {
+    height: 53px;
+    padding: var(--space-1) var(--space-1) var(--space-1) 0;
+    border-bottom-color: var(--color-rule);
+    font-size: 14px;
+    line-height: 1.43;
+  }
   .pledges tbody tr {
     cursor: default;
+  }
+  .pledges tbody tr:hover,
+  .pledges tbody tr[data-on] {
+    background: var(--color-bg);
+  }
+  .pledges .check {
+    margin-left: 0;
+  }
+  .pledges .name {
+    font-weight: 400;
+  }
+  .pledges .email,
+  .pledges .date,
+  .pledges .lead {
+    color: var(--color-ink-muted);
+  }
+  .pledges .email a {
+    text-decoration: none;
+  }
+  .pledges .email a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
   .pledges .player,
   .pledges .pledge,
   .pledges .owed,
+  .pledges .status,
   .pledges .date {
     white-space: nowrap;
+  }
+  /* Figma's row ends 16px in */
+  .pledges .acts {
+    padding-right: var(--space-4);
   }
   .pledges .acts > div {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 16px;
+    gap: 0 var(--space-6);
+  }
+  @media (min-width: 1440px) {
+    .pledges th:nth-child(2) {
+      width: 76px;
+    }
+    .pledges th:nth-child(3) {
+      width: 120px;
+    }
+    /* The email takes what's left */
+    .pledges th:nth-child(6) {
+      width: 60px;
+    }
+    .pledges th:nth-child(7) {
+      width: 124px;
+    }
+    .pledges th:nth-child(8) {
+      width: 96px;
+    }
+    .pledges .acts > div {
+      flex-wrap: nowrap;
+    }
+  }
+  /* Mark as Paid, Mark as Pending and Cancel Pledge are Ghost buttons */
+  .pledges .acts button {
+    color: var(--color-ink);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .pledges .acts button:hover {
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-decoration-thickness: var(--border-thick);
+    text-underline-offset: 6px;
+  }
+  /* Figma's Status tag: Pledged and Nothing owed on paper, Pending in the accent, Paid in the brand green */
+  .stag.stag {
+    padding: var(--space-half) var(--space-2);
+    border-color: transparent;
+  }
+  .pledgedTag.pledgedTag,
+  .nothingTag.nothingTag {
+    border-color: var(--color-rule);
+    background: var(--color-bg);
+  }
+  .nothingTag.nothingTag {
+    color: var(--color-ink-muted);
+  }
+  .pendingTag.pendingTag {
+    background: var(--color-team-accent);
+    color: var(--color-on-team-accent);
+  }
+  .paidTag.paidTag {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
   }
 
   @media (max-width: 1239px) {
@@ -352,7 +486,7 @@
       display: block;
     }
     .pledges thead {
-      border-bottom: 1px solid var(--dash-rule);
+      border-bottom: var(--border-thin) solid var(--color-ink);
     }
     .pledges thead tr {
       display: flex;
@@ -384,7 +518,7 @@
     .pledges .pledge,
     .pledges .owed,
     .pledges .date {
-      color: var(--studio-soft);
+      color: var(--color-ink-muted);
       font-size: 13px;
     }
     .pledges .email a {
@@ -575,39 +709,79 @@
       display: none;
     }
 
+    /*
+      Figma's Pledge row, Phone: the player in Display XS over the supporter, the tag on the right, then the email,
+      pledge, owed and date, and the buttons, 48px in
+    */
     .pledges tbody tr {
-      grid-template-columns: 40px minmax(0, 1fr) auto;
-      column-gap: 10px;
+      grid-template-columns: 44px auto minmax(0, 1fr) auto;
+      column-gap: 0;
+      padding: var(--space-3) 0;
+    }
+    .pledges tbody td,
+    .pledges .player,
+    .pledges .pledge,
+    .pledges .owed,
+    .pledges .date {
+      color: var(--color-ink);
+      font-size: 16px;
+      line-height: 1.5;
     }
     .pledges .tick {
       grid-area: 1 / 1 / 3;
     }
+    /* Display XS */
+    .pledges .player {
+      grid-area: 1 / 2 / 2 / 4;
+      align-self: end;
+      padding-left: var(--space-2);
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-variation-settings: 'opsz' 72;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
     .pledges .name {
-      grid-area: 1 / 2;
+      grid-area: 2 / 2 / 3 / 4;
+      align-self: start;
+      padding-left: var(--space-2);
     }
     .pledges .status {
-      grid-area: 1 / 3;
-      justify-self: end;
+      grid-area: 1 / 4 / 3;
+      margin-left: var(--space-2);
     }
-    .pledges .player {
-      grid-area: 2 / 2;
-    }
-    .pledges .owed {
-      grid-area: 2 / 3;
-      justify-self: end;
-    }
-    .pledges .pledge {
-      grid-area: 3 / 2 / 4 / 4;
+    .pledges .email,
+    .pledges .pledge,
+    .pledges .owed,
+    .pledges .acts {
+      padding-left: var(--space-1);
     }
     .pledges .email {
-      grid-area: 4 / 2 / 5 / 4;
-      font-size: 14px;
+      grid-area: 3 / 2 / 4 / -1;
+      margin-top: var(--space-2);
+      color: var(--color-ink-muted);
     }
-    .pledges .acts {
-      grid-area: 5 / 2 / 6 / 4;
+    .pledges .email a {
+      min-height: 0;
+    }
+    .pledges .pledge {
+      grid-area: 4 / 2 / 5 / -1;
+      margin-top: var(--space-1);
+    }
+    .pledges .owed {
+      grid-area: 5 / 2;
+      margin-top: var(--space-1);
     }
     .pledges .date {
-      display: none;
+      grid-area: 5 / 3 / 6 / -1;
+      margin: var(--space-1) 0 0 var(--space-4);
+      white-space: normal;
+    }
+    .pledges .acts {
+      grid-area: 6 / 2 / 7 / -1;
+      margin-top: var(--space-1);
     }
 
     .team,
@@ -637,6 +811,33 @@
     .team tbody tr {
       padding: 14px 0;
       border-bottom: 1px solid var(--dash-hair);
+    }
+    /* The Member row, Phone: everything on the left, Copy Link on the right */
+    .players tbody tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: var(--space-2);
+      align-items: center;
+      padding: var(--space-2) 0;
+    }
+    .players td {
+      grid-column: 1;
+    }
+    .players td:last-child {
+      grid-area: 1 / 2 / span 4;
+    }
+    .players td:nth-child(3) {
+      margin: 0;
+    }
+    .players .url {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .players tbody tr.blank {
+      display: block;
+    }
+    .players td:last-child button {
+      padding: 0 var(--space-4);
     }
   }
   @media (max-width: 379px) {
