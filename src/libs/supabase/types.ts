@@ -437,6 +437,71 @@ export type Database = {
           },
         ];
       };
+      pledge_payments: {
+        Row: {
+          amount_paid: number | null;
+          card_paid_at: string | null;
+          checkout_expires_at: string | null;
+          checkout_session_id: string | null;
+          contest_id: string;
+          created_at: string;
+          pay_token: string;
+          payment_intent_id: string | null;
+          pledge_id: string;
+          stripe_account_id: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_paid?: number | null;
+          card_paid_at?: string | null;
+          checkout_expires_at?: string | null;
+          checkout_session_id?: string | null;
+          contest_id: string;
+          created_at?: string;
+          pay_token?: string;
+          payment_intent_id?: string | null;
+          pledge_id: string;
+          stripe_account_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          amount_paid?: number | null;
+          card_paid_at?: string | null;
+          checkout_expires_at?: string | null;
+          checkout_session_id?: string | null;
+          contest_id?: string;
+          created_at?: string;
+          pay_token?: string;
+          payment_intent_id?: string | null;
+          pledge_id?: string;
+          stripe_account_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pledge_payments_contest_id_fkey';
+            columns: ['contest_id'];
+            isOneToOne: false;
+            referencedRelation: 'contests';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pledge_payments_contest_id_pledge_id_fkey';
+            columns: ['contest_id', 'pledge_id'];
+            isOneToOne: false;
+            referencedRelation: 'pledges';
+            referencedColumns: ['contest_id', 'id'];
+          },
+          {
+            foreignKeyName: 'pledge_payments_pledge_id_fkey';
+            columns: ['pledge_id'];
+            isOneToOne: true;
+            referencedRelation: 'pledges';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       pledges: {
         Row: {
           amount: number;
@@ -733,6 +798,62 @@ export type Database = {
           },
         ];
       };
+      stripe_accounts: {
+        Row: {
+          card_payments_status: string | null;
+          created_at: string;
+          disconnected_at: string | null;
+          livemode: boolean;
+          stripe_account_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          card_payments_status?: string | null;
+          created_at?: string;
+          disconnected_at?: string | null;
+          livemode: boolean;
+          stripe_account_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          card_payments_status?: string | null;
+          created_at?: string;
+          disconnected_at?: string | null;
+          livemode?: boolean;
+          stripe_account_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      stripe_events: {
+        Row: {
+          id: string;
+          livemode: boolean;
+          processed_at: string;
+          stripe_account_id: string | null;
+          type: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          id: string;
+          livemode: boolean;
+          processed_at?: string;
+          stripe_account_id?: string | null;
+          type: string;
+        };
+        Update: {
+          id?: string;
+          livemode?: boolean;
+          processed_at?: string;
+          stripe_account_id?: string | null;
+          type?: string;
+        };
+        Relationships: [];
+      };
       subscriptions: {
         Row: {
           cancel_at: string | null;
@@ -911,7 +1032,7 @@ export type Database = {
         }[];
       };
       lock_hit_a_thon: {
-        Args: { p_contest_id: string };
+        Args: { p_card_payments?: boolean; p_contest_id: string };
         Returns: {
           flat_pending: number;
           hits_locked_at: string;
