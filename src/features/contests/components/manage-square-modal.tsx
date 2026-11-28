@@ -169,7 +169,7 @@ export function ManageSquareModal({
 
         {square.payment_status !== 'available' && (
           <DashButton
-            look='quiet'
+            look='danger'
             onClick={() => handleUpdateStatus('available')}
             disabled={isPending || releaseLocked}
             aria-describedby={releaseLocked ? 'release-locked' : undefined}

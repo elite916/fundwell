@@ -16,6 +16,7 @@ export const PAYMENT_LABELS: Record<PaymentStatus, string> = {
   paid: 'Paid',
 };
 export const WINNER_LABEL = 'Winner';
+export const PAST_WINNER_LABEL = 'Past winner';
 
 export type GridScore = Pick<Score, 'quarter' | 'winning_square_id'>;
 

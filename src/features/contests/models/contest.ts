@@ -198,6 +198,6 @@ export const defaultContestValues: CreateContestFormValues = {
   heroImageUrl: null,
   heroImagePosition: 'center',
   orgImageUrl: null,
-  primaryColor: '#F97316',
-  secondaryColor: '#D97706',
+  primaryColor: '#17603F',
+  secondaryColor: '#F2B233',
 };

@@ -1,10 +1,11 @@
 'use client';
 
 import { useId, useState } from 'react';
+import Link from 'next/link';
 
 import { Button } from '@/components/studio/button';
-import { TextLink } from '@/components/studio/text-link';
-import { Display, Mid, Soft } from '@/components/studio/type';
+import { Segmented } from '@/components/studio/setup/fields';
+import { Mid, textStyle } from '@/components/studio/type';
 import { cn } from '@/utils/cn';
 
 import { productMetadataSchema } from '../models/product-metadata';
@@ -18,6 +19,7 @@ const INTERVALS: { value: BillingInterval; label: string }[] = [
   { value: 'year', label: 'Yearly' },
 ];
 
+/** Figma's Pricing card. Free's button is Secondary, Pro's is Primary. */
 export function PricingCard({
   product,
   createCheckoutAction,
@@ -46,6 +48,8 @@ export function PricingCard({
       : (product.prices[0] ?? null);
   const metadata = productMetadataSchema.parse(product.metadata);
   const button = planButton({ variant: metadata.priceCardVariant, price, isLoggedIn, hasPro, isOverdue });
+  const isPro = metadata.priceCardVariant === 'pro';
+  const look = isPro ? 'button' : 'secondary';
 
   const monthPrice = product.prices.find((price) => price.interval === 'month')?.unit_amount;
   const yearPrice = product.prices.find((price) => price.interval === 'year')?.unit_amount;
@@ -55,56 +59,41 @@ export function PricingCard({
   const dollars = amount == null ? 'Custom' : `$${amount / 100}`;
 
   return (
-    <div className={css.plan}>
+    <div className={cn(css.plan, isPro && css.pro)}>
       <Mid as={heading}>{product.name}</Mid>
-      {isFree ? (
-        <Display className={css.free}>{dollars}</Display>
-      ) : (
-        <Mid aria-live='polite'>
-          {dollars}
-          {amount != null && (isYearly ? ' a year' : ' a month')}
-        </Mid>
-      )}
+      <p className={css.price} aria-live={isFree ? undefined : 'polite'}>
+        <span className={textStyle.displayL}>{dollars}</span>
+        {amount != null && !isFree && (isYearly ? ' a year' : ' a month')}
+      </p>
       {hasIntervals && product.prices.length > 1 && (
-        <fieldset className={css.intervals}>
-          <legend className={css.legend}>Billing</legend>
-          {INTERVALS.map(({ value, label }) => (
-            <label key={value} className={css.interval}>
-              <input
-                type='radio'
-                name={groupName}
-                value={value}
-                checked={interval === value}
-                onChange={() => setInterval(value)}
-              />
-              <span>{label}</span>
-            </label>
-          ))}
-        </fieldset>
+        <div className={css.billing}>
+          <Segmented legend='Billing' name={groupName} value={interval} onChange={setInterval} options={INTERVALS} />
+        </div>
       )}
-      <Soft className={css.includes}>
-        {metadata.activeContests === '1' ? 'One active fundraiser at a time' : 'Unlimited active fundraisers'}
-        <br />
-        {metadata.priceCardVariant === 'pro'
-          ? 'Everything in Free'
-          : 'Your logo and colors, payment tracking, and emails to winners'}
-      </Soft>
-      <div className={cn(css.action, !button && css.none)}>
-        {button?.kind === 'checkout' && (
-          <Button onClick={() => createCheckoutAction({ priceId: button.priceId })}>{button.label}</Button>
-        )}
-        {button?.kind === 'link' && (
-          <TextLink look='button' href={button.href}>
-            {button.label}
-          </TextLink>
-        )}
-        {button?.kind === 'portal' && (
-          <Button asChild>
-            <a href={button.href}>{button.label}</a>
-          </Button>
-        )}
-        {button?.kind === 'current' && <Button disabled>{button.label}</Button>}
+      <div className={css.includes}>
+        <p>{metadata.activeContests === '1' ? 'One active fundraiser at a time' : 'Unlimited active fundraisers'}</p>
+        <p>{isPro ? 'Everything in Free' : 'Your logo and colors, payment tracking, and emails to winners'}</p>
       </div>
+      {button && (
+        <div>
+          {button.kind === 'checkout' && (
+            <Button look={look} onClick={() => createCheckoutAction({ priceId: button.priceId })}>
+              {button.label}
+            </Button>
+          )}
+          {button.kind === 'link' && (
+            <Button asChild look={look}>
+              <Link href={button.href}>{button.label}</Link>
+            </Button>
+          )}
+          {button.kind === 'portal' && (
+            <Button asChild look={look}>
+              <a href={button.href}>{button.label}</a>
+            </Button>
+          )}
+          {button.kind === 'current' && <Button disabled>{button.label}</Button>}
+        </div>
+      )}
     </div>
   );
 }

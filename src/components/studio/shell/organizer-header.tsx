@@ -9,8 +9,8 @@ import css from './shell.module.css';
 
 interface OrganizerHeaderProps {
   contestName: string;
-  /** Second line, hidden on phones: "Hosted by …" */
-  host?: ReactNode;
+  /** Second line: the organizer's own description. */
+  description?: ReactNode;
   logoUrl?: string | null;
   /** On the right, for example a Share button. */
   action?: ReactNode;
@@ -26,19 +26,15 @@ export function initialsOf(name: string): string {
     .join('');
 }
 
-/** A contest page's header: the organizer's logo, or the contest's initials on their color. */
-export function OrganizerHeader({ contestName, host, logoUrl, action }: OrganizerHeaderProps) {
+/** Figma's Contest header: a bar in the team color, with the organizer's logo or the contest's initials on the accent. */
+export function OrganizerHeader({ contestName, description, logoUrl, action }: OrganizerHeaderProps) {
   return (
-    <header className={css.header}>
-      <div className={cn(css.organizer, underSheet)}>
-        <span aria-hidden='true' className={css.avatar}>
-          {logoUrl ? <Image src={logoUrl} alt='' width={88} height={88} /> : initialsOf(contestName)}
-        </span>
-        <div>
-          <h1 className={css.contest}>{contestName}</h1>
-          {host && <p className={css.host}>{host}</p>}
-        </div>
-      </div>
+    <header className={css.organizerBar}>
+      <span aria-hidden='true' className={cn(css.avatar, underSheet)}>
+        {logoUrl ? <Image src={logoUrl} alt='' width={112} height={112} /> : initialsOf(contestName)}
+      </span>
+      <h1 className={cn(css.contest, underSheet)}>{contestName}</h1>
+      {description && <p className={cn(css.description, underSheet)}>{description}</p>}
       {action && <div className={css.action}>{action}</div>}
     </header>
   );

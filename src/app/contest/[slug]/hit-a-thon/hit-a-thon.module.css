@@ -1,170 +1,367 @@
 @layer theme, base, components, utilities;
 
+/* Figma's Hit-a-thon pages: the event (totals, then the players) and a player's page (card, details, and the pledge
+   form or share sheet beside them). Same edges as the squares page. */
 @layer components {
-  /* First screen: the total or the player, and the players. Same grid as the squares page. */
-  .first {
-    display: grid;
-    grid-template: auto 1fr / minmax(0, 1fr) auto;
-    column-gap: 40px;
-    align-items: start;
-    min-height: 100svh;
-    padding: 15vh var(--studio-edge) 9vh;
-  }
-  .lead {
-    grid-area: 1 / 1;
-    container-type: inline-size;
-  }
-  /* Shrinks for long names: a character is about half an em wide */
-  .headline {
-    font-size: min(var(--studio-big), calc(100cqw / (var(--fit) * 0.52)));
-    overflow-wrap: anywhere;
-  }
-  .act {
-    grid-area: 2 / 1;
-    align-self: end;
-    max-width: 420px;
-    margin-top: 40px;
-    overflow-wrap: anywhere;
-    text-wrap: pretty;
-  }
-  .side {
-    grid-area: 1 / 2 / 3 / 3;
-    align-self: start;
-    width: var(--studio-board);
-    min-width: 0;
-    overflow-wrap: anywhere;
+  .main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-10);
+    padding: var(--space-12) var(--space-16) var(--space-16);
   }
 
-  /* The goal */
+  /* The total: Pledge totals, Goal progress and the Fundraiser status */
+  .summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    width: 640px;
+    max-width: 100%;
+    container-type: inline-size;
+  }
+  /* Figma's Pledge totals: two cells in a 2px ink frame. Display M. */
+  .totals {
+    display: inline-flex;
+    max-width: 100%;
+    overflow: hidden;
+    border: var(--border-thick) solid var(--color-ink);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    line-height: 0.96;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+  .pledged,
+  .supporters {
+    padding: var(--space-3) var(--space-5);
+    white-space: nowrap;
+  }
+  /* Too narrow for both on one line (phones, and a player's page on small laptops): one under the other, Display S */
+  @container (max-width: 599px) {
+    .totals {
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      font-size: 32px;
+      line-height: 1;
+      white-space: normal;
+    }
+    .pledged,
+    .supporters {
+      padding-block: var(--space-2);
+      white-space: normal;
+    }
+  }
+  .pledged {
+    background: var(--color-team);
+    color: var(--color-on-team);
+  }
+  /* Figma's Goal progress: a 12px track in rule, filled in the team color */
   .goal {
-    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
   }
   .goal p {
-    margin-top: 10px;
-    color: var(--studio-soft);
     font-variant-numeric: tabular-nums;
   }
   .bar {
-    height: 10px;
+    height: 12px;
     overflow: hidden;
-    border-radius: var(--studio-radius-pill);
-    background: rgb(var(--studio-shade) / 0.16);
+    border-radius: var(--radius-full);
+    background: var(--color-rule);
   }
   .bar span {
     display: block;
     height: 100%;
-    border-radius: inherit;
-    background: var(--org);
+    background: var(--color-team);
   }
-  .pledge {
-    margin-top: 32px;
-  }
+  /* Figma's Fundraiser status. Body L. */
   .status {
-    margin-top: 24px;
+    align-self: stretch;
+    padding: var(--space-3) var(--space-4);
+    border: var(--border-thick) solid var(--color-ink);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    font-size: 20px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
   }
 
-  /* Players, by number */
+  /* The players: Figma's Hit player rows, three across */
   .players {
-    margin-top: 22px;
-    border-top: 1px solid var(--studio-line);
-  }
-  .player {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 4px 24px;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-self: stretch;
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
     width: 100%;
-    min-height: 60px;
-    padding: 16px 0;
-    border: 0;
-    border-bottom: 1px solid var(--studio-line);
-    background: none;
-    color: inherit;
+    height: 100%;
+    /* A row without a number is as tall as one with */
+    min-height: calc(48px + 2 * var(--space-3) + 2 * var(--border-thin));
+    padding: var(--space-3) var(--space-4);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink);
     font: inherit;
     text-align: left;
   }
-  button.player {
+  button.row {
     cursor: pointer;
   }
-  button.player:hover .name {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 6px;
+  /* Display S on the team color */
+  .number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: var(--color-team);
+    color: var(--color-on-team);
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    line-height: 1;
   }
-  .name {
+  .text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     min-width: 0;
-    font-size: var(--studio-mid);
-    font-weight: 500;
+    overflow-wrap: anywhere;
   }
   .amount {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     font-variant-numeric: tabular-nums;
   }
-
-  /* The organizer */
-  .more {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12vh 40px;
-    align-items: start;
-    padding: 18vh var(--studio-edge) 12vh;
+  .arrow {
+    flex: none;
   }
-  .organizer {
+
+  /* A player's page: the card and the details, then the pledge form or share sheet in a 400px column */
+  .main:has(.player) {
+    flex-direction: row;
+    gap: var(--space-16);
+  }
+  .player {
+    display: flex;
+    flex: 1;
+    gap: var(--space-10);
+    align-items: flex-start;
     min-width: 0;
   }
-
-  /* Pledge sheet */
-  .form {
-    /* Segmented's track, which the dashboard's theme sets */
-    --dash-quiet: var(--studio-field);
+  /* Figma's Player card: the number in Display L, the name in Display S */
+  .card {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 200px;
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-md);
+    background: var(--color-team);
+    color: var(--color-on-team);
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 72;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
   }
-  .most {
-    margin: -4px 0 18px;
+  .cardNumber {
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 0.92;
+  }
+  .cardName {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    min-width: 0;
+    container-type: inline-size;
+  }
+  .lead {
+    --studio-big: 120px;
+    align-self: stretch;
+    container-type: inline-size;
+  }
+  /* Display XL. Shrinks for long names: a character is about half an em wide. */
+  .headline {
+    font-size: min(var(--studio-big), calc(100cqw / (var(--fit) * 0.52)));
+    overflow-wrap: anywhere;
+  }
+  .details .goal {
+    width: 480px;
+    max-width: 100%;
+  }
+  .details .status {
+    align-self: flex-start;
+    width: 480px;
+    max-width: 100%;
+  }
+  .pledge {
+    width: 240px;
+  }
+  .right {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 400px;
+  }
+  .right:not(:has(section)) {
+    display: none;
+  }
+  .slot:empty {
+    display: none;
+  }
+
+  /* Figma's Pledge form */
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  /* Figma's Pledge type toggle: the chosen one in the team color */
+  .kind fieldset {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-1);
+    border: var(--border-thin) solid var(--color-rule-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .kind fieldset span {
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .kind fieldset input:checked + span {
+    background: var(--color-team);
+    color: var(--color-on-team);
+    box-shadow: none;
+  }
+  /* The cap's hint, a field's gap under it, as in Figma */
+  .form p[id$='-hint'] {
+    margin-top: var(--space-4);
+  }
+  /* "Most you'd pay", in a paper box. Button text. */
+  .most p {
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-weight: 700;
+    line-height: 1.25;
   }
   .alert {
+    margin-bottom: var(--space-4);
     font-weight: 600;
   }
   .alert:empty {
     display: none;
   }
-  .submit {
-    padding-top: 24px;
+  .wide {
+    width: 100%;
   }
   .note {
-    margin-top: 14px;
+    margin-top: var(--space-4);
+  }
+  /* Made: the payment options, then "Not now?", then Done */
+  .payments {
+    margin-bottom: var(--space-4);
   }
   .later {
-    margin-top: 8px;
+    margin-bottom: var(--space-4);
+  }
+  .pledgeCard .payments,
+  .pledgeCard .later {
+    margin-bottom: 0;
   }
 
   @media (min-width: 1000px) and (max-width: 1199px) {
-    .first {
-      --studio-big: min(6.3vw, 15vh);
-      column-gap: 24px;
+    .main {
+      padding-inline: var(--space-10);
+    }
+    .main:has(.player) {
+      gap: var(--space-10);
+    }
+    .player {
+      gap: var(--space-6);
+    }
+    .card {
+      width: 160px;
+    }
+    .right {
+      width: 340px;
     }
   }
   @media (max-width: 999px) {
-    .first {
-      display: flex;
+    .main,
+    .main:has(.player) {
       flex-direction: column;
       align-items: stretch;
-      min-height: 0;
-      padding: 36px var(--studio-edge) 32px;
+      gap: var(--space-8);
+      padding: var(--space-6) var(--space-8) var(--space-12);
     }
-    .act {
-      align-self: stretch;
-      max-width: none;
-      margin-top: 18px;
+  }
+  /* Phones: Figma's Phone 390 */
+  @media (max-width: 699px) {
+    .main,
+    .main:has(.player) {
+      padding-inline: var(--space-4);
     }
-    .side {
-      align-self: stretch;
-      width: auto;
-      margin: 26px 0 0;
+    .summary {
+      width: 100%;
     }
-    .more {
+    .players {
+      gap: var(--space-3);
+    }
+    .list {
       grid-template-columns: minmax(0, 1fr);
-      padding: 48px var(--studio-edge) 72px;
+      gap: var(--space-3);
+    }
+    .player {
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+    .lead {
+      --studio-big: 80px;
+    }
+    /* Display L */
+    .lead .headline {
+      line-height: 0.92;
+    }
+    .details {
+      align-self: stretch;
+    }
+    .details .goal,
+    .details .status,
+    .pledge {
+      width: 100%;
     }
   }
 }

@@ -15,7 +15,7 @@ const FAQS = [
   {
     question: 'How do I create a contest?',
     answer:
-      'Sign up for an account, then click "Create Contest" from your dashboard. Give your contest a name, choose your sport, set the price per square, and add your payment options. Your contest will be ready to share in minutes.',
+      'Sign up for an account, then click “Create Contest” from your dashboard. Give your contest a name, choose your sport, set the price per square, and add your payment options. Your contest will be ready to share in minutes.',
   },
   {
     question: 'How do participants claim squares?',
@@ -30,7 +30,7 @@ const FAQS = [
   {
     question: 'How are winners determined?',
     answer:
-      "You'll assign numbers to each row and column. During the game, enter the scores for each quarter. Fundwell automatically highlights the winning squares based on the last digit of each team's score.",
+      'You’ll assign numbers to each row and column. During the game, enter the scores for each quarter. Fundwell automatically highlights the winning squares based on the last digit of each team’s score.',
   },
   {
     question: 'Can I customize my contest?',
@@ -38,7 +38,7 @@ const FAQS = [
       'Yes! You can add your team logos, customize colors, set your own payout structure, and configure how many squares each person can claim. Make it yours.',
   },
   {
-    question: "What's included in the free plan?",
+    question: 'What’s included in the free plan?',
     answer:
       'The free plan lets you run one contest at a time with all core features included. Upgrade to run multiple contests simultaneously.',
   },
@@ -56,11 +56,11 @@ export default function SupportPage(): React.ReactElement {
         </TextSection>
       ))}
       <TextSection title='Still need help?'>
-        <Soft>Send us a message and we&apos;ll get back to you as soon as possible.</Soft>
+        <Soft>Send us a message and we’ll get back to you as soon as possible.</Soft>
         <p>
           Email us at{' '}
           <Button asChild look='link'>
-            <a href='mailto:support@battlebornusa.com'>support@battlebornusa.com</a>
+            <a href='mailto:hello@elite916.com'>hello@elite916.com</a>
           </Button>
         </p>
       </TextSection>

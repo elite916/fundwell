@@ -1,31 +1,104 @@
 @layer theme, base, components, utilities;
 
+/* Figma's text styles. Display is Big Shoulders at its display optical size, in capitals; the rest is Figtree. */
 @layer components {
-  .display {
-    margin: 0 0 0 -0.05em;
-    font-size: var(--studio-big);
-    font-weight: 500;
-    letter-spacing: -0.055em;
-    line-height: var(--studio-big-leading);
-  }
+  .displayXl,
+  .displayL,
+  .displayM,
+  .displayS,
+  .displayXs,
+  .display,
   .mid {
-    font-size: var(--studio-mid);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.25;
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 72;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
-  .soft {
-    color: var(--studio-soft);
+  .displayXl {
+    font-size: 120px;
+    font-weight: 900;
+    line-height: 0.9;
   }
-  .small {
-    font-size: var(--studio-small);
+  .displayL {
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 0.92;
+  }
+  .displayM {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 0.96;
+  }
+  .displayS {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .displayXs {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
   }
 
-  /* Host Grotesk's 1 has a wide foot that reads badly at display size. Same glyph, foot trimmed off. */
-  .one {
-    display: inline-block;
-    margin: 0 -0.11em 0 -0.05em;
-    text-indent: 0;
-    clip-path: polygon(0 0, 0.397em 0, 0.397em 100%, 0.2885em 100%, 0.2885em 62%, 0 62%);
+  .bodyL {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .bodyM {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .bodyS {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.43;
+  }
+  /* Label on wide screens, Label/Phone on phones */
+  .label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.23;
+    text-transform: uppercase;
+  }
+  .button {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  /* The page's headline: Display XL, sized to the screen */
+  .display {
+    margin: 0;
+    font-size: var(--studio-big);
+    font-weight: 900;
+    line-height: 0.9;
+  }
+  /* Display S */
+  .mid {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .soft {
+    color: var(--color-ink-muted);
+  }
+  /* Body S, and Body M on phones */
+  .small {
+    font-size: var(--studio-small);
+    line-height: 1.43;
+  }
+
+  @media (max-width: 699px) {
+    .bodyS {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .label {
+      font-size: 15px;
+    }
   }
 }

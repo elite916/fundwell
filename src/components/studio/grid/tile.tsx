@@ -29,7 +29,7 @@ export function tileClass({ payment, won, found, chosen }: TileState, className?
   );
 }
 
-/** For tiles that can be pressed. `claimable` ones turn lime under a mouse. */
+/** For tiles that can be pressed. `claimable` ones show the Mine ring under a mouse. */
 export function pressableClass(claimable: boolean): string {
   return cn(css.pressable, claimable && css.claimable);
 }
@@ -48,7 +48,11 @@ export function Tile({ children, className, ...state }: TileProps) {
   );
 }
 
-/** A tile the size of a line of text, for legends and sheet headings. */
-export function TileChip(state: TileState) {
-  return <span aria-hidden='true' className={tileClass(state, css.chip)} />;
+/** A tile the size of a line of text, for legends and sheet headings. Home's legend puts example initials in it. */
+export function TileChip({ children, ...state }: TileState & { children?: ReactNode }) {
+  return (
+    <span aria-hidden='true' className={tileClass(state, css.chip)}>
+      {children}
+    </span>
+  );
 }

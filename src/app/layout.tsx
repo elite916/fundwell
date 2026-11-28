@@ -1,6 +1,6 @@
 import { PropsWithChildren, Suspense } from 'react';
 import type { Metadata } from 'next';
-import { Montserrat, Montserrat_Alternates } from 'next/font/google';
+import { Big_Shoulders, Figtree } from 'next/font/google';
 
 import { RouteProgress } from '@/components/shared';
 import { Toaster } from '@/components/ui/toaster';
@@ -12,18 +12,20 @@ import '@/styles/globals.css';
 
 export const dynamic = 'force-dynamic';
 
-// Not preloaded: only pages outside the studio look use them
-const montserrat = Montserrat({
-  variable: '--font-montserrat',
+// Figtree for text, Big Shoulders for display type. Variable fonts, so every weight comes in one file. Latin is
+// preloaded; latin-ext (names like "Łukasz Dvořák") downloads only when a page uses one of its characters.
+const figtree = Figtree({
+  variable: '--font-figtree',
   subsets: ['latin'],
-  preload: false,
 });
 
-const montserratAlternates = Montserrat_Alternates({
-  variable: '--font-montserrat-alternates',
-  weight: ['500', '600', '700'],
+// Figma's "Big Shoulders Display" is this family at its largest optical size. `opsz` lets the CSS pick that size.
+// Next has no fallback metrics for it, so the CSS names its own fallbacks.
+const bigShoulders = Big_Shoulders({
+  variable: '--font-big-shoulders',
   subsets: ['latin'],
-  preload: false,
+  axes: ['opsz'],
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang='en' className='h-full'>
-      <body className={cn('h-full font-sans antialiased', montserrat.variable, montserratAlternates.variable)}>
+      <body className={cn('h-full font-sans antialiased', figtree.variable, bigShoulders.variable)}>
         <Suspense fallback={null}>
           <RouteProgress />
         </Suspense>

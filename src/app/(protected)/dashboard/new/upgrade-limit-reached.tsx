@@ -23,7 +23,7 @@ export function UpgradeLimitReached({ currentCount, proPrice }: UpgradeLimitReac
       <BackLink href='/dashboard'>Back to Dashboard</BackLink>
       <PageHead title='Upgrade Required' sub={["You've reached your contest limit"]} />
 
-      <Panel className={css.narrow}>
+      <Panel className={`${css.narrow} ${css.limit}`}>
         <h2>Free Plan Limit Reached</h2>
         <p className={css.limitText}>
           You currently have {currentCount} active contest{currentCount !== 1 ? 's' : ''}. Free accounts can have 1
@@ -37,7 +37,7 @@ export function UpgradeLimitReached({ currentCount, proPrice }: UpgradeLimitReac
         </ul>
 
         {/* Buttons */}
-        <div className={css.row}>
+        <div className={css.limitButtons}>
           <DashButton onClick={() => setShowModal(true)}>Upgrade to Pro</DashButton>
           <DashButton asChild look='quiet'>
             <Link href='/dashboard'>View My Contests</Link>

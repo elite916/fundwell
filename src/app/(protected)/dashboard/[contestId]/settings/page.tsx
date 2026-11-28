@@ -84,7 +84,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   ];
 
   return (
-    <DashPage className={css.scale}>
+    <DashPage className={`${css.scale} ${css.settingsPage}`}>
       <BackLink href={`/dashboard/${contestId}`}>Back to Contest</BackLink>
       <PageHead title='Contest Settings' sub={[contest.name]} />
 

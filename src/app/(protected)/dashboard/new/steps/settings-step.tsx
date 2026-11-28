@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useEffect, useState } from 'react';
+import { Check } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { PinField, Segmented, SwitchRow, UnitField } from '@/components/studio/setup/fields';
@@ -159,19 +160,21 @@ export function SettingsStep() {
           </div>
 
           {/* Prize Type Selection */}
-          <p className={css.label}>Prize Type</p>
-          <Segmented
-            legend='Prize Type'
-            name='prize-type'
-            value={prizeType ?? 'percentage'}
-            onChange={(value) => setValue('prizeType', value)}
-            options={[
-              { value: 'percentage', label: 'Cash Payouts' },
-              { value: 'custom', label: 'Custom Prizes' },
-            ]}
-          />
-          <input type='hidden' {...register('prizeType')} />
-          {errors.prizeType && <p className={css.error}>{errors.prizeType.message}</p>}
+          <div className={css.labelled}>
+            <p className={css.label}>Prize Type</p>
+            <Segmented
+              legend='Prize Type'
+              name='prize-type'
+              value={prizeType ?? 'percentage'}
+              onChange={(value) => setValue('prizeType', value)}
+              options={[
+                { value: 'percentage', label: 'Cash Payouts' },
+                { value: 'custom', label: 'Custom Prizes' },
+              ]}
+            />
+            <input type='hidden' {...register('prizeType')} />
+            {errors.prizeType && <p className={css.error}>{errors.prizeType.message}</p>}
+          </div>
 
           {/* Payout Distribution - Show when prizeType is 'percentage' */}
           {prizeType === 'percentage' && (
@@ -213,9 +216,12 @@ export function SettingsStep() {
               <p className={css.totalLine} role='status'>
                 <span>Total Payouts: {totalPayout}%</span>
                 {totalPayout <= 100 ? (
-                  <span>✓ Valid ({100 - totalPayout}% to fundraiser)</span>
+                  <span className={css.valid}>
+                    <Check aria-hidden='true' width={24} height={24} strokeWidth={2} />
+                    Valid ({100 - totalPayout}% to fundraiser)
+                  </span>
                 ) : (
-                  <span>{totalPayout - 100}% over limit</span>
+                  <span className={css.overLimit}>{totalPayout - 100}% over limit</span>
                 )}
               </p>
 
@@ -224,7 +230,7 @@ export function SettingsStep() {
 
               {/* Payout Breakdown */}
               {totalPot > 0 && totalPayout <= 100 && (
-                <>
+                <div className={css.group}>
                   <h3>Payout Breakdown</h3>
                   <dl className={css.breakdown}>
                     <dt>Total Pot (100 squares × ${Number(squarePrice).toLocaleString()})</dt>
@@ -252,7 +258,7 @@ export function SettingsStep() {
                     <dt data-line='total'>Fundraiser Keeps ({100 - totalPayout}%)</dt>
                     <dd data-line='total'>${((totalPot * (100 - totalPayout)) / 100).toLocaleString()}</dd>
                   </dl>
-                </>
+                </div>
               )}
             </>
           )}

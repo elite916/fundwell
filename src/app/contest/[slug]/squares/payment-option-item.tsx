@@ -5,24 +5,18 @@ import Image from 'next/image';
 
 import { Button } from '@/components/studio/button';
 import { srOnly } from '@/components/studio/theme';
-import type { PaymentOption, PaymentOptionType } from '@/features/contests/types';
+import { PAYMENT_OPTION_NAMES } from '@/features/contests/constants';
+import type { PaymentOption } from '@/features/contests/types';
 import { copyText, selectText } from '@/utils/copy-text';
 import { generatePaymentUrl } from '@/utils/payment-url-generator';
 
 import css from './squares.module.css';
 
-const NAMES: Record<PaymentOptionType, string> = {
-  venmo: 'Venmo',
-  paypal: 'PayPal',
-  cashapp: 'Cash App',
-  zelle: 'Zelle',
-};
-
 /** One way to pay: a link to the app, the handle to copy, and whatever else the organizer added. */
 export function PaymentOptionItem({ option }: { option: PaymentOption }) {
   const [isCopied, setIsCopied] = useState(false);
-  const handleRef = useRef<HTMLSpanElement>(null);
-  const name = NAMES[option.type];
+  const handleRef = useRef<HTMLParagraphElement>(null);
+  const name = PAYMENT_OPTION_NAMES[option.type];
   const paymentUrl = generatePaymentUrl(option.type, option.handle_or_link);
 
   const handleCopy = async () => {
@@ -38,25 +32,17 @@ export function PaymentOptionItem({ option }: { option: PaymentOption }) {
   return (
     <li className={css.payment}>
       <div className={css.paymentText}>
-        <p className={css.paymentLine}>
+        <p className={css.paymentName}>
           {paymentUrl ? (
-            <Button look='link' asChild>
-              <a href={paymentUrl} target='_blank' rel='noopener noreferrer'>
-                {name}
-              </a>
-            </Button>
+            <a href={paymentUrl} target='_blank' rel='noopener noreferrer'>
+              {name}
+            </a>
           ) : (
-            <span className={css.paymentName}>{name}</span>
+            name
           )}
-          <span ref={handleRef} className={css.handle}>
-            {option.handle_or_link}
-          </span>
-          <Button look='link' onClick={handleCopy} aria-label={isCopied ? undefined : `Copy ${name} handle`}>
-            {isCopied ? 'Copied!' : 'Copy'}
-          </Button>
-          <span role='status' className={srOnly}>
-            {isCopied && 'Copied!'}
-          </span>
+        </p>
+        <p ref={handleRef} className={css.handle}>
+          {option.handle_or_link}
         </p>
         {option.display_name && <p className={css.paymentNote}>{option.display_name}</p>}
         {option.type === 'venmo' && option.account_last_4_digits && (
@@ -64,6 +50,12 @@ export function PaymentOptionItem({ option }: { option: PaymentOption }) {
         )}
         {option.instructions && <p className={css.paymentNote}>{option.instructions}</p>}
       </div>
+      <Button look='ghost' onClick={handleCopy} aria-label={isCopied ? undefined : `Copy ${name} handle`}>
+        {isCopied ? 'Copied!' : 'Copy'}
+      </Button>
+      <span role='status' className={srOnly}>
+        {isCopied && 'Copied!'}
+      </span>
       {option.qr_code_url && (
         <div className={css.paymentQr}>
           <Image src={option.qr_code_url} alt={`${name} QR code`} width={96} height={96} />

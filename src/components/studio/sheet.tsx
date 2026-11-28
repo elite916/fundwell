@@ -18,6 +18,8 @@ interface SheetProps {
   description?: ReactNode;
   /** A TileChip shown before the description on phones, where the sheet covers the board. */
   mark?: ReactNode;
+  /** Above the title, for example the squares around the one being claimed. Puts the close button beside the title. */
+  top?: ReactNode;
   children?: ReactNode;
   /** Buttons, kept at the bottom. */
   footer?: ReactNode;
@@ -38,6 +40,7 @@ export function Sheet({
   title,
   description,
   mark,
+  top,
   children,
   footer,
   placement = 'side',
@@ -61,7 +64,7 @@ export function Sheet({
       <Dialog.Portal>
         <Dialog.Overlay className={css.overlay} />
         <Dialog.Content
-          className={cn(studioTheme, css.sheet, css[placement])}
+          className={cn(studioTheme, css.sheet, css[placement], top !== undefined && css.withTop)}
           style={style}
           data-studio-sheet={placement}
           onOpenAutoFocus={(event) => {
@@ -79,11 +82,15 @@ export function Sheet({
           {...(!description && { 'aria-describedby': undefined })}
         >
           <div className={css.inner}>
-            <Dialog.Title asChild>
-              <Mid as='h2' ref={titleRef} tabIndex={-1} className={cn(css.title, !description && css.alone)}>
-                {title}
-              </Mid>
-            </Dialog.Title>
+            {top}
+            <div className={css.heading}>
+              <Dialog.Title asChild>
+                <Mid as='h2' ref={titleRef} tabIndex={-1} className={cn(css.title, !description && css.alone)}>
+                  {title}
+                </Mid>
+              </Dialog.Title>
+              {dismissible && top !== undefined && <Dialog.Close className={css.close} aria-label='Close' />}
+            </div>
             {description && (
               <Dialog.Description className={cn(css.description, mark && css.marked)}>
                 {mark && <span className={css.mark}>{mark}</span>}
@@ -92,10 +99,15 @@ export function Sheet({
             )}
             {children}
             {footer && <div className={css.footer}>{footer}</div>}
-            {dismissible && <Dialog.Close className={css.close} aria-label='Close' />}
+            {dismissible && top === undefined && <Dialog.Close className={css.close} aria-label='Close' />}
           </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   );
+}
+
+/** Figma's grabber bar at the top of a sheet on phones, for the `top` slot. Hidden on wide screens. */
+export function SheetGrabber() {
+  return <div aria-hidden='true' className={css.grabber} />;
 }

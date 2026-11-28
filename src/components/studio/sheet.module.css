@@ -11,7 +11,7 @@
     z-index: 41;
     overflow: auto;
     overscroll-behavior: contain;
-    background: var(--studio-sheet);
+    background: var(--color-surface);
   }
   .sheet:focus-visible {
     outline: 0;
@@ -31,8 +31,8 @@
     margin-bottom: 24px;
   }
   .description {
-    margin: 6px 0 30px;
-    color: var(--studio-soft);
+    margin: var(--space-2) 0 30px;
+    color: var(--color-ink-muted);
   }
   .mark {
     display: none;
@@ -46,7 +46,71 @@
     padding-top: 24px;
   }
 
-  .close {
+  /* The title's row. With something above the title (`top`), the close button sits in it. */
+  .heading {
+    display: contents;
+  }
+  .withTop .heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .withTop .title {
+    flex: 1;
+    margin-right: 0;
+  }
+  .withTop .close {
+    position: relative;
+    inset: auto;
+    flex: none;
+  }
+
+  /* With something above the title and no description, the title's own row keeps the 16px gap */
+  .withTop .alone {
+    margin-bottom: 0;
+  }
+  .withTop .heading:has(> .alone) {
+    margin-bottom: var(--space-4);
+  }
+
+  /* Figma's sheet grabber, on phones */
+  .grabber {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  .grabber::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-rule-strong);
+  }
+
+  /* `SideCard`: Figma's sheets as a card beside the page */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: var(--border-thin) solid var(--color-rule);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+  .cardHeading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .cardTitle {
+    flex: 1;
+    min-width: 0;
+    outline: 0;
+  }
+
+  .close,
+  .cardClose {
     position: absolute;
     top: 28px;
     right: 30px;
@@ -55,29 +119,42 @@
     width: 44px;
     height: 44px;
     border: 0;
+    border-radius: var(--radius-sm);
     background: none;
     color: inherit;
     cursor: pointer;
   }
+  .cardClose {
+    position: relative;
+    top: auto;
+    right: auto;
+    flex: none;
+  }
   .close::before,
-  .close::after {
+  .close::after,
+  .cardClose::before,
+  .cardClose::after {
     content: '';
     position: absolute;
     width: 18px;
     height: 2px;
-    background: var(--studio-ink);
+    background: var(--color-ink);
     transform: rotate(45deg);
   }
-  .close::after {
+  .close::after,
+  .cardClose::after {
     transform: rotate(-45deg);
   }
 
   @media (min-width: 1000px) {
+    .grabber {
+      display: none;
+    }
     .side {
       inset: 0 auto 0 0;
       width: min(480px, 92vw);
       height: 100dvh;
-      box-shadow: var(--studio-shadow-sheet);
+      border-right: var(--border-thin) solid var(--color-rule);
     }
     .side[data-state='open'] {
       animation: studio-from-left 0.28s var(--studio-ease);
@@ -87,8 +164,8 @@
       left: 50%;
       width: min(480px, calc(100vw - 48px));
       max-height: 88dvh;
-      border-radius: var(--studio-radius-sheet);
-      box-shadow: 0 30px 90px rgb(var(--studio-shade) / 0.34);
+      border: var(--border-thin) solid var(--color-rule);
+      border-radius: var(--radius-lg);
       transform: translate(-50%, -50%);
     }
     .center[data-state='open'] {
@@ -102,8 +179,8 @@
       inset: auto 0 0;
       width: 100%;
       max-height: 88dvh;
-      border-radius: var(--studio-radius-sheet) var(--studio-radius-sheet) 0 0;
-      box-shadow: var(--studio-shadow-sheet-up);
+      border-top: var(--border-thin) solid var(--color-rule);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
     .side[data-state='open'],
     .center[data-state='open'] {
@@ -126,6 +203,21 @@
     .mark {
       display: inline;
       margin-right: 12px;
+    }
+    /* Figma's Claim sheet: the page dimmed behind it, 16px sides, the square's line in ink */
+    .overlay:has(+ .withTop) {
+      background: rgb(28 27 24 / 0.35);
+    }
+    /* Figma's Claim sheet: 16px sides, the square's line in ink */
+    .withTop .inner {
+      padding: 0 var(--space-4) var(--space-6);
+    }
+    .withTop .description {
+      margin: var(--space-4) 0;
+      color: var(--color-ink);
+    }
+    .withTop .mark {
+      margin-right: var(--space-2);
     }
   }
 

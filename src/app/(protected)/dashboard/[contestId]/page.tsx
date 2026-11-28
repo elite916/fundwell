@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { organizerColors } from '@/components/studio/color';
 import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { BackLink, DashPage, Tag } from '@/components/studio/dashboard/dash-page';
+import { studioTheme } from '@/components/studio/theme';
 import { ManageSquare } from '@/features/contests/components/manage-square-modal';
 import {
   getContestById,
@@ -38,8 +40,14 @@ const STATUS_LABELS: Record<ContestStatus, string> = {
   draft: 'Draft',
   open: 'Open',
   locked: 'Locked',
-  in_progress: 'In Progress',
+  in_progress: 'In progress',
   completed: 'Completed',
+};
+
+/** Figma's Status chip, per status. The rest are Open's look. */
+const STATUS_TONES: Partial<Record<ContestStatus, 'now' | 'locked'>> = {
+  locked: 'locked',
+  in_progress: 'now',
 };
 
 // A hit-a-thon's "Lock and Send Totals" sends its emails after the response, a batch at a time
@@ -67,7 +75,13 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
 
   // No grid, scores or winners
   if (contest.kind === 'hit_a_thon') {
-    return <HitAThonOverview contest={contest} statusLabel={STATUS_LABELS[contest.status]} />;
+    return (
+      <HitAThonOverview
+        contest={contest}
+        statusLabel={STATUS_LABELS[contest.status]}
+        statusTone={STATUS_TONES[contest.status] ?? 'quiet'}
+      />
+    );
   }
 
   // Fetch squares, scores, and payment options count
@@ -138,15 +152,18 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
 
   return (
     <DashPage>
-      <BackLink href='/dashboard'>Back to Dashboard</BackLink>
-
       <div className={cn(css.run, contest.status === 'in_progress' && css.playing)}>
+        {/* In the grid, so Quick Actions starts level with it */}
+        <BackLink href='/dashboard' className={css.back}>
+          Back to Dashboard
+        </BackLink>
+
         {/* Header */}
         <div className={css.head}>
           <div>
             <div className={css.title}>
               <h1>{contest.name}</h1>
-              <Tag className={css.status}>{STATUS_LABELS[contest.status]}</Tag>
+              <Tag tone={STATUS_TONES[contest.status] ?? 'quiet'}>{STATUS_LABELS[contest.status]}</Tag>
             </div>
             <p className={css.about}>
               {contest.row_team_name} vs {contest.col_team_name}
@@ -236,7 +253,15 @@ export default async function ContestDetailPage({ params }: ContestDetailPagePro
         />
 
         {/* Grid Preview */}
-        <section aria-labelledby='grid-preview' className={css.squares}>
+        {/*
+          The board in the contest's own colors; the rest of the dashboard stays in Fundwell's. The theme goes on again
+          here, so the square colors that follow the team ones pick them up.
+        */}
+        <section
+          aria-labelledby='grid-preview'
+          className={cn(studioTheme, css.squares)}
+          style={organizerColors(contest.primary_color, contest.secondary_color)}
+        >
           <div className={css.gridHead}>
             <div>
               <h2 id='grid-preview'>Grid Preview</h2>

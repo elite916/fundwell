@@ -46,12 +46,12 @@ export default async function ParticipantsPage({ params }: ParticipantsPageProps
     const [players, pledges] = await Promise.all([getHitPlayersWithHits(contestId), getPledgesForOwner(contestId)]);
 
     return (
-      <DashPage>
+      <DashPage className={css.manage}>
         <BackLink href={`/dashboard/${contestId}`}>Back to Contest</BackLink>
 
         <PageHead title='Pledges' sub={[contest.name]} />
 
-        <Panel aria-labelledby='pledges'>
+        <Panel aria-labelledby='pledges' className={css.panel}>
           <h2 id='pledges'>Pledges</h2>
 
           <PledgesTableClient
@@ -70,7 +70,7 @@ export default async function ParticipantsPage({ params }: ParticipantsPageProps
   const participants = await getParticipantsForContest(contestId);
 
   return (
-    <DashPage>
+    <DashPage className={css.manage}>
       <BackLink href={`/dashboard/${contestId}`}>Back to Contest</BackLink>
 
       <PageHead
@@ -78,7 +78,7 @@ export default async function ParticipantsPage({ params }: ParticipantsPageProps
         sub={[contest.name, `${participants.length} participant${participants.length !== 1 ? 's' : ''}`]}
       />
 
-      <Panel aria-labelledby='participants'>
+      <Panel aria-labelledby='participants' className={css.panel}>
         <h2 id='participants'>Participants</h2>
         <p className={css.about}>View and manage all participants who have claimed squares</p>
 

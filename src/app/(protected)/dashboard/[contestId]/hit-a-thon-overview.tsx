@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { after } from 'next/server';
+import type { ComponentProps } from 'react';
 
 import { DashButton } from '@/components/studio/dashboard/dash-button';
 import { BackLink, DashPage, Tag } from '@/components/studio/dashboard/dash-page';
@@ -25,13 +26,14 @@ import css from './run.module.css';
 interface HitAThonOverviewProps {
   contest: Contest;
   statusLabel: string;
+  statusTone: ComponentProps<typeof Tag>['tone'];
 }
 
 /**
  * A hit-a-thon's overview: what's been pledged, owed and paid, and each player's hits. Before hits are locked,
  * "Pledged" counts each per-hit pledge at its most (the decided rule); a player's "Total" uses their entered hits.
  */
-export async function HitAThonOverview({ contest, statusLabel }: HitAThonOverviewProps) {
+export async function HitAThonOverview({ contest, statusLabel, statusTone }: HitAThonOverviewProps) {
   const pitches = contest.pitches_per_player ?? 0;
 
   const [players, pledges, accessPin, paymentOptions, totalsSent] = await Promise.all([
@@ -91,15 +93,19 @@ export async function HitAThonOverview({ contest, statusLabel }: HitAThonOvervie
 
   return (
     <DashPage>
-      <BackLink href='/dashboard'>Back to Dashboard</BackLink>
-
       <div className={css.run}>
+        {/* In the grid, so Quick Actions starts level with it */}
+        <BackLink href='/dashboard' className={css.back}>
+          Back to Dashboard
+        </BackLink>
+
         {/* Header */}
         <div className={css.head}>
           <div>
-            <div className={css.title}>
+            {/* Figma puts the chip under the name */}
+            <div className={cn(css.title, css.under)}>
               <h1>{contest.name}</h1>
-              <Tag className={css.status}>{statusLabel}</Tag>
+              <Tag tone={statusTone}>{statusLabel}</Tag>
             </div>
             {contest.description && <p className={css.about}>{contest.description}</p>}
           </div>

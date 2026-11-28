@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { toastFont } from '@/components/studio/toast-font';
 import { cn } from '@/utils/cn';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import * as ToastPrimitives from '@radix-ui/react-toast';
@@ -50,7 +49,6 @@ const Toast = React.forwardRef<
       ref={ref}
       className={cn(
         toastVariants({ variant }),
-        toastFont,
         studio.toast,
         variant === 'destructive' && studio.toastBad,
         className

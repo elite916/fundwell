@@ -78,6 +78,9 @@ export function HitsSection({ contestId, pitches, players, locked, lock }: HitsS
     hitsLeft > 0 && HITS_LEFT(hitsLeft),
     lock && !lock.hasPaymentOption && HitAThonErrors.PAYMENT_OPTION_FIRST,
   ].filter((reason): reason is string => !!reason);
+  const showsLock = !!lock && players.length > 0;
+  // Save Hits is the main button until every player has hits, then Lock and Send Totals is
+  const lockIsMain = showsLock && hitsLeft === 0;
 
   const handleLock = () => {
     startLocking(async () => {
@@ -103,38 +106,39 @@ export function HitsSection({ contestId, pitches, players, locked, lock }: HitsS
       </h2>
       <p className={css.intro}>Enter each player&apos;s hits after the event. Pitches per player: {pitches}.</p>
       {locked && (
-        <p className={css.intro}>
+        <p className={css.lockedOn}>
           Hits locked on {locked.on}. Totals sent to {supporters(locked.totalsSent)}.
         </p>
       )}
 
       <form onSubmit={handleSubmit} noValidate>
-        <table className={css.hitTable}>
+        {/* The roles keep it a table where phones lay it out another way */}
+        <table role='table' className={css.hitTable}>
           <caption className={srOnly}>Hits</caption>
-          <thead>
-            <tr>
+          <thead role='rowgroup'>
+            <tr role='row'>
               {['Player', 'Hits', 'Supporters', 'Total'].map((heading) => (
-                <th key={heading} scope='col'>
+                <th key={heading} role='columnheader' scope='col'>
                   {heading}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody role='rowgroup'>
             {players.length === 0 ? (
-              <tr>
-                <td colSpan={4} className={css.blank}>
+              <tr role='row'>
+                <td role='cell' colSpan={4} className={css.blank}>
                   No players yet. Add players to give each one a link.
                 </td>
               </tr>
             ) : (
               players.map((player) => (
-                <tr key={player.id}>
-                  <td className={css.player}>
+                <tr key={player.id} role='row'>
+                  <td role='cell' className={css.player}>
                     {player.first_name}
                     {player.number !== null && <span className={css.soft}> #{player.number}</span>}
                   </td>
-                  <td>
+                  <td role='cell' className={locked ? undefined : css.hitCell}>
                     {locked ? (
                       player.hits
                     ) : (
@@ -149,12 +153,12 @@ export function HitsSection({ contestId, pitches, players, locked, lock }: HitsS
                           aria-invalid={invalid.has(player.id) || undefined}
                           aria-describedby={invalid.has(player.id) ? 'hits-error' : undefined}
                         />
-                        {player.hits === null && <Tag>No hits yet</Tag>}
+                        {player.hits === null && <Tag className={css.noHits}>No hits yet</Tag>}
                       </span>
                     )}
                   </td>
-                  <td>{player.supporters}</td>
-                  <td>{formatPrizeAmount(player.total)}</td>
+                  <td role='cell'>{player.supporters}</td>
+                  <td role='cell'>{formatPrizeAmount(player.total)}</td>
                 </tr>
               ))
             )}
@@ -168,28 +172,28 @@ export function HitsSection({ contestId, pitches, players, locked, lock }: HitsS
         )}
 
         {players.length > 0 && !locked && (
-          <BusyButton type='submit' look='quiet' busy={isPending} className={css.save}>
-            Save Hits
-          </BusyButton>
+          <div className={css.save}>
+            <BusyButton type='submit' look={lockIsMain ? 'quiet' : 'main'} busy={isPending}>
+              Save Hits
+            </BusyButton>
+            {showsLock && (
+              <DashButton
+                look={lockIsMain ? 'main' : 'quiet'}
+                onClick={() => setIsConfirming(true)}
+                disabled={lockReasons.length > 0 || isLocking}
+                aria-describedby={lockReasons.length > 0 ? 'lock-why' : undefined}
+              >
+                Lock and Send Totals
+              </DashButton>
+            )}
+          </div>
+        )}
+        {showsLock && lockReasons.length > 0 && (
+          <p id='lock-why' className={css.intro}>
+            {lockReasons.join(' ')}
+          </p>
         )}
       </form>
-
-      {lock && players.length > 0 && (
-        <div className={css.save}>
-          <DashButton
-            onClick={() => setIsConfirming(true)}
-            disabled={lockReasons.length > 0 || isLocking}
-            aria-describedby={lockReasons.length > 0 ? 'lock-why' : undefined}
-          >
-            Lock and Send Totals
-          </DashButton>
-          {lockReasons.length > 0 && (
-            <p id='lock-why' className={css.intro}>
-              {lockReasons.join(' ')}
-            </p>
-          )}
-        </div>
-      )}
 
       {lock && (
         <DashDialog

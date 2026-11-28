@@ -41,11 +41,12 @@ function formatName(firstName: string | null, lastName: string | null): string {
   return name || '—';
 }
 
-const STATUS_TAGS: Record<OwnerPledge['status'], { label: string; tone?: 'owes' }> = {
-  pledged: { label: 'Pledged' },
-  pending: { label: 'Pending', tone: 'owes' },
-  paid: { label: 'Paid' },
-  nothing_owed: { label: 'Nothing owed' },
+/** Figma's Status tag in the Pledge row, which isn't the Status chip */
+const STATUS_TAGS: Record<OwnerPledge['status'], { label: string; look?: string }> = {
+  pledged: { label: 'Pledged', look: css.pledgedTag },
+  pending: { label: 'Pending', look: css.pendingTag },
+  paid: { label: 'Paid', look: css.paidTag },
+  nothing_owed: { label: 'Nothing owed', look: css.nothingTag },
   cancelled: { label: '' },
 };
 
@@ -242,7 +243,7 @@ export function PledgesTableClient({ contestId, pitches, players, pledges, isLoc
                     {pledge.amount_owed !== null ? formatPrizeAmount(Number(pledge.amount_owed)) : '—'}
                   </td>
                   <td role='cell' className={css.status}>
-                    <Tag tone={tag.tone}>{tag.label}</Tag>
+                    <Tag className={cn(css.stag, tag.look)}>{tag.label}</Tag>
                   </td>
                   <td role='cell' className={css.date}>
                     <span className={css.lead}>Pledged </span>
@@ -305,7 +306,7 @@ export function PledgesTableClient({ contestId, pitches, players, pledges, isLoc
           <DashButton look='quiet' onClick={() => setCancelling(null)} disabled={isPending}>
             Keep Pledge
           </DashButton>
-          <BusyButton busy={isPending} onClick={confirmCancel}>
+          <BusyButton busy={isPending} look='danger' onClick={confirmCancel}>
             Cancel Pledge
           </BusyButton>
         </DashDialogFoot>

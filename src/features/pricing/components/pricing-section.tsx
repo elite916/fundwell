@@ -1,4 +1,4 @@
-import { Mid, Soft } from '@/components/studio/type';
+import { Soft, textStyle } from '@/components/studio/type';
 import { getUser } from '@/features/account/controllers/get-user';
 import { PricingCard } from '@/features/pricing/components/price-card';
 import { getProducts } from '@/features/pricing/controllers/get-products';
@@ -10,6 +10,7 @@ import { createCheckoutAction } from '../actions/create-checkout-action';
 
 import css from './pricing.module.css';
 
+/** Figma's Pricing section, on home and on the pricing page. The page adds Monthly / Yearly and the note. */
 export async function PricingSection({ isPricingPage = false }: { isPricingPage?: boolean }) {
   const [products, user] = await Promise.all([getProducts(), getUser()]);
   const isLoggedIn = !!user;
@@ -17,32 +18,33 @@ export async function PricingSection({ isPricingPage = false }: { isPricingPage?
     hasActiveSubscription(user?.id ?? null),
     hasOverdueSubscription(user?.id ?? null),
   ]);
+  const Heading = isPricingPage ? 'h1' : 'h2';
 
   return (
-    <section className={cn(css.section, isPricingPage && css.page)}>
-      <Mid as={isPricingPage ? 'h1' : 'h2'} className={css.heading}>
-        One fundraiser is free. Pro runs more.
-      </Mid>
-      <div className={css.plans}>
-        {products.map((product) => (
-          <PricingCard
-            key={product.id}
-            product={product}
-            createCheckoutAction={createCheckoutAction}
-            isLoggedIn={isLoggedIn}
-            hasPro={hasPro}
-            isOverdue={isOverdue}
-            hasIntervals={isPricingPage}
-            heading={isPricingPage ? 'h2' : 'h3'}
-          />
-        ))}
+    <section className={css.section}>
+      <Heading className={cn(textStyle.displayL, css.heading)}>One fundraiser is free. Pro runs more.</Heading>
+      <div className={css.side}>
+        <div className={css.plans}>
+          {products.map((product) => (
+            <PricingCard
+              key={product.id}
+              product={product}
+              createCheckoutAction={createCheckoutAction}
+              isLoggedIn={isLoggedIn}
+              hasPro={hasPro}
+              isOverdue={isOverdue}
+              hasIntervals={isPricingPage}
+              heading={isPricingPage ? 'h2' : 'h3'}
+            />
+          ))}
+        </div>
+        {isPricingPage && (
+          <Soft className={css.why}>
+            We offer a free plan so anyone can run a fundraiser. You can host one fundraiser at a time, and Pro removes
+            that limit.
+          </Soft>
+        )}
       </div>
-      {isPricingPage && (
-        <Soft className={css.why}>
-          We offer a free plan so anyone can run a fundraiser. You can host one fundraiser at a time, and Pro removes
-          that limit.
-        </Soft>
-      )}
     </section>
   );
 }

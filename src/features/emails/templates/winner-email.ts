@@ -1,8 +1,8 @@
 import { formatPrizeAmount } from '@/features/contests/utils/prize-helpers';
 
-import { gradientCtaButton } from '../components/email-components';
+import { brandStrong, ctaButton, emailText } from '../components/email-components';
 import { escapeHtml } from '../escape-html';
-import { emailLayout, emailStyles } from '../layouts/email-layout';
+import { emailColors, emailFonts, emailLayout, emailStack, emailStyles } from '../layouts/email-layout';
 
 interface WinnerEmailParams {
   participantName: string;
@@ -37,82 +37,67 @@ export function winnerEmail({
   const safeHomeTeamName = escapeHtml(homeTeamName);
   const safeAwayTeamName = escapeHtml(awayTeamName);
 
-  const scoreBox = `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailStyles.detailsBox}">
+  // Winner heading: trophy and WINNER!, Display/L (Display/M on a phone)
+  const heading = `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
       <tr>
-        <td style="${emailStyles.detailsBoxPadding}">
-          <h3 style="margin: 0 0 16px 0; color: #a1a1aa; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; text-align: center;">
-            Final Score
-          </h3>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <td align="center" class="fw-display-l" style="${emailStyles.displayL} color: ${emailColors.ink}; text-align: center;">🏆</td>
+      </tr>
+      <tr>
+        <td align="center" class="fw-display-l" style="padding-top: 8px; ${emailStyles.displayL} color: ${emailColors.ink}; text-align: center;">WINNER!</td>
+      </tr>
+    </table>`;
+
+  // Final score: a paper panel with a flat scoreboard
+  function scoreRow(team: string, score: number, rule: string): string {
+    return `
             <tr>
-              <td style="padding: 12px 16px; background-color: #52525b; border-radius: 6px 6px 0 0;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td style="color: #fafafa; font-size: 16px; font-weight: 600;">${safeHomeTeamName}</td>
-                    <td style="color: #fafafa; font-size: 24px; font-weight: bold; text-align: right;">${homeScore}</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 16px; background-color: #52525b; border-radius: 0 0 6px 6px; border-top: 1px solid #71717a;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td style="color: #fafafa; font-size: 16px; font-weight: 600;">${safeAwayTeamName}</td>
-                    <td style="color: #fafafa; font-size: 24px; font-weight: bold; text-align: right;">${awayScore}</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+              <td style="${rule} padding: 12px 16px; font-family: ${emailFonts.body}; font-size: 16px; line-height: 1.25; font-weight: 700; color: ${emailColors.ink}; ${emailStyles.wrap}">${team}</td>
+              <td align="right" style="${rule} padding: 12px 16px 12px 0; ${emailStyles.displayS} color: ${emailColors.ink}; text-align: right; white-space: nowrap;">${score}</td>
+            </tr>`;
+  }
+
+  const scoreBox = `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${emailColors.bg}; border-radius: 4px;">
+      <tr>
+        <td style="padding: 16px;">
+          <p class="fw-label" style="${emailStyles.label} text-align: center; margin: 0 0 12px 0;">Final Score</p>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${emailColors.surface}; border: 2px solid ${emailColors.ink}; border-radius: 4px; border-collapse: separate;">${scoreRow(safeHomeTeamName, homeScore, '')}${scoreRow(safeAwayTeamName, awayScore, `border-top: 1px solid ${emailColors.ink};`)}
           </table>
         </td>
       </tr>
-    </table>
-  `;
+    </table>`;
 
   // Custom prizes show their text; a quarter with no prize shows no prize block.
   const prizeValue = prizeText ? escapeHtml(prizeText) : prizeAmount > 0 ? formatPrizeAmount(prizeAmount) : null;
+  // Prize block: styled like the winning square
   const prizeSection = prizeValue
     ? `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${emailColors.winning}; border: 2px solid ${emailColors.ink}; border-radius: 4px; border-collapse: separate;">
       <tr>
-        <td align="center">
-          <p style="margin: 0 0 8px 0; color: #a1a1aa; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
-            Your Prize
-          </p>
-          <p style="margin: 0; color: #22c55e; font-size: 48px; font-weight: bold;">
-            ${prizeValue}
-          </p>
+        <td align="center" style="padding: 24px 16px; text-align: center;">
+          <p class="fw-label" style="${emailStyles.label} color: ${emailColors.ink}; text-align: center; margin: 0 0 8px 0;">Your Prize</p>
+          <p class="fw-display-l" style="margin: 0; ${emailStyles.displayL} color: ${emailColors.ink}; text-align: center;">${prizeValue}</p>
         </td>
       </tr>
-    </table>
-  `
+    </table>`
     : '';
 
-  const content = `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td align="center" style="padding-bottom: 24px;">
-          <div style="font-size: 64px; line-height: 1;">🏆</div>
-          <h2 style="margin: 16px 0 0 0; color: #FBBF24; font-size: 32px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">
-            WINNER!
-          </h2>
-        </td>
-      </tr>
-    </table>
-    <p style="margin: 0 0 8px 0; color: #fafafa; font-size: 20px; text-align: center; font-weight: 600;">
-      Congratulations ${safeParticipantName}!
-    </p>
-    <p style="margin: 0 0 24px 0; color: #a1a1aa; font-size: 16px; text-align: center;">
-      You won <strong style="color: #F97316;">${quarterName}</strong> in <strong style="color: #fafafa;">${safeContestName}</strong>!
-    </p>
-    ${scoreBox}
-    ${prizeSection}
-    ${gradientCtaButton('View Contest', contestUrl)}
-  `;
+  const content = [
+    heading,
+    emailStack(
+      [
+        emailText(`Congratulations ${safeParticipantName}!`, { size: 'L', align: 'center' }),
+        emailText(`You won ${brandStrong(quarterName)} in ${brandStrong(safeContestName)}!`, { align: 'center' }),
+      ],
+      8
+    ),
+    scoreBox,
+    prizeSection,
+    ctaButton('View Contest', contestUrl),
+  ];
 
-  const html = emailLayout({ headerStyle: 'gradient', children: content });
+  const html = emailLayout({ content });
 
   return { subject, html };
 }

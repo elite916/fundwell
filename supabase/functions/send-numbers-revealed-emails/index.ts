@@ -59,101 +59,131 @@ function generateNumbersRevealedEmail({
   const subjectSafeContestName = sanitizeSubject(contestName);
   const subject = `Numbers are in for ${subjectSafeContestName}!`;
 
+  // Game day look, the same as the app's emails (src/features/emails/layouts/email-layout.ts): this function can't
+  // import from src, so the styles are repeated here. Figma: Emails page, "Numbers revealed".
+  const brand = '#17603F';
+  const ink = '#1C1B18';
+  const inkMuted = '#57534A';
+  const paper = '#F6F2E9';
+  const rule = '#DDD6C6';
+  const body = 'Figtree, Arial, Helvetica, sans-serif';
+  const display = "'Big Shoulders Display', Arial, Helvetica, sans-serif";
+  const wrap = 'overflow-wrap: break-word; word-break: break-word;';
+  const bodyM = `margin: 0; font-family: ${body}; font-size: 16px; line-height: 1.5; font-weight: 400; color: ${ink}; ${wrap}`;
+  const label = `font-family: ${body}; font-size: 13px; line-height: 1.23; font-weight: 700; letter-spacing: 0.52px; text-transform: uppercase; color: ${inkMuted}; ${wrap}`;
+  // "Position" and "Row r, Column c" wrap only between words, so a narrow screen squeezes the team names instead
+  const ourWords = 'overflow-wrap: normal; word-break: normal;';
+  const digit = `font-family: ${display}; font-size: 32px; line-height: 1; font-weight: 800; color: ${brand};`;
+
   const html = `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Fundwell</title>
+  <!--[if !mso]><!-->
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&amp;family=Figtree:wght@400;700&amp;display=swap" rel="stylesheet">
+  <!--<![endif]-->
+  <!--[if mso]><style>* { font-family: Arial, Helvetica, sans-serif !important; }</style><![endif]-->
+  <style>
+    @media only screen and (max-width: 480px) {
+      .fw-shell { padding: 24px 12px !important; }
+      .fw-header { padding: 20px !important; }
+      .fw-card { padding: 20px !important; }
+      .fw-label { font-size: 15px !important; letter-spacing: 0.6px !important; }
+      .fw-digit { width: 64px !important; }
+      .fw-button { width: 100% !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #18181B; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #18181B;">
+<body style="margin: 0; padding: 0; background-color: ${paper}; -webkit-text-size-adjust: 100%;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${paper};">
     <tr>
-      <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%;">
-          
+      <td align="center" class="fw-shell" style="padding: 40px 20px;">
+        <!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" align="center"><tr><td><![endif]-->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 560px;">
+
           <!-- Header -->
           <tr>
-            <td style="background-color: #F97316; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Fundwell</h1>
-            </td>
+            <td class="fw-header" style="background-color: ${brand}; border-radius: 4px 4px 0 0; padding: 24px 32px; font-family: ${display}; font-size: 32px; line-height: 1; font-weight: 800; text-transform: uppercase; color: #FFFFFF;">Fundwell</td>
           </tr>
-          
+
           <!-- Main Content -->
           <tr>
-            <td style="background-color: #27272A; padding: 32px; border-radius: 0 0 8px 8px;">
-              
-              <!-- Greeting -->
-              <p style="margin: 0 0 16px 0; color: #fafafa; font-size: 16px;">
-                Hi ${safeParticipantName},
-              </p>
-              
-              <p style="margin: 0 0 24px 0; color: #fafafa; font-size: 16px;">
-                The numbers have been revealed for <strong style="color: #F97316;">${safeContestName}</strong>!
-              </p>
-              
-              <!-- Square Details Box -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #3f3f46; border-radius: 8px; margin-bottom: 24px;">
+            <td class="fw-card" style="background-color: #FFFFFF; border: 1px solid ${rule}; border-radius: 0 0 4px 4px; padding: 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                <!-- Greeting -->
                 <tr>
-                  <td style="padding: 20px;">
-                    <h2 style="margin: 0 0 16px 0; color: #fafafa; font-size: 18px; font-weight: 600;">
-                      ${squares.length === 1 ? 'Your Square' : 'Your Squares'}
-                    </h2>
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <td>
+                    <p style="${bodyM}">Hi ${safeParticipantName},</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-top: 24px;">
+                    <p style="${bodyM}">The numbers have been revealed for <strong style="font-weight: 700; color: ${brand};">${safeContestName}</strong>!</p>
+                  </td>
+                </tr>
+
+                <!-- Square Details Box -->
+                <tr>
+                  <td style="padding-top: 24px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${paper}; border-radius: 4px;">
                       <tr>
-                        <td style="padding: 8px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase;">Position</td>
-                        <td style="padding: 8px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase; text-align: center;">
-                          ${safeRowTeamName}
-                        </td>
-                        <td style="padding: 8px 0; color: #a1a1aa; font-size: 12px; text-transform: uppercase; text-align: center;">
-                          ${safeColTeamName}
+                        <td style="padding: 16px;">
+                          <p style="margin: 0 0 12px 0; font-family: ${display}; font-size: 20px; line-height: 1; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: ${ink};">${squares.length === 1 ? 'Your Square' : 'Your Squares'}</p>
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td class="fw-label" style="padding: 8px 0; ${label} ${ourWords}">Position</td>
+                              <td class="fw-label fw-digit" width="96" style="width: 96px; padding: 8px 0 8px 8px; ${label} text-align: center;">${safeRowTeamName}</td>
+                              <td class="fw-label fw-digit" width="96" style="width: 96px; padding: 8px 0 8px 8px; ${label} text-align: center;">${safeColTeamName}</td>
+                            </tr>
+                            ${squares
+                              .map(
+                                (square) => `
+                            <tr>
+                              <td style="border-top: 1px solid ${rule}; padding: 12px 0; ${bodyM} ${ourWords}">Row ${square.rowIndex + 1}, Column ${square.colIndex + 1}</td>
+                              <td class="fw-digit" width="96" style="border-top: 1px solid ${rule}; width: 96px; padding: 12px 0 12px 8px; ${digit} text-align: center;">${square.rowNumber}</td>
+                              <td class="fw-digit" width="96" style="border-top: 1px solid ${rule}; width: 96px; padding: 12px 0 12px 8px; ${digit} text-align: center;">${square.colNumber}</td>
+                            </tr>`
+                              )
+                              .join('')}
+                          </table>
                         </td>
                       </tr>
-                      ${squares
-                        .map(
-                          (square) => `
-                      <tr>
-                        <td style="padding: 8px 0; color: #fafafa; font-size: 14px;">
-                          Row ${square.rowIndex + 1}, Column ${square.colIndex + 1}
-                        </td>
-                        <td style="padding: 8px 0; color: #F97316; font-size: 24px; font-weight: bold; text-align: center;">
-                          ${square.rowNumber}
-                        </td>
-                        <td style="padding: 8px 0; color: #F97316; font-size: 24px; font-weight: bold; text-align: center;">
-                          ${square.colNumber}
-                        </td>
-                      </tr>`
-                        )
-                        .join('')}
                     </table>
                   </td>
                 </tr>
-              </table>
-              
-              <!-- CTA Button -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+
+                <!-- CTA Button -->
                 <tr>
-                  <td align="center" style="padding: 8px 0;">
-                    <a href="${contestUrl}" style="display: inline-block; background-color: #F97316; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: 600;">
-                      View Contest
-                    </a>
+                  <td style="padding-top: 24px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="fw-button" style="margin: 0 auto;">
+                      <tr>
+                        <td align="center" bgcolor="${brand}" style="background-color: ${brand}; border-radius: 4px; mso-padding-alt: 12px 24px;">
+                          <a href="${contestUrl}" style="display: block; padding: 12px 24px; font-family: ${body}; font-size: 16px; line-height: 1.25; font-weight: 700; color: #FFFFFF; text-decoration: none; text-align: center; border-radius: 4px;">View Contest</a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
+
               </table>
-              
             </td>
           </tr>
-          
+
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px; text-align: center;">
-              <p style="margin: 0; color: #71717a; font-size: 14px;">
-                Good luck! - The Fundwell Team
-              </p>
-            </td>
+            <td align="center" style="padding: 24px 0 0 0; ${bodyM} color: ${inkMuted}; text-align: center;">Good luck! - The Fundwell Team</td>
           </tr>
-          
+
         </table>
+        <!--[if mso]></td></tr></table><![endif]-->
       </td>
     </tr>
   </table>
