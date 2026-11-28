@@ -118,7 +118,12 @@ export function ContestStatusButton({ contestId, currentStatus, isHitAThon, clas
   return (
     <>
       <DashButton
-        look={currentStatus === 'in_progress' ? 'quiet' : 'main'}
+        // A hit-a-thon's open or closed pledges: Primary stays with Save Hits or Lock and Send Totals (Figma; Brent, 2026-11-27)
+        look={
+          currentStatus === 'in_progress' || (isHitAThon && (currentStatus === 'open' || currentStatus === 'locked'))
+            ? 'quiet'
+            : 'main'
+        }
         onClick={() => setIsConfirming(true)}
         disabled={isLoading}
         className={className}

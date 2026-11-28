@@ -83,21 +83,14 @@
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
-  --color-fundwell-primary: var(--fundwell-primary);
-  --color-fundwell-secondary: var(--fundwell-secondary);
-  --color-fundwell-accent: var(--fundwell-accent);
-  --color-fundwell-background: var(--fundwell-background);
-  --color-fundwell-surface: var(--fundwell-surface);
-  --color-fundwell-text: var(--fundwell-text);
-
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
   --font-sans:
-    var(--font-montserrat), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    var(--font-figtree), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-alt: var(--font-montserrat-alternates);
+  --font-alt: var(--font-figtree);
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -385,12 +378,6 @@
   :root {
     --background: 240 6% 10%;
     --foreground: 60 0% 90%;
-    --fundwell-primary: #f97316;
-    --fundwell-secondary: #d97706;
-    --fundwell-accent: #fbbf24;
-    --fundwell-background: #18181b;
-    --fundwell-surface: #27272a;
-    --fundwell-text: #fafafa;
 
     --muted: 240 6% 10%;
     --muted-foreground: 240 5% 84%;
@@ -424,12 +411,6 @@
   .dark {
     --background: 224 71% 4%;
     --foreground: 213 31% 91%;
-    --fundwell-primary: #f97316;
-    --fundwell-secondary: #d97706;
-    --fundwell-accent: #fbbf24;
-    --fundwell-background: #18181b;
-    --fundwell-surface: #27272a;
-    --fundwell-text: #fafafa;
 
     --muted: 223 47% 11%;
     --muted-foreground: 215.4 16.3% 56.9%;

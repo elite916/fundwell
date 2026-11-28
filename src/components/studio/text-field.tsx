@@ -2,6 +2,8 @@ import { type ComponentProps, type ReactNode, useId } from 'react';
 
 import { cn } from '@/utils/cn';
 
+import { textStyle } from './type';
+
 import css from './field.module.css';
 
 interface TextFieldProps extends ComponentProps<'input'> {
@@ -21,7 +23,7 @@ export function TextField({ label, note, hint, error, id, className, ...props }:
 
   return (
     <div className={cn(css.field, className)}>
-      <label htmlFor={inputId} className={css.label}>
+      <label htmlFor={inputId} className={cn(css.label, textStyle.label)}>
         {label} {note && <span>{note}</span>}
       </label>
       <input

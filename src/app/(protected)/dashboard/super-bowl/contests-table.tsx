@@ -16,7 +16,7 @@ const STATUS_LABELS = {
   draft: 'Draft',
   open: 'Open',
   locked: 'Locked',
-  in_progress: 'In Progress',
+  in_progress: 'In progress',
   completed: 'Completed',
 };
 

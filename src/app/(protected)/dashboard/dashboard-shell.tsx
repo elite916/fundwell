@@ -61,7 +61,7 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
             <Dialog.Root open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
               <Dialog.Trigger asChild>
                 <IconButton label='Open menu'>
-                  <Menu aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
+                  <Menu aria-hidden='true' width={24} height={24} strokeWidth={1.8} />
                 </IconButton>
               </Dialog.Trigger>
               <Dialog.Portal>
@@ -83,7 +83,7 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
                   </button>
                   <Dialog.Close asChild>
                     <IconButton label='Close' className={css.close}>
-                      <X aria-hidden='true' width={18} height={18} strokeWidth={1.8} />
+                      <X aria-hidden='true' width={24} height={24} strokeWidth={1.8} />
                     </IconButton>
                   </Dialog.Close>
                 </Dialog.Content>
@@ -99,7 +99,7 @@ export function DashboardShell({ children, userEmail, avatarUrl, isAdmin }: Dash
             <DropdownMenu.Trigger className={css.who} aria-label={`${userEmail}, account menu`}>
               {/* The letter is drawn with CSS: as text it would be part of the visible label, and not of the spoken one */}
               <span aria-hidden='true' className={css.avatar} data-letter={avatarUrl ? undefined : userEmail.charAt(0)}>
-                {avatarUrl && <Image src={avatarUrl} alt='' fill sizes='32px' />}
+                {avatarUrl && <Image src={avatarUrl} alt='' fill sizes='44px' />}
               </span>
               <span aria-hidden='true' className={css.email}>
                 {userEmail}

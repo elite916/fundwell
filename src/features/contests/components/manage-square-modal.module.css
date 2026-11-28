@@ -15,10 +15,10 @@
     font-weight: 600;
   }
   .square .open {
-    box-shadow: inset 0 0 0 2px var(--studio-bed);
+    box-shadow: inset 0 0 0 2px var(--color-rule);
   }
   .square dt {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     font-size: 13px;
   }
   .square dd {
@@ -30,7 +30,7 @@
     font-weight: 600;
   }
   .soft {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
   }
   .facts {
     margin: 8px 0 0;
@@ -55,7 +55,7 @@
     text-underline-offset: 4px;
   }
   .why {
-    color: var(--studio-soft);
+    color: var(--color-ink-muted);
     font-size: 13px;
     text-align: center;
   }

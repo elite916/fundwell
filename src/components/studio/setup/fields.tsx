@@ -8,6 +8,7 @@ import * as Switch from '@radix-ui/react-switch';
 
 import { DashButton, IconButton } from '../dashboard/dash-button';
 import { srOnly } from '../theme';
+import { textStyle } from '../type';
 
 import field from '../field.module.css';
 import css from './setup.module.css';
@@ -47,7 +48,7 @@ export function TextArea({ label, hint, error, id, className, ...props }: Wordin
 
   return (
     <div className={cn(field.field, className)}>
-      <label htmlFor={inputId} className={field.label}>
+      <label htmlFor={inputId} className={cn(field.label, textStyle.label)}>
         {label}
       </label>
       <textarea
@@ -76,7 +77,7 @@ export function UnitField({
 
   return (
     <div className={field.field}>
-      <label htmlFor={inputId} className={field.label}>
+      <label htmlFor={inputId} className={cn(field.label, textStyle.label)}>
         {label}
       </label>
       <div className={css.unit}>
@@ -169,7 +170,7 @@ export function ColorField({ label, error, color, onPick, id, className, ...prop
 
   return (
     <div className={field.field}>
-      <label htmlFor={inputId} className={field.label}>
+      <label htmlFor={inputId} className={cn(field.label, textStyle.label)}>
         {label}
       </label>
       <div className={css.colorRow}>
@@ -206,7 +207,7 @@ export function PinField({
 
   return (
     <div className={field.field}>
-      <label htmlFor={id} className={field.label}>
+      <label htmlFor={id} className={cn(field.label, textStyle.label)}>
         Access PIN
       </label>
       <div className={css.pinRow}>

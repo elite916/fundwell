@@ -2,6 +2,7 @@
 
 import { useFormContext, useWatch } from 'react-hook-form';
 
+import { organizerColors } from '@/components/studio/color';
 import { ColorField } from '@/components/studio/setup/fields';
 import { CreateContestInput } from '@/features/contests/models/contest';
 
@@ -52,7 +53,7 @@ export function BrandingStep() {
                 onClick={() => selectPreset(preset.primary, preset.secondary)}
               />
               <span>
-                <i style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.secondary})` }} />
+                <i style={{ background: `linear-gradient(90deg, ${preset.primary} 50%, ${preset.secondary} 50%)` }} />
                 {preset.name}
               </span>
             </label>
@@ -65,37 +66,32 @@ export function BrandingStep() {
         <ColorField
           id='primaryColor'
           label='Primary Color'
-          color={primaryColor || '#F97316'}
+          color={primaryColor || '#17603F'}
           onPick={(color) => setValue('primaryColor', color, { shouldValidate: true })}
-          placeholder='#F97316'
+          placeholder='#17603F'
           error={errors.primaryColor?.message}
           {...register('primaryColor')}
         />
         <ColorField
           id='secondaryColor'
           label='Secondary Color'
-          color={secondaryColor || '#D97706'}
+          color={secondaryColor || '#F2B233'}
           onPick={(color) => setValue('secondaryColor', color, { shouldValidate: true })}
-          placeholder='#D97706'
+          placeholder='#F2B233'
           error={errors.secondaryColor?.message}
           {...register('secondaryColor')}
         />
       </div>
 
       {/* Color Preview */}
-      <div
-        className={css.swatch}
-        style={{
-          background: `linear-gradient(135deg, ${primaryColor || '#F97316'}, ${secondaryColor || '#D97706'})`,
-        }}
-      >
+      <div className={css.swatch} style={organizerColors(primaryColor || '#17603F', secondaryColor || '#F2B233')}>
         <span>Preview</span>
       </div>
 
       {/* Contest Images Notice */}
       <p className={css.say}>
         <b>Contest Images</b>
-        You can upload a hero banner image and organization logo after creating your contest. Simply go to your contest
+        You can upload an organization logo after creating your contest. Simply go to your contest
         settings and use the image upload feature in the branding section.
       </p>
 

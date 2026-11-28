@@ -21,7 +21,7 @@ interface BoardFrameProps<T extends GridSquare> {
   tableProps?: TableHTMLAttributes<HTMLTableElement>;
 }
 
-/** The slab and the table. Shared by both boards; use one of those instead. */
+/** The table of squares and its numbers. Shared by both boards; use one of those instead. */
 export function BoardFrame<T extends GridSquare>({
   grid,
   rowTeamName,

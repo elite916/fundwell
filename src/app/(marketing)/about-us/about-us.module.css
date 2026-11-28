@@ -1,11 +1,29 @@
+/* Figma's About: the intro in the left column, Body L under a Display S lead */
 .text {
   display: grid;
-  gap: 18px;
+  gap: var(--space-4);
   justify-items: start;
-}
-.lead {
-  text-wrap: balance;
+  max-width: 680px;
+  margin-top: var(--space-16);
+  font-size: 20px;
 }
 .button {
-  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+@media (max-width: 699px) {
+  .text {
+    margin-top: var(--space-10);
+    font-size: 16px;
+  }
+  /* Display XS */
+  .lead {
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  .button {
+    justify-self: stretch;
+  }
 }

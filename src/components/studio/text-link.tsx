@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 import { Button } from './button';
 
 interface TextLinkProps extends ComponentProps<typeof Link> {
-  /** `link` is underlined text. `button` is the black pill. */
+  /** `link` is underlined text. `button` is the main action. */
   look?: 'button' | 'link';
 }
 

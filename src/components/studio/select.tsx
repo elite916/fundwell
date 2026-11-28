@@ -2,6 +2,8 @@ import { type ComponentProps, type ReactNode, useId } from 'react';
 
 import { cn } from '@/utils/cn';
 
+import { textStyle } from './type';
+
 import css from './field.module.css';
 
 interface SelectProps extends ComponentProps<'select'> {
@@ -22,7 +24,7 @@ export function Select({ label, note, error, look = 'text', id, className, child
 
   return (
     <div className={cn(isForm ? css.field : css.inlineField, className)}>
-      <label htmlFor={selectId} className={css.label}>
+      <label htmlFor={selectId} className={cn(css.label, textStyle.label)}>
         {label} {note && <span>{note}</span>}
       </label>
       <select

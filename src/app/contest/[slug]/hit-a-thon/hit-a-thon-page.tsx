@@ -6,11 +6,10 @@ import { getHitPlayerPledgeTotals, getHitPlayers, getPaymentOptionsForContest } 
 import type { Contest } from '@/features/contests/types';
 import { supabaseAdminClient } from '@/libs/supabase/supabase-admin';
 
-import { OrganizerPrint } from '../organizer-print';
 import { ShareButton } from '../share-button';
 
 import { HitAThonFundraiser } from './hit-a-thon-fundraiser';
-import type { PublicHitAThon, PublicHitPlayer } from './model';
+import { type PublicHitAThon, type PublicHitPlayer, SHARE_CARD_SLOT } from './model';
 
 import css from '../contest.module.css';
 
@@ -60,6 +59,7 @@ export async function HitAThonPage({ contest, referral, sharePin, colors }: HitA
       header={
         <OrganizerHeader
           contestName={contest.name}
+          description={contest.description}
           logoUrl={contest.org_image_url}
           action={
             <ShareButton
@@ -71,6 +71,7 @@ export async function HitAThonPage({ contest, referral, sharePin, colors }: HitA
               {...(player && {
                 title: `Share ${player.first_name}'s page`,
                 description: 'Send this link to family and friends.',
+                besideId: SHARE_CARD_SLOT,
               })}
             />
           }
@@ -83,15 +84,6 @@ export async function HitAThonPage({ contest, referral, sharePin, colors }: HitA
         player={player}
         paymentOptions={paymentOptions}
         colors={colors}
-        organizer={
-          <OrganizerPrint
-            contestName={contest.name}
-            imageUrl={contest.hero_image_url}
-            imagePosition={contest.hero_image_position}
-            logoUrl={contest.org_image_url}
-            description={contest.description}
-          />
-        }
       />
     </StudioPage>
   );

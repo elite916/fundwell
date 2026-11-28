@@ -1,6 +1,6 @@
-import { gradientCtaButton } from '../components/email-components';
+import { brandStrong, ctaButton, emailText } from '../components/email-components';
 import { escapeHtml } from '../escape-html';
-import { emailLayout, emailStyles } from '../layouts/email-layout';
+import { emailColors, emailLayout, emailStack } from '../layouts/email-layout';
 
 import { formatPrize, formatScore, type QuarterResult } from './organizer-quarter-email';
 
@@ -27,13 +27,10 @@ export function organizerSummaryEmail({
   const quarterLines = quarters.map((result) => {
     const prize = formatPrize(result);
     const winner = result.winner
-      ? `Winner: <strong>${escapeHtml(result.winner.name)}</strong>.`
+      ? `Winner: <strong style="font-weight: 700;">${escapeHtml(result.winner.name)}</strong>.`
       : 'Nobody claimed the winning square.';
 
-    return `
-          <p style="margin: 0; padding: 8px 0; color: #fafafa; font-size: 14px; line-height: 1.5; word-break: break-word;">
-            ${formatScore(result)} ${winner}${prize ? ` Prize: <strong style="color: #22c55e;">${escapeHtml(prize)}</strong>` : ''}
-          </p>`;
+    return emailText(`${formatScore(result)} ${winner}${prize ? ` Prize: ${brandStrong(escapeHtml(prize))}` : ''}`);
   });
 
   // The same day for everyone, wherever the server runs
@@ -46,21 +43,22 @@ export function organizerSummaryEmail({
 
   const closing = isCompleted
     ? ''
-    : `
-    <p style="${emailStyles.greeting}">
-      When you've paid the winners, mark the contest complete in your dashboard.${closingDate ? ` It closes automatically on ${closingDate}.` : ''}
-    </p>`;
+    : emailText(
+        `When you've paid the winners, mark the contest complete in your dashboard.${closingDate ? ` It closes automatically on ${closingDate}.` : ''}`
+      );
 
-  const content = `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailStyles.detailsBox}">
+  // A Details box with no title, its rows the quarters, 8px apart
+  const content = [
+    `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${emailColors.bg}; border-radius: 4px;">
       <tr>
-        <td style="${emailStyles.detailsBoxPadding}">${quarterLines.join('')}
+        <td style="padding: 16px;">${emailStack(quarterLines, 8)}
         </td>
       </tr>
-    </table>
-    ${closing}
-    ${gradientCtaButton('View Contest', contestUrl)}
-  `;
+    </table>`,
+    closing,
+    ctaButton('View Contest', contestUrl),
+  ];
 
-  return { subject, html: emailLayout({ headerStyle: 'gradient', children: content }) };
+  return { subject, html: emailLayout({ content }) };
 }

@@ -11,6 +11,9 @@ export interface PrizeLine {
   prize: string | null;
   /** What it would pay with the squares sold so far. Only before the first winner. */
   now?: string;
+  /** Who won it, in the list of winners. */
+  winner?: string;
+  /** Quiet lines under it: the score, or "Not played yet". */
   notes: string[];
 }
 
@@ -86,10 +89,8 @@ export function prizeList(
           {
             label,
             prize,
-            notes: [
-              winnerName(score, squares) ?? 'Nobody claimed that square.',
-              `${contest.row_team_name} ${score.home_score} - ${contest.col_team_name} ${score.away_score}`,
-            ],
+            winner: winnerName(score, squares) ?? 'Nobody claimed that square.',
+            notes: [`${contest.row_team_name} ${score.home_score} - ${contest.col_team_name} ${score.away_score}`],
           },
         ];
       }
