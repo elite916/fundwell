@@ -145,7 +145,7 @@ export async function HitAThonOverview({ contest, statusLabel, statusTone }: Hit
         </div>
 
         {/* Summary */}
-        <dl className={cn(css.stats, css.four)}>
+        <dl className={css.stats}>
           {stats.map(({ label, value }) => (
             <div key={label}>
               <dt>{label}</dt>
