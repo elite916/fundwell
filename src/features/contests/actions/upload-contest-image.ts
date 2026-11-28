@@ -6,7 +6,7 @@ import { validateImageFile } from '@/utils/file-validators';
 
 import { requireAuth, requireContestOwnershipForUpload } from '../middleware/auth-middleware';
 
-type ImageType = 'hero' | 'logo';
+type ImageType = 'logo';
 
 /**
  * Uploads an image to Supabase Storage for a contest.
@@ -30,7 +30,7 @@ export async function uploadContestImage(
     return { data: null, error: { message: 'No file provided' } };
   }
 
-  if (!imageType || !['hero', 'logo'].includes(imageType)) {
+  if (!imageType || !['logo'].includes(imageType)) {
     return { data: null, error: { message: 'Invalid image type' } };
   }
 

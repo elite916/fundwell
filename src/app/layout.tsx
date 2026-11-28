@@ -20,11 +20,13 @@ const figtree = Figtree({
 });
 
 // Figma's "Big Shoulders Display" is this family at its largest optical size. `opsz` lets the CSS pick that size.
-// Next has no fallback metrics for it, so the CSS names its own fallbacks.
+// Next has no fallback metrics for it, so the CSS names its own fallbacks. The empty `fallback` stops Turbopack
+// looking for those metrics and warning in dev.
 const bigShoulders = Big_Shoulders({
   variable: '--font-big-shoulders',
   subsets: ['latin'],
   axes: ['opsz'],
+  fallback: [],
   adjustFontFallback: false,
 });
 

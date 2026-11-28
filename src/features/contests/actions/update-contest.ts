@@ -43,8 +43,6 @@ const UPDATABLE_COLUMNS = [
   'prize_q2_text',
   'prize_q3_text',
   'prize_final_text',
-  'hero_image_url',
-  'hero_image_position',
   'org_image_url',
   'primary_color',
   'secondary_color',
