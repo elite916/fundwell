@@ -1,6 +1,6 @@
-import { ctaButton, squareDetailsTable } from '../components/email-components';
+import { checkMark, ctaButton, emailText, paidRow, squareDetailsTable } from '../components/email-components';
 import { escapeHtml } from '../escape-html';
-import { emailLayout, emailStyles } from '../layouts/email-layout';
+import { emailLayout } from '../layouts/email-layout';
 
 interface PaymentConfirmedEmailParams {
   participantName: string;
@@ -26,28 +26,21 @@ export function paymentConfirmedEmail({
   // Escape user-provided values to prevent HTML injection
   const safeParticipantName = escapeHtml(participantName);
 
-  const statusHtml = `
-    <td style="${emailStyles.detailLabel}">Status:</td>
-    <td style="color: #22c55e; font-size: 16px; font-weight: bold; text-align: right;">✓ Paid</td>
-  `;
-
-  const content = `
-    <p style="${emailStyles.greeting}">Hi ${safeParticipantName},</p>
-    <p style="margin: 0 0 24px 0; color: #fafafa; font-size: 18px; font-weight: 600;">
-      Your payment has been confirmed! ✓
-    </p>
-    ${squareDetailsTable({
+  const content = [
+    emailText(`Hi ${safeParticipantName},`),
+    emailText(`Your payment has been confirmed! ${checkMark()}`, { size: 'L' }),
+    squareDetailsTable({
       rowIndex,
       colIndex,
       rowTeamName,
       colTeamName,
-      statusHtml,
-    })}
-    <p style="${emailStyles.greeting}">Your square is locked in. Good luck!</p>
-    ${ctaButton('View Contest', contestUrl)}
-  `;
+      status: paidRow,
+    }),
+    emailText('Your square is locked in. Good luck!'),
+    ctaButton('View Contest', contestUrl),
+  ];
 
-  const html = emailLayout({ children: content });
+  const html = emailLayout({ content });
 
   return { subject, html };
 }

@@ -1,8 +1,9 @@
+import { PAYMENT_OPTION_NAMES } from '@/features/contests/constants';
 import { formatPrizeAmount } from '@/features/contests/utils/prize-helpers';
 
-import { gradientCtaButton } from '../components/email-components';
+import { ctaButton, type DetailRow, detailsBox, emailText } from '../components/email-components';
 import { escapeHtml } from '../escape-html';
-import { emailLayout, emailStyles } from '../layouts/email-layout';
+import { emailLayout } from '../layouts/email-layout';
 
 export interface QuarterResult {
   quarterName: string;
@@ -36,9 +37,9 @@ export function organizerQuarterEmail({
   const rows = [
     winner && detailRow('Winner:', winner.name),
     winner?.email && detailRow('Email:', winner.email),
-    winner?.venmo && detailRow('Venmo:', winner.venmo),
-    prize && detailRow('Prize:', prize, 'color: #22c55e; font-weight: bold;'),
-  ].filter(Boolean);
+    winner?.venmo && detailRow(`${PAYMENT_OPTION_NAMES.venmo}:`, winner.venmo),
+    prize && detailRow('Prize:', prize, 'due'),
+  ].filter((row): row is DetailRow => Boolean(row));
 
   const problem = !winner
     ? 'Nobody claimed the winning square.'
@@ -46,28 +47,15 @@ export function organizerQuarterEmail({
       ? "We don't have an email for this winner, so we couldn't notify them."
       : null;
 
-  const content = `
-    ${isCorrected ? `<p style="${emailStyles.greeting}">The ${quarterName} score was corrected.</p>` : ''}
-    <p style="margin: 0 0 24px 0; color: #fafafa; font-size: 20px; font-weight: 600;">${formatScore(result)}</p>
-    ${problem ? `<p style="${emailStyles.greeting}">${problem}</p>` : ''}
-    ${
-      rows.length > 0
-        ? `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailStyles.detailsBox}">
-      <tr>
-        <td style="${emailStyles.detailsBoxPadding}">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            ${rows.join('')}
-          </table>
-        </td>
-      </tr>
-    </table>`
-        : ''
-    }
-    ${gradientCtaButton('View Contest', contestUrl)}
-  `;
+  const content = [
+    isCorrected && emailText(`The ${quarterName} score was corrected.`),
+    emailText(formatScore(result), { size: 'L' }),
+    problem && emailText(problem),
+    rows.length > 0 && detailsBox(null, rows),
+    ctaButton('View Contest', contestUrl),
+  ];
 
-  return { subject, html: emailLayout({ headerStyle: 'gradient', children: content }) };
+  return { subject, html: emailLayout({ content }) };
 }
 
 /** Escaped for HTML. */
@@ -89,10 +77,6 @@ export function formatPrize({
   return prizeText || (prizeAmount > 0 ? formatPrizeAmount(prizeAmount) : null);
 }
 
-function detailRow(label: string, value: string, valueStyle = ''): string {
-  return `
-            <tr>
-              <td style="${emailStyles.detailRow} ${emailStyles.detailLabel} vertical-align: top;">${label}</td>
-              <td style="${emailStyles.detailRow} ${emailStyles.detailValue} padding-left: 16px; word-break: break-word; ${valueStyle}">${escapeHtml(value)}</td>
-            </tr>`;
+function detailRow(label: string, value: string, look?: DetailRow['look']): DetailRow {
+  return { label, value: escapeHtml(value), look };
 }
