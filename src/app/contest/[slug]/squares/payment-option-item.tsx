@@ -5,24 +5,18 @@ import Image from 'next/image';
 
 import { Button } from '@/components/studio/button';
 import { srOnly } from '@/components/studio/theme';
-import type { PaymentOption, PaymentOptionType } from '@/features/contests/types';
+import { PAYMENT_OPTION_NAMES } from '@/features/contests/constants';
+import type { PaymentOption } from '@/features/contests/types';
 import { copyText, selectText } from '@/utils/copy-text';
 import { generatePaymentUrl } from '@/utils/payment-url-generator';
 
 import css from './squares.module.css';
 
-const NAMES: Record<PaymentOptionType, string> = {
-  venmo: 'Venmo',
-  paypal: 'PayPal',
-  cashapp: 'Cash App',
-  zelle: 'Zelle',
-};
-
 /** One way to pay: a link to the app, the handle to copy, and whatever else the organizer added. */
 export function PaymentOptionItem({ option }: { option: PaymentOption }) {
   const [isCopied, setIsCopied] = useState(false);
   const handleRef = useRef<HTMLParagraphElement>(null);
-  const name = NAMES[option.type];
+  const name = PAYMENT_OPTION_NAMES[option.type];
   const paymentUrl = generatePaymentUrl(option.type, option.handle_or_link);
 
   const handleCopy = async () => {
