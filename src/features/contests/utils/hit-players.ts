@@ -1,6 +1,9 @@
 import { Database } from '@/libs/supabase/types';
 
-export type HitPlayer = Pick<Database['public']['Tables']['hit_players']['Row'], 'id' | 'first_name' | 'number' | 'slug'>;
+export type HitPlayer = Pick<
+  Database['public']['Tables']['hit_players']['Row'],
+  'id' | 'first_name' | 'number' | 'slug'
+>;
 
 /** By number, then first name; players without a number last. Never by amount. */
 export function sortHitPlayers<T extends Pick<HitPlayer, 'first_name' | 'number'>>(players: T[]): T[] {
