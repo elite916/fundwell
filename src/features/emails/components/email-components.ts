@@ -72,7 +72,13 @@ type SquareDetailsParams = {
 };
 
 /** The squares emails' "Square Details" box. */
-export function squareDetailsTable({ rowIndex, colIndex, rowTeamName, colTeamName, status }: SquareDetailsParams): string {
+export function squareDetailsTable({
+  rowIndex,
+  colIndex,
+  rowTeamName,
+  colTeamName,
+  status,
+}: SquareDetailsParams): string {
   return detailsBox('Square Details', [
     { label: 'Position:', value: `Row ${rowIndex + 1}, Column ${colIndex + 1}` },
     { label: 'Teams:', value: `${escapeHtml(rowTeamName)} vs ${escapeHtml(colTeamName)}` },

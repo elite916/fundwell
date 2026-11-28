@@ -91,8 +91,8 @@ export function BrandingStep() {
       {/* Contest Images Notice */}
       <p className={css.say}>
         <b>Contest Images</b>
-        You can upload an organization logo after creating your contest. Simply go to your contest
-        settings and use the image upload feature in the branding section.
+        You can upload an organization logo after creating your contest. Simply go to your contest settings and use the
+        image upload feature in the branding section.
       </p>
 
       {/* Info Note */}
